@@ -1,0 +1,6 @@
+# Readline configuration for bash
+set bell-style none
+set completion-ignore-case on
+set show-all-if-ambiguous on
+set history-size -1
+

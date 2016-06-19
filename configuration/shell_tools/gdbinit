@@ -1,0 +1,31 @@
+set history save
+set history file ~/.gdb_history
+# Use ! to perform command expansion like in the shell
+set history expansion 
+
+define hook-quit
+  set confirm off
+end
+document hook-quit 
+  Disables exit confirmation
+end  
+define exit
+  quit
+end
+document exit
+  Simple alias for quit
+end  
+define hookpost-help
+  python print_color(" >> Type cheatsheet for a BADASS help !!", bldred)
+end  
+document hookpost-help
+  Just reming you there is a cheatsheet
+end  
+
+python
+import os, glob
+python_sources = [ os.environ["MY_ROOT_CONF_DIR"] + "/" + f 
+  for f in ["gdb_common.py", "gdb_printers_filters.py", "gdb_prompt_and_help.py"] ]
+for python_file in python_sources: gdb.execute("source " + python_file)
+end
+

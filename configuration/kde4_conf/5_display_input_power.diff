@@ -1,0 +1,75 @@
+diff -r 5b3331354276 config/kaccessrc
+--- a/config/kaccessrc	Sun Mar 22 21:05:28 2015 +0100
++++ b/config/kaccessrc	Sun Mar 22 21:16:47 2015 +0100
+@@ -28,3 +28,13 @@
+ ToggleKeysBeep=false
+ kNotifyAccessX=false
+ kNotifyModifiers=false
++
++[Mouse]
++MK-MaxSpeed=1000
++MK-TimeToMax=5000
++MKCurve=0
++MKDelay=160
++MKInterval=5
++MKMaxSpeed=5
++MKTimeToMax=1000
++MouseKeys=false
+diff -r 5b3331354276 config/kcminputrc
+--- a/config/kcminputrc	Sun Mar 22 21:05:28 2015 +0100
++++ b/config/kcminputrc	Sun Mar 22 21:16:47 2015 +0100
+@@ -1,3 +1,7 @@
+ [Mouse]
++Acceleration=3
++MouseButtonMapping=RightHanded
++ReverseScrollPolarity=false
++Threshold=4
+ cursorSize=32
+ cursorTheme=Adwaita
+diff -r 5b3331354276 config/kdeglobals
+--- a/config/kdeglobals	Sun Mar 22 21:05:28 2015 +0100
++++ b/config/kdeglobals	Sun Mar 22 21:16:47 2015 +0100
+@@ -141,8 +141,14 @@
+ widgetStyle=oxygen
+ 
+ [KDE]
++AutoSelectDelay=-1
++DoubleClickInterval=400
+ ShowIconsInMenuItems=true
+ ShowIconsOnPushButtons=true
++SingleClick=false
++StartDragDist=4
++StartDragTime=500
++WheelScrollLines=3
+ 
+ [KDE-Global GUI Settings]
+ GraphicEffectsLevel=1
+diff -r 5b3331354276 config/kgammarc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/kgammarc	Sun Mar 22 21:16:47 2015 +0100
+@@ -0,0 +1,2 @@
++[ConfigFile]
++use=kgammarc
+diff -r 5b3331354276 config/kscreensaverrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/kscreensaverrc	Sun Mar 22 21:16:47 2015 +0100
+@@ -0,0 +1,4 @@
++[ScreenSaver]
++Enabled=false
++LegacySaverEnabled=false
++PlasmaEnabled=false
+diff -r 5b3331354276 config/powermanagementprofilesrc
+--- a/config/powermanagementprofilesrc	Sun Mar 22 21:05:28 2015 +0100
++++ b/config/powermanagementprofilesrc	Sun Mar 22 21:16:47 2015 +0100
+@@ -2,10 +2,7 @@
+ icon=battery-charging
+ 
+ [AC][DPMSControl]
+-idleTime=600
+-
+-[AC][DimDisplay]
+-idleTime=300000
++idleTime=3600
+ 
+ [AC][HandleButtonEvents]
+ lidAction=1

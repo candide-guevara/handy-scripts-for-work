@@ -1,0 +1,136 @@
+diff -r ae4a61e204d5 config/plasma-desktop-appletsrc
+--- a/config/plasma-desktop-appletsrc	Sun Mar 22 14:25:23 2015 +0100
++++ b/config/plasma-desktop-appletsrc	Sun Mar 22 14:33:01 2015 +0100
+@@ -111,6 +111,12 @@
+ [Containments][1][ActionPlugins]
+ RightButton;NoModifier=contextmenu
+ 
++[Containments][1][Applets][16]
++geometry=1870,3,50,32
++immutability=2
++plugin=keyboard_applet
++zvalue=0
++
+ [Containments][1][Applets][2]
+ geometry=0,3,32,32
+ immutability=1
+@@ -145,21 +151,33 @@
+ Order=2
+ 
+ [Containments][1][Applets][5]
+-geometry=105,3,1585,32
+-immutability=1
++geometry=105,3,1555,32
++immutability=2
+ plugin=tasks
+ zvalue=0
+ 
++[Containments][1][Applets][5][Configuration]
++forceRows=false
++groupWhenFull=true
++groupingStrategy=2
++highlightWindows=false
++maxRows=1
++showOnlyCurrentActivity=true
++showOnlyCurrentDesktop=false
++showOnlyCurrentScreen=false
++showOnlyMinimized=false
++showToolTip=false
++sortingStrategy=2
++
+ [Containments][1][Applets][5][Configuration][Launchers]
+-browser=preferred://browser, , ,\s
+-filemanager=preferred://filemanager, , ,\s
++Items=
+ 
+ [Containments][1][Applets][5][LayoutInformation]
+ Order=3
+ 
+ [Containments][1][Applets][6]
+-geometry=1694,3,134,32
+-immutability=1
++geometry=1664,3,134,32
++immutability=2
+ plugin=systemtray
+ zvalue=0
+ 
+@@ -212,20 +230,34 @@
+ Order=4
+ 
+ [Containments][1][Applets][7]
+-geometry=1832,3,64,32
+-immutability=1
++geometry=1802,3,64,32
++immutability=2
+ plugin=digital-clock
+ zvalue=0
+ 
+ [Containments][1][Applets][7][Configuration]
++announceInterval=0
++calendarType=-1
++dateStyle=2
++defaultTimezone=Local
+ displayEvents=false
++displayHolidays=true
++holidaysRegions=us_en-us,fr_fr
++holidaysRegionsDaysOff=us_en-us,fr_fr
++plainClockDrawShadow=true
++plainClockFont=Sans Serif,32,-1,0,50,0,0,0,0,0
++showSeconds=false
++showTimezone=false
++timeZones=Europe/Paris,UTC
++useCustomColor=false
++useCustomShadowColor=false
+ 
+ [Containments][1][Applets][7][LayoutInformation]
+ Order=5
+ 
+ [Containments][1][Applets][7][PopupApplet]
+-DialogHeight=230
+-DialogWidth=412
++DialogHeight=270
++DialogWidth=571
+ 
+ [Containments][1][Configuration]
+ maximumSize=1920,35
+@@ -282,19 +314,6 @@
+ wallpaperpluginmode=SingleImage
+ zvalue=0
+ 
+-[Containments][8][Applets][9]
+-geometry=20,20,600,400
+-immutability=1
+-plugin=folderview
+-zvalue=0
+-
+-[Containments][8][Applets][9][Configuration]
+-geometry=20,20,600,400
+-immutability=1
+-plugin=folderview
+-url=desktop:/
+-zvalue=0
+-
+ [Containments][8][Wallpaper][image]
+ slideTimer=10
+ slidepaths=
+@@ -302,3 +321,6 @@
+ wallpaper=/usr/share/wallpapers/openSUSEdefault
+ wallpapercolor=0,0,0
+ wallpaperposition=0
++
++[General]
++immutability=2
+diff -r ae4a61e204d5 config/plasma-desktoprc
+--- a/config/plasma-desktoprc	Sun Mar 22 14:25:23 2015 +0100
++++ b/config/plasma-desktoprc	Sun Mar 22 14:33:01 2015 +0100
+@@ -1,5 +1,9 @@
++[BackgroundConfigDialog]
++Height 1080=719
++Width 1920=650
++
+ [PlasmaViews][1]
+-panelVisibility=0
++panelVisibility=1
+ 
+ [PlasmaViews][1][Sizes]
+ lastsize=1920

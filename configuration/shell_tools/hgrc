@@ -1,0 +1,19 @@
+[ui]
+username = cguevara <esteban.guevara@gmail.com>
+ignore= ~/.myconf.d/hgignore
+merge = internal:merge
+
+[extensions]
+color =
+graphlog =
+pager = 
+
+[pager]
+pager = LESS='FSRX' less
+
+[alias]
+goback = revert -C --all
+mydiff = diff --stat -c tip
+
+[auth]
+

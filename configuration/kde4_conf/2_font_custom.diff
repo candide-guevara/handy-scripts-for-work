@@ -1,0 +1,165 @@
+diff -r 39fc64019360 config/gtkrc
+--- a/config/gtkrc	Sun Mar 22 14:33:26 2015 +0100
++++ b/config/gtkrc	Sun Mar 22 17:05:01 2015 +0100
+@@ -1,54 +1,7 @@
+-# created by KDE, Sun Mar 22 13:48:49 2015
++# created by KDE, Sun Mar 22 17:00:44 2015
+ #
+ # If you do not want KDE to override your GTK settings, select
+ # Appearance -> Colors in the System Settings and disable the checkbox
+ # "Apply colors to non-KDE4 applications"
+ #
+ #
+-style "default"
+-{
+-  bg[NORMAL] = { 0.835, 0.820, 0.812 }
+-  bg[SELECTED] = { 0.514, 0.686, 0.467 }
+-  bg[INSENSITIVE] = { 0.835, 0.820, 0.812 }
+-  bg[ACTIVE] = { 0.714, 0.682, 0.667 }
+-  bg[PRELIGHT] = { 0.835, 0.820, 0.812 }
+-
+-  base[NORMAL] = { 1.000, 1.000, 1.000 }
+-  base[SELECTED] = { 0.514, 0.686, 0.467 }
+-  base[INSENSITIVE] = { 0.835, 0.820, 0.812 }
+-  base[ACTIVE] = { 0.514, 0.686, 0.467 }
+-  base[PRELIGHT] = { 0.514, 0.686, 0.467 }
+-
+-  text[NORMAL] = { 0.078, 0.075, 0.071 }
+-  text[SELECTED] = { 1.000, 1.000, 1.000 }
+-  text[INSENSITIVE] = { 0.714, 0.682, 0.667 }
+-  text[ACTIVE] = { 1.000, 1.000, 1.000 }
+-  text[PRELIGHT] = { 1.000, 1.000, 1.000 }
+-
+-  fg[NORMAL] = { 0.078, 0.075, 0.071 }
+-  fg[SELECTED] = { 1.000, 1.000, 1.000 }
+-  fg[INSENSITIVE] = { 0.714, 0.682, 0.667 }
+-  fg[ACTIVE] = { 0.078, 0.075, 0.071 }
+-  fg[PRELIGHT] = { 0.078, 0.075, 0.071 }
+-}
+-
+-class "*" style "default"
+-
+-style "ToolTip"
+-{
+-  bg[NORMAL] = { 0.835, 0.820, 0.812 }
+-  base[NORMAL] = { 1.000, 1.000, 1.000 }
+-  text[NORMAL] = { 0.078, 0.075, 0.071 }
+-  fg[NORMAL] = { 0.078, 0.075, 0.071 }
+-}
+-
+-widget "gtk-tooltip" style "ToolTip"
+-widget "gtk-tooltips" style "ToolTip"
+-
+-style "MenuItem"
+-{
+-  bg[PRELIGHT] = { 0.514, 0.686, 0.467 }
+-}
+-
+-class "*MenuItem" style "MenuItem"
+-
+diff -r 39fc64019360 config/gtkrc-2.0
+--- a/config/gtkrc-2.0	Sun Mar 22 14:33:26 2015 +0100
++++ b/config/gtkrc-2.0	Sun Mar 22 17:05:01 2015 +0100
+@@ -1,4 +1,4 @@
+-# created by KDE, Sun Mar 22 13:48:49 2015
++# created by KDE, Sun Mar 22 17:00:44 2015
+ #
+ # If you do not want KDE to override your GTK settings, select
+ # Appearance -> Colors in the System Settings and disable the checkbox
+@@ -8,50 +8,3 @@
+ 
+ gtk-alternative-button-order = 1
+ 
+-style "default"
+-{
+-  bg[NORMAL] = { 0.835, 0.820, 0.812 }
+-  bg[SELECTED] = { 0.514, 0.686, 0.467 }
+-  bg[INSENSITIVE] = { 0.835, 0.820, 0.812 }
+-  bg[ACTIVE] = { 0.714, 0.682, 0.667 }
+-  bg[PRELIGHT] = { 0.835, 0.820, 0.812 }
+-
+-  base[NORMAL] = { 1.000, 1.000, 1.000 }
+-  base[SELECTED] = { 0.514, 0.686, 0.467 }
+-  base[INSENSITIVE] = { 0.835, 0.820, 0.812 }
+-  base[ACTIVE] = { 0.514, 0.686, 0.467 }
+-  base[PRELIGHT] = { 0.514, 0.686, 0.467 }
+-
+-  text[NORMAL] = { 0.078, 0.075, 0.071 }
+-  text[SELECTED] = { 1.000, 1.000, 1.000 }
+-  text[INSENSITIVE] = { 0.714, 0.682, 0.667 }
+-  text[ACTIVE] = { 1.000, 1.000, 1.000 }
+-  text[PRELIGHT] = { 1.000, 1.000, 1.000 }
+-
+-  fg[NORMAL] = { 0.078, 0.075, 0.071 }
+-  fg[SELECTED] = { 1.000, 1.000, 1.000 }
+-  fg[INSENSITIVE] = { 0.714, 0.682, 0.667 }
+-  fg[ACTIVE] = { 0.078, 0.075, 0.071 }
+-  fg[PRELIGHT] = { 0.078, 0.075, 0.071 }
+-}
+-
+-class "*" style "default"
+-
+-style "ToolTip"
+-{
+-  bg[NORMAL] = { 0.835, 0.820, 0.812 }
+-  base[NORMAL] = { 1.000, 1.000, 1.000 }
+-  text[NORMAL] = { 0.078, 0.075, 0.071 }
+-  fg[NORMAL] = { 0.078, 0.075, 0.071 }
+-}
+-
+-widget "gtk-tooltip" style "ToolTip"
+-widget "gtk-tooltips" style "ToolTip"
+-
+-style "MenuItem"
+-{
+-  bg[PRELIGHT] = { 0.514, 0.686, 0.467 }
+-}
+-
+-class "*MenuItem" style "MenuItem"
+-
+diff -r 39fc64019360 config/kcmfonts
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/kcmfonts	Sun Mar 22 17:05:01 2015 +0100
+@@ -0,0 +1,3 @@
++[General]
++dontChangeAASettings=true
++forceFontDPI=120
+diff -r 39fc64019360 config/kdebugrc
+--- a/config/kdebugrc	Sun Mar 22 14:33:26 2015 +0100
++++ b/config/kdebugrc	Sun Mar 22 17:05:01 2015 +0100
+@@ -18,3 +18,6 @@
+ 
+ [kdostartupconfig4]
+ InfoOutput=4
++
++[kio (delegateanimationhandler)]
++InfoOutput=4
+diff -r 39fc64019360 config/kdeglobals
+--- a/config/kdeglobals	Sun Mar 22 14:33:26 2015 +0100
++++ b/config/kdeglobals	Sun Mar 22 17:05:01 2015 +0100
+@@ -1,2 +1,15 @@
+ [$Version]
+ update_info=kded.upd:kde3.0
++
++[General]
++dbfile=/home/cguevara/.mozilla/firefox/pzp7amt1.cguevara/places.sqlite
++desktopFont=Droid Sans,10,-1,5,50,0,0,0,0,0
++fixed=Droid Sans Mono,9,-1,5,50,0,0,0,0,0
++font=Droid Sans,9,-1,5,50,0,0,0,0,0
++menuFont=Droid Sans,9,-1,5,50,0,0,0,0,0
++smallestReadableFont=Droid Sans,9,-1,5,50,0,0,0,0,0
++taskbarFont=Droid Sans,10,-1,5,50,0,0,0,0,0
++toolBarFont=Droid Sans,9,-1,5,50,0,0,0,0,0
++
++[WM]
++activeFont=Droid Sans,9,-1,5,50,0,0,0,0,0
+diff -r 39fc64019360 config/systemsettingsrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/systemsettingsrc	Sun Mar 22 17:05:01 2015 +0100
+@@ -0,0 +1,6 @@
++[MainWindow]
++Height 1080=1081
++MenuBar=Disabled
++State=AAAA/wAAAAD9AAAAAAAAB4AAAAQGAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgEAAAAA/////wAAAAAAAAAA
++ToolBarsMovable=Disabled
++Width 1920=1921

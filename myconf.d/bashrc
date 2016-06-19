@@ -1,0 +1,18 @@
+#! /bin/bash
+## Sourced for interactive shells in __my home machine__ it is the main
+## entry point to all other bash configuration scripts.
+
+ROOT_CONF_DIR="$HOME/.myconf.d"
+
+if [[ -z $BASHPROFILE_ALREADY_SOURCED ]]; then 
+  source "$ROOT_CONF_DIR/whichmachine.sh"
+  source "$ROOT_CONF_DIR/colors.sh"
+  source "$ROOT_CONF_DIR/environment.sh"
+  source "$ROOT_CONF_DIR/compatibility.sh"
+  source "$ROOT_CONF_DIR/common_routines.sh"
+  source "$ROOT_CONF_DIR/specific_routines.sh"
+  source "$ROOT_CONF_DIR/bash_complete_functions.sh"
+  source "$ROOT_CONF_DIR/bash_settings.sh"
+  BASHPROFILE_ALREADY_SOURCED=1
+fi  
+

@@ -1,0 +1,181 @@
+diff -r 1494f1c1095c apps/ksysguard/ProcessTable.sgrd
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/apps/ksysguard/ProcessTable.sgrd	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE KSysGuardWorkSheet>
++<WorkSheet title="Process Table" interval="2" locked="1" rows="1" columns="1">
++ <host port="-1" command="ksysguardd" shell="" name="localhost"/>
++ <display title="Process Table" columnSpan="1" treeViewHeader="AAAA/wAAAAAAAAABAAAAAAAAAAEBAAAAAAAAAAAAAAAP3DMAAAAJAAAADQAAAGQAAAAMAAAAZAAAAAkAAABkAAAACAAAAGQAAAAHAAAAZAAAAAYAAABkAAAABAAAAGQAAAADAAAAZAAAAAIAAABkAAAHYwAAAA8BAQABAAAAAAAAAAAAAAAAZP////8AAACBAAAAAAAAAAgAAADIAAAAAgAAAAAAAAAAAAAAAwAAAAAAAABSAAAAAQAAAAAAAAAAAAAABAAAAAAAAABiAAAAAQAAAAAAAACAAAAAAQAAAAAAAAAAAAAAAgAAAAAAAAVnAAAAAQAAAAA=" filterState="0" ioUnits="1" hostName="localhost" ioInformation="5" version="5" showTotals="1" sensorType="table" normalizeCPUUsage="1" units="1" rowSpan="1" sensorName="ps" showTooltips="1" column="0" unit="" showCommandLineOptions="0" showUnit="0" class="ProcessController" row="0"/>
++</WorkSheet>
+diff -r 1494f1c1095c apps/ksysguard/SystemLoad2.sgrd
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/apps/ksysguard/SystemLoad2.sgrd	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,16 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE KSysGuardWorkSheet>
++<WorkSheet title="System Load" interval="1" locked="1" rows="3" columns="1">
++ <host port="-1" command="ksysguardd" shell="" name="localhost"/>
++ <display title="CPU History" columnSpan="1" hScale="6" svgBackground="widgets/plot-background" version="1" vLines="0" labels="1" manualRange="0" autoRange="0" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="0">
++  <beam sensorType="float" hostName="localhost" regexpSensorName="cpu/cpu.*/TotalLoad" color="0xffff8000,0xffe20800,0xfff3c300,0xffff0000"/>
++ </display>
++ <display title="Memory and Swap History" columnSpan="1" hScale="6" svgBackground="widgets/plot-background" version="1" vLines="0" labels="1" manualRange="0" autoRange="0" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="1">
++  <beam sensorName="mem/physical/application" sensorType="integer" hostName="localhost" summationName="Memory" color="0xffc000c0"/>
++  <beam sensorName="mem/swap/used" sensorType="integer" hostName="localhost" summationName="Swap" color="0xff00c000"/>
++ </display>
++ <display title="Network History" columnSpan="1" hScale="6" svgBackground="widgets/plot-background" version="1" max="20" vLines="0" labels="1" manualRange="1" autoRange="1" rowSpan="1" min="0" stacked="0" vDistance="30" vScroll="0" fontSize="8" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="2">
++  <beam sensorType="float" hostName="localhost" regexpSensorName="network/interfaces/(?!lo|bridge|usbus|bond).*/receiver/data" summationName="Receiving" color="0xffb3a52d"/>
++  <beam sensorType="float" hostName="localhost" regexpSensorName="network/interfaces/(?!lo|bridge|usbus|bond).*/transmitter/data" summationName="Sending" color="0xff844798"/>
++ </display>
++</WorkSheet>
+diff -r 1494f1c1095c apps/ksysguard/ksys_memory.sgrd
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/apps/ksysguard/ksys_memory.sgrd	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,23 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE KSysGuardWorkSheet>
++<WorkSheet title="MySystemLoad" interval="1" locked="0" rows="4" columns="1">
++ <host port="-1" command="ksysguardd" shell="" name="localhost"/>
++ <display title="Total" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="0">
++  <beam sensorName="cpu/interrupts/int00" sensorType="float" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="cpu/context" sensorType="float" hostName="localhost" color="0xffe20800"/>
++ </display>
++ <display title="Process" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="1">
++  <beam sensorName="pscount" sensorType="integer" hostName="localhost" color="0xff0057ae"/>
++ </display>
++ <display title="Memory" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="2">
++  <beam sensorName="mem/physical/free" sensorType="integer" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="mem/physical/buf" sensorType="integer" hostName="localhost" color="0xffe20800"/>
++  <beam sensorName="mem/physical/cached" sensorType="integer" hostName="localhost" color="0xfff3c300"/>
++ </display>
++ <display title="DiskUsage" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="3">
++  <beam sensorName="disk/sda_(8:0)/Rate/rblk" sensorType="float" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="disk/sda_(8:0)/Rate/wblk" sensorType="float" hostName="localhost" color="0xffe20800"/>
++  <beam sensorName="disk/sdb_(8:16)/Rate/rblk" sensorType="float" hostName="localhost" color="0xfff3c300"/>
++  <beam sensorName="disk/sdb_(8:16)/Rate/wblk" sensorType="float" hostName="localhost" color="0xffff0000"/>
++ </display>
++</WorkSheet>
+diff -r 1494f1c1095c apps/ksysguard/ksys_network.sgrd
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/apps/ksysguard/ksys_network.sgrd	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,18 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE KSysGuardWorkSheet>
++<WorkSheet title="Network" interval="1" locked="0" rows="3" columns="1">
++ <host port="-1" command="ksysguardd" shell="" name="localhost"/>
++ <display title="EthernetNIC" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="0">
++  <beam sensorName="network/interfaces/ethernetif/receiver/data" sensorType="float" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="network/interfaces/ethernetif/transmitter/data" sensorType="float" hostName="localhost" color="0xffe20800"/>
++ </display>
++ <display title="Localhost" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="1">
++  <beam sensorName="network/interfaces/lo/receiver/data" sensorType="float" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="network/interfaces/lo/transmitter/data" sensorType="float" hostName="localhost" color="0xffe20800"/>
++ </display>
++ <display title="Sockets" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="2">
++  <beam sensorName="network/sockets/tcp/count" sensorType="integer" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="network/sockets/udp/count" sensorType="integer" hostName="localhost" color="0xffe20800"/>
++  <beam sensorName="network/sockets/raw/count" sensorType="integer" hostName="localhost" color="0xffffff00"/>
++ </display>
++</WorkSheet>
+diff -r 1494f1c1095c apps/ksysguard/ksys_temperature.sgrd
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/apps/ksysguard/ksys_temperature.sgrd	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE KSysGuardWorkSheet>
++<WorkSheet title="Temperature" interval="1" locked="0" rows="3" columns="1">
++ <host port="-1" command="ksysguardd" shell="" name="localhost"/>
++ <display title="Temperature" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="0">
++  <beam sensorName="lmsensors/radeon-pci-0100/temp1" sensorType="float" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="lmsensors/coretemp-isa-0000/Physical_id_0" sensorType="float" hostName="localhost" color="0xffe20800"/>
++  <beam sensorName="lmsensors/pkg-temp-0-virtual-0/temp1" sensorType="float" hostName="localhost" color="0xfff3c300"/>
++ </display>
++ <display title="Processor" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="1">
++  <beam sensorName="lmsensors/coretemp-isa-0000/Core_0" sensorType="float" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="lmsensors/coretemp-isa-0000/Core_1" sensorType="float" hostName="localhost" color="0xffe20800"/>
++  <beam sensorName="lmsensors/coretemp-isa-0000/Core_2" sensorType="float" hostName="localhost" color="0xfff3c300"/>
++  <beam sensorName="lmsensors/coretemp-isa-0000/Core_3" sensorType="float" hostName="localhost" color="0xffff0000"/>
++ </display>
++ <display title="Clock" columnSpan="1" hScale="6" svgBackground="" version="1" vLines="0" labels="1" manualRange="0" autoRange="1" rowSpan="1" stacked="0" vDistance="30" fontSize="8" vScroll="0" column="0" unit="" hLines="1" showUnit="0" class="FancyPlotter" row="2">
++  <beam sensorName="cpu/cpu0/clock" sensorType="float" hostName="localhost" color="0xff0057ae"/>
++  <beam sensorName="cpu/cpu1/clock" sensorType="float" hostName="localhost" color="0xffe20800"/>
++  <beam sensorName="cpu/cpu2/clock" sensorType="float" hostName="localhost" color="0xfff3c300"/>
++  <beam sensorName="cpu/cpu3/clock" sensorType="float" hostName="localhost" color="0xffff0000"/>
++ </display>
++</WorkSheet>
+diff -r 1494f1c1095c config/colors/Recent_Colors
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/colors/Recent_Colors	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,3 @@
++KDE RGB Palette
++#
++255 255 0 
+diff -r 1494f1c1095c config/kdeglobals
+--- a/config/kdeglobals	Sun Mar 22 21:53:39 2015 +0100
++++ b/config/kdeglobals	Sun Mar 22 22:20:18 2015 +0100
+@@ -136,7 +136,7 @@
+ font=Droid Sans,9,-1,5,50,0,0,0,0,0
+ menuFont=Droid Sans,9,-1,5,50,0,0,0,0,0
+ smallestReadableFont=Droid Sans,9,-1,5,50,0,0,0,0,0
+-taskbarFont=Droid Sans,9,-1,5,50,0,0,0,0,0
++taskbarFont=Droid Sans,10,-1,5,50,0,0,0,0,0
+ toolBarFont=Droid Sans,9,-1,5,50,0,0,0,0,0
+ widgetStyle=oxygen
+ 
+@@ -153,6 +153,22 @@
+ [KDE-Global GUI Settings]
+ GraphicEffectsLevel=1
+ 
++[KFileDialog Settings]
++Automatically select filename extension=true
++Breadcrumb Navigation=false
++Decoration position=0
++LocationCombo Completionmode=5
++PathCombo Completionmode=5
++Show Bookmarks=false
++Show Full Path=false
++Show Speedbar=true
++Show hidden files=false
++Sort by=Name
++Sort directories first=true
++Sort reversed=false
++Speedbar Width=118
++View Style=Simple
++
+ [MainToolbarIcons]
+ ActiveColor=169,156,255
+ ActiveColor2=0,0,0
+diff -r 1494f1c1095c config/knfsshare
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/knfsshare	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,2 @@
++[General]
++exportsFile=/etc/exports
+diff -r 1494f1c1095c config/ksysguardrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/ksysguardrc	Sun Mar 22 22:20:18 2015 +0100
+@@ -0,0 +1,24 @@
++Height 1080=1081
++State=AAAA/wAAAAD9AAAAAAAAB4AAAAP1AAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAA
++Width 1920=1921
++
++[Colors]
++CurrentPalette=Forty Colors
++
++[KFileDialog Settings]
++Height 1080=540
++Recent Files[$e]=$HOME/.kde4/share/apps/ksysguard/ksys_temperature.sgrd,$HOME/.kde4/share/apps/ksysguard/ksys_temperature.sgrd
++Recent URLs[$e]=$HOME/.kde4/,$HOME/.kde4/share/apps/ksysguard/
++Width 1920=960
++
++[MainWindow]
++CommandList=
++Height 1080=1081
++HostList=
++SelectedSheets[$e]=ProcessTable.sgrd,SystemLoad2.sgrd,ksys_temperature.sgrd,ksys_memory.sgrd,ksys_network.sgrd
++SplitterSizeList=1917,0
++State=AAAA/wAAAAD9AAAAAAAAB4AAAAP1AAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAA
++ToolBarsMovable=Disabled
++Width 1920=1921
++currentSheet=2
++isMinimized=false

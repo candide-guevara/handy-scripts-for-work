@@ -1,0 +1,69 @@
+diff -r 0d81e2677e12 config/bluedevilglobalrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/bluedevilglobalrc	Sun Mar 22 21:05:06 2015 +0100
+@@ -0,0 +1,2 @@
++[General]
++enableGlobalBluetooth=false
+diff -r 0d81e2677e12 config/emaildefaults
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/emaildefaults	Sun Mar 22 21:05:06 2015 +0100
+@@ -0,0 +1,5 @@
++[Defaults]
++Profile=Default
++
++[PROFILE_Default]
++ServerType=
+diff -r 0d81e2677e12 config/kaccessrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/kaccessrc	Sun Mar 22 21:05:06 2015 +0100
+@@ -0,0 +1,30 @@
++[Bell]
++ArtsBell=false
++ArtsBellFile[$e]=
++SystemBell=false
++VisibleBell=false
++VisibleBellColor=255,0,0
++VisibleBellInvert=true
++VisibleBellPause=500
++
++[Keyboard]
++AccessXBeep=true
++AccessXTimeout=false
++AccessXTimeoutDelay=30
++BounceKeys=false
++BounceKeysDelay=500
++BounceKeysRejectBeep=true
++GestureConfirmation=false
++Gestures=false
++SlowKeys=false
++SlowKeysAcceptBeep=true
++SlowKeysDelay=500
++SlowKeysPressBeep=true
++SlowKeysRejectBeep=true
++StickyKeys=false
++StickyKeysAutoOff=false
++StickyKeysBeep=true
++StickyKeysLatch=true
++ToggleKeysBeep=false
++kNotifyAccessX=false
++kNotifyModifiers=false
+diff -r 0d81e2677e12 config/kdedrc
+--- a/config/kdedrc	Sun Mar 22 21:00:08 2015 +0100
++++ b/config/kdedrc	Sun Mar 22 21:05:06 2015 +0100
+@@ -3,3 +3,6 @@
+ 
+ [Module-appmenu]
+ autoload=false
++
++[Module-bluedevil]
++autoload=false
+diff -r 0d81e2677e12 config/knotifyrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/knotifyrc	Sun Mar 22 21:05:06 2015 +0100
+@@ -0,0 +1,6 @@
++[Misc]
++LastConfiguredApp=Accessibility
++
++[Sounds]
++No sound=true
++Use external player=false

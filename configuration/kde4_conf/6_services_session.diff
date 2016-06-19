@@ -1,0 +1,119 @@
+diff -r 66f23c10f943 config/apper
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/apper	Sun Mar 22 21:27:04 2015 +0100
+@@ -0,0 +1,6 @@
++[BrowseView]
++ShowApplicationVersions=true
++
++[FilterMenu]
++FilterNative=true
++FilterNewest=true
+diff -r 66f23c10f943 config/device_automounter_kcmrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/device_automounter_kcmrc	Sun Mar 22 21:27:04 2015 +0100
+@@ -0,0 +1,2 @@
++[Layout]
++HeaderWidths=171,183,1538
+diff -r 66f23c10f943 config/kdebugrc
+--- a/config/kdebugrc	Sun Mar 22 21:17:18 2015 +0100
++++ b/config/kdebugrc	Sun Mar 22 21:27:04 2015 +0100
+@@ -16,6 +16,9 @@
+ [kdecore (KConfigSkeleton)]
+ InfoOutput=2
+ 
++[kdecore (KLibrary)]
++InfoOutput=2
++
+ [kdecore (KPluginInfo)]
+ InfoOutput=2
+ 
+diff -r 66f23c10f943 config/kdedrc
+--- a/config/kdedrc	Sun Mar 22 21:17:18 2015 +0100
++++ b/config/kdedrc	Sun Mar 22 21:27:04 2015 +0100
+@@ -1,8 +1,68 @@
+ [$Version]
+ update_info=kded.upd:kde3.0
+ 
++[Module-apperd]
++autoload=false
++
+ [Module-appmenu]
+ autoload=false
+ 
+ [Module-bluedevil]
+ autoload=false
++
++[Module-device_automounter]
++autoload=true
++
++[Module-dnssdwatcher]
++autoload=true
++
++[Module-freespacenotifier]
++autoload=false
++
++[Module-keyboard]
++autoload=true
++
++[Module-khotkeys]
++autoload=true
++
++[Module-kmixd]
++autoload=true
++
++[Module-kscreen]
++autoload=true
++
++[Module-ktimezoned]
++autoload=true
++
++[Module-ktouchpadenabler]
++autoload=false
++
++[Module-kwrited]
++autoload=true
++
++[Module-nepomuksearchmodule]
++autoload=true
++
++[Module-networkmanagement]
++autoload=true
++
++[Module-networkstatus]
++autoload=true
++
++[Module-obexftpdaemon]
++autoload=false
++
++[Module-powerdevil]
++autoload=true
++
++[Module-printmanager]
++autoload=false
++
++[Module-remotedirnotify]
++autoload=true
++
++[Module-solidautoeject]
++autoload=true
++
++[Module-statusnotifierwatcher]
++autoload=true
+diff -r 66f23c10f943 config/ksmserverrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/ksmserverrc	Sun Mar 22 21:27:04 2015 +0100
+@@ -0,0 +1,6 @@
++[General]
++confirmLogout=false
++excludeApps=
++loginMode=default
++offerShutdown=true
++shutdownType=2
+diff -r 66f23c10f943 config/kwalletrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/kwalletrc	Sun Mar 22 21:27:04 2015 +0100
+@@ -0,0 +1,4 @@
++# I hate you kwallet, just die !!
++[Wallet]
++Enabled=false
++

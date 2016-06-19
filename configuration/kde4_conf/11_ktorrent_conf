@@ -1,0 +1,154 @@
+diff -r 7a599ef328f2 -r 0276ae2c7c1a config/kglobalshortcutsrc
+--- a/config/kglobalshortcutsrc	Sun Mar 22 23:03:51 2015 +0100
++++ b/config/kglobalshortcutsrc	Mon Mar 23 19:05:02 2015 +0100
+@@ -5,6 +5,12 @@
+ Switch to Next Keyboard Layout=none,Ctrl+Alt+K,Switch to Next Keyboard Layout
+ _k_friendly_name=KDE Keyboard Layout Switcher
+ 
++[kactivitymanagerd]
++_k_friendly_name=KDE Activity Manager
++switch-to-activity-3fc51c5b-7287-4c2c-a848-08647b4f6203=none,none,Switch to activity "New Activity"
++switch-to-activity-8bac7978-10a0-4d75-bb54-c62b49f9ddd8=none,none,Switch to activity "Desktop Icons"
++switch-to-activity-a7e69b86-3afe-46bc-a7f9-8daf04c0b902=none,none,Switch to activity "Desktop"
++
+ [kded]
+ Decrease Keyboard Brightness=Keyboard Brightness Down,Keyboard Brightness Down,Decrease Keyboard Brightness
+ Decrease Screen Brightness=Monitor Brightness Down,Monitor Brightness Down,Decrease Screen Brightness
+@@ -20,11 +26,8 @@
+ [khotkeys]
+ _k_friendly_name=khotkeys
+ {43b50dac-e59e-4a70-bc6c-83f477f309b2}=Meta+F,none,internet
+-{7bd29ff1-6d2a-4863-9c65-2d3f2a224deb}=Print,none,PrintScreen
+ {8269917e-9ed3-42c0-9c73-e119d03f7e24}=Meta+V,none,media_player
+ {b591760f-6c31-441a-9100-5a4174f0179d}=Meta+`,none,folders
+-{c8faefad-8d09-4389-8f36-09865d2bb0c2}=none,none,Calculator
+-{d03619b6-9b3c-48cc-9d9c-a2aadb485550}=none,none,Search
+ {e0fa2ac6-efa5-434e-b9d3-2aaf0707a04d}=Meta+M,none,monitoring
+ {f591cc7e-50c2-4601-a564-dc519a2e9033}=Meta+T,none,konsole
+ 
+@@ -76,6 +79,11 @@
+ Reboot Without Confirmation=none,Ctrl+Alt+Shift+PgUp,Reboot Without Confirmation
+ _k_friendly_name=The KDE Session Manager
+ 
++[ktorrent]
++_k_friendly_name=KTorrent
++queue_suspend=Alt+Shift+P,Alt+Shift+P,Suspend Torrents
++show_kt=Alt+Shift+T,Alt+Shift+T,Show/Hide KTorrent
++
+ [kwin]
+ Activate Window Demanding Attention=none,Ctrl+Alt+A,Activate Window Demanding Attention
+ Decrease Opacity=none,none,Decrease Opacity of Active Window by 5 %
+@@ -227,7 +235,7 @@
+ Previous Activity=none,Meta+Shift+Tab,Previous Activity
+ Show Dashboard=none,Ctrl+F12,Show Dashboard
+ Stop Activity=none,Meta+S,Stop Current Activity
+-SystemTray-Klipper-6=Meta+K,Ctrl+Alt+V,
++SystemTray-Klipper-6=Ctrl+Alt+V,Ctrl+Alt+V,
+ _k_friendly_name=Plasma Desktop Shell
+-activate widget 2=Meta+Space,Alt+F1,Activate Application Launcher Widget
++activate widget 2=Meta+Space,Meta+Space,Activate Application Launcher Widget
+ manage activities=none,Meta+Q,Activities...
+diff -r 7a599ef328f2 -r 0276ae2c7c1a config/ktorrentrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/ktorrentrc	Mon Mar 23 19:05:02 2015 +0100
+@@ -0,0 +1,100 @@
++[ChunkDownloadView]
++state=AAAA/wAAAAAAAAABAAAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAAB3oAAAAFAQEAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAACAAABkAAAAAQAAAAAAAAF6gAAAAEAAAAA
++
++[DownloadOrderPlugin]
++DownloadOrderPluginEnabled=false
++
++[FileView]
++show_list_of_files=false
++state=AAAA/wAAAAAAAAABAAAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAk0AAAAFAQEAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAACAAABkAAAAAQAAAAAAAAAvQAAAAEAAAAA
++
++[GroupSwitcher]
++current_tab=0
++groups=/all,/all/downloads,/all/uploads
++tab0_settings=\x00\x00\x00ˇ\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x05\x01\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x07\x00\x00\x00\t\x00\x00\x00\n\x00\x00\x00\x0b\x00\x00\x00\x05\x00\x00\x00\x08\x00\x00\x00\x0c\x00\x00\x00\r\x00\x00\x00\x0e\x00\x00\x00\x0f\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\x04\x00\x00\x00\n\x00\x00\x00\x05\x00\x00\x00\x06\x00\x00\x00\x0b\x00\x00\x00\x07\x00\x00\x00\x08\x00\x00\x00\t\x00\x00\x00\x0c\x00\x00\x00\r\x00\x00\x00\x0e\x00\x00\x00\x0f\x00\x00\x00\x10\x1a\x00\x00\x00\x07\x00\x00\x00\x0f\x00\x00\x00®\x00\x00\x00\x0e\x00\x00\x00d\x00\x00\x00\r\x00\x00\x00d\x00\x00\x00\x0c\x00\x00\x00d\x00\x00\x00\x04\x00\x00\x00d\x00\x00\x00\x03\x00\x00\x00d\x00\x00\x00\x01\x00\x00\x00d\x00\x00\x07z\x00\x00\x00\x10\x01\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00dˇˇˇˇ\x00\x00\x00Å\x00\x00\x00\x00\x00\x00\x00\x0c\x00\x00\x03\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00d\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00ª\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00°\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00ã\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00^\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00ô\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00ñ\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00°\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00
++tab1_settings=\x00\x00\x00ˇ\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06@\x00\x00\x00\x10\x01\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00dˇˇˇˇ\x00\x00\x00Å\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x06@\x00\x00\x00\x10\x00\x00\x00\x00
++tab2_settings=\x00\x00\x00ˇ\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06@\x00\x00\x00\x10\x01\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00dˇˇˇˇ\x00\x00\x00Å\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x06@\x00\x00\x00\x10\x00\x00\x00\x00
++
++[GroupView]
++expanded=/all,/all/active,/all/downloads,/all/uploads,/all/passive
++visible=false
++
++[InfoWidgetPlugin]
++InfoWidgetPluginEnabled=true
++
++[MagnetView]
++state=AAAA/wAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASwAAAADAQAAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAABAAABLAAAAAMAAAAA
++
++[MainWindow]
++Height 1080=1060
++State=AAAA/wAAAAD9AAAAAAAAB4AAAAPzAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAIAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAAAAAAHgBUAG8AcgByAGUAbgB0AHMAVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAA
++ToolBarsMovable=Disabled
++Width 1920=1920
++current_activity=0
++hidden_on_exit=false
++menubar_hidden=false
++statusbar_hidden=false
++
++[PeerView]
++state=AAAA/wAAAAAAAAABAAAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAAB3oAAAAQAQEAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAACAAAF3AAAAA8AAAAAAAABngAAAAEAAAAA
++
++[PrefDialog]
++size=1037,504
++
++[QueueManager]
++suspended=false
++
++[QueueManagerWidget]
++search_bar_visible=false
++search_text=
++show_downloads=true
++show_not_queued=true
++show_uploads=true
++view_state=AAAA/wAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB00AAAAEAQAAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAACAAABLAAAAAMAAAAAAAAGIQAAAAEAAAAA
++
++[StatsPlugin]
++StatsPluginEnabled=true
++
++[TipOfDay]
++RunOnStart=false
++
++[TorrentActivityBottomTabBar]
++current_tab=Queue Manager
++shrunken=false
++
++[TorrentActivitySplitters]
++hsplit=AAAA/wAAAAAAAAACAAABMgAABksBAAAAAwEAAAAB
++vsplit=AAAA/wAAAAAAAAACAAACwAAAARIBAAAAAwEAAAAC
++
++[TorrentSearchBar]
++hidden=true
++text=
++
++[TrackerView]
++state=AAAA/wAAAAAAAAABAAAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAABtAAAAAGAQEAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAADAAABwwAAAAEAAAAAAAABkAAAAAQAAAAAAAADfQAAAAEAAAAA
++tracker_hints=udp://tracker.publicbt.com:80/announce,udp://tracker.openbittorrent.com:80/announce
++
++[UPnPDevicesList]
++state=AAAA/wAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABvgAAAACAQAAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAACAAABEQAAAAEAAAAAAAAF5wAAAAEAAAAA
++
++[UPnPPlugin]
++UPnPPluginEnabled=true
++
++[WebSeedsTab]
++state=AAAA/wAAAAAAAAABAAAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAABsUAAAAEAQEAAQAAAAAAAAAAAAAAAGT/////AAAAgQAAAAAAAAACAAABLAAAAAMAAAAAAAAFmQAAAAEAAAAA
++
++[downloads]
++completedDir=file:///home/cguevara/Temp/TorrentData
++decreasePriorityOfStalledTorrents=true
++fullDiskPrealloc=true
++greenRatio=1.1
++maxRatio=1.1
++numUploadSlots=3
++oldTorrentsImported=true
++saveDir=file:///home/cguevara/Temp/TorrentData
++stallTimer=5
++tempDir=file:///home/cguevara/Temp/Torrents
++torrentCopyDir=file:///home/cguevara/Temp/Torrents
++useCompletedDir=true
++useSaveDir=true
++useTorrentCopyDir=true

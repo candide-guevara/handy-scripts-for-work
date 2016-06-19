@@ -1,0 +1,17 @@
+# Global hg ignore for all mercurial projects
+syntax: regexp
+\.project
+\.pydevproject
+.*\.cproject
+.*\.settings/.*
+.*\__pycache__
+.*\.o$
+.*\.os$
+.*\.pyc$
+.*\.class$
+.*\.out$
+.*\.exe$
+.*\.swp$
+.*\.sconsign\.dblite$
+.*\.directory$
+

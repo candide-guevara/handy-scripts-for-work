@@ -1,0 +1,15 @@
+**/.project
+**/.pydevproject
+**/.cproject
+**/.settings
+*.o
+*.os
+*.pyc
+*.class
+*.out
+*.exe
+*.swp
+**/__pycache__
+**/.sconsign.dblite
+**/.directory
+

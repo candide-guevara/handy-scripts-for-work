@@ -1,0 +1,25 @@
+[user]
+	name = candide guevara
+	email = candide-guevara@users.noreply.github.com
+
+[core]
+	excludesfile = ~/.myconf.d/gitignore
+
+[alias]
+  alias = config --get-regexp alias
+  mydiff = !git diff --ignore-space-at-eol --ignore-space-change --ignore-all-space --ignore-blank-lines
+  revert = checkout HEAD --
+  glog = log --graph --branches --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+  ci = commit
+  co = checkout
+  st = status
+  br = branch
+  in = fetch -v --dry-run origin master
+  out = push -v --dry-run origin master
+  ig = !git update-index --assume-unchanged
+  noig = !git update-index --no-assume-unchanged
+  igls = !git ls-files -v | grep ^h
+
+[color]
+  ui = true
+

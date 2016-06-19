@@ -1,0 +1,22 @@
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+UUID=e4b7130c-ee1b-42bf-a5d0-b782b11ea9c5 /               ext4    discard,noatime,nodiratime,errors=remount-ro 0       1
+UUID=d0087d46-621b-433b-bb73-e8d9463ff064 /home           ext4    discard,noatime,nodiratime 0       2
+LABEL=Badrach   /media/Badrach    ext4 noauto,user,noatime,nodiratime,exec 0 2
+
+LABEL=Gandar    /media/Gandar     ext4 auto,user,noatime,nodiratime,exec 0 2
+LABEL=Bifrost   /media/Belenus    auto subvol=Belenus,autodefrag,auto,user,noatime,nodiratime,exec 0 2
+LABEL=Bifrost   /media/Aelia      auto subvol=Aelia,autodefrag,auto,user,noatime,nodiratime 0 2
+LABEL=Bifrost   /media/Kashell    auto subvol=Kashell,autodefrag,auto,user,noatime,nodiratime 0 2
+
+LABEL=Bifrost   /media/Bifrost    auto subvolid=5,autodefrag,noauto,nouser,noatime,nodiratime 0 2
+LABEL=Bifrost   /media/Heimdall   auto subvol=Heimdall,autodefrag,noauto,user,noatime,nodiratime 0 2
+
+LABEL=Nanami    /media/Nanami     auto noauto,user,noatime,nodiratime 0 2
+LABEL=Jelanda   /media/Jelanda    auto noauto,user,noatime,nodiratime 0 2
+

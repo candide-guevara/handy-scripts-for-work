@@ -1,0 +1,16 @@
+# Sets the XDG variables to control the desktop environment
+# You can use xdg-user-dirs-update to create a file like this too
+
+#XDG_DATA_HOME=$HOME/.xdg/data
+#XDG_CONFIG_HOME=$HOME/.xdg/config
+#XDG_CACHE_HOME=/var/cache/xdg
+
+XDG_DESKTOP_DIR="$HOME/Desktop"
+XDG_DOCUMENTS_DIR="$HOME/Documents"
+XDG_PICTURES_DIR="$HOME/Pictures"
+XDG_MUSIC_DIR="$HOME/Music"
+XDG_VIDEOS_DIR="$HOME/Videos"
+XDG_DOWNLOAD_DIR="$HOME/Temp"
+XDG_PUBLICSHARE_DIR="$HOME"
+XDG_TEMPLATES_DIR="$HOME"
+

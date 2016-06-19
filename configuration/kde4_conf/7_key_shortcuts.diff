@@ -1,0 +1,475 @@
+diff -r ad1e5a3200cd config/kdeglobals
+--- a/config/kdeglobals	Sun Mar 22 21:27:43 2015 +0100
++++ b/config/kdeglobals	Sun Mar 22 21:53:16 2015 +0100
+@@ -191,6 +191,13 @@
+ DisabledValue=1
+ Size=32
+ 
++[Shortcuts]
++Activate Next Tab=Ctrl+]
++Activate Previous Tab=Ctrl+[
++Close=Ctrl+W
++Help=
++WhatsThis=
++
+ [SmallIcons]
+ ActiveColor=169,156,255
+ ActiveColor2=0,0,0
+diff -r ad1e5a3200cd config/kglobalshortcutsrc
+--- a/config/kglobalshortcutsrc	Sun Mar 22 21:27:43 2015 +0100
++++ b/config/kglobalshortcutsrc	Sun Mar 22 21:53:16 2015 +0100
+@@ -2,7 +2,7 @@
+ update_info=plasma-to-plasmadesktop-shortcuts.upd:4.3plasma-desktop-shortcuts,konsole_remove_background_mode.upd:2.11.0-remove-background-mode,kscreenlocker_locksession-shortcut.upd:4.9-locksession-shortcut,ksmserver_shortcuts.upd:kde4.10,ksmserver_shortcuts.upd:kde4.10-remove-group-kscreenlocker
+ 
+ [KDE Keyboard Layout Switcher]
+-Switch to Next Keyboard Layout=Ctrl+Alt+K,Ctrl+Alt+K,Switch to Next Keyboard Layout
++Switch to Next Keyboard Layout=none,Ctrl+Alt+K,Switch to Next Keyboard Layout
+ _k_friendly_name=KDE Keyboard Layout Switcher
+ 
+ [kded]
+@@ -19,18 +19,23 @@
+ 
+ [khotkeys]
+ _k_friendly_name=khotkeys
++{43b50dac-e59e-4a70-bc6c-83f477f309b2}=Meta+F,none,internet
+ {7bd29ff1-6d2a-4863-9c65-2d3f2a224deb}=Print,none,PrintScreen
+-{c8faefad-8d09-4389-8f36-09865d2bb0c2}=Launch (1),none,Calculator
+-{d03619b6-9b3c-48cc-9d9c-a2aadb485550}=Search,none,Search
++{8269917e-9ed3-42c0-9c73-e119d03f7e24}=Meta+V,none,media_player
++{b591760f-6c31-441a-9100-5a4174f0179d}=Meta+`,none,folders
++{c8faefad-8d09-4389-8f36-09865d2bb0c2}=none,none,Calculator
++{d03619b6-9b3c-48cc-9d9c-a2aadb485550}=none,none,Search
++{e0fa2ac6-efa5-434e-b9d3-2aaf0707a04d}=Meta+M,none,monitoring
++{f591cc7e-50c2-4601-a564-dc519a2e9033}=Meta+T,none,konsole
+ 
+ [klipper]
+ _k_friendly_name=Klipper
+ clear-history=none,none,Clear Clipboard History
+-clipboard_action=Ctrl+Alt+X,Ctrl+Alt+X,Enable Clipboard Actions
++clipboard_action=none,Ctrl+Alt+X,Enable Clipboard Actions
+ cycleNextAction=none,none,Next History Item
+ cyclePrevAction=none,none,Previous History Item
+ edit_clipboard=none,none,Edit Contents...
+-repeat_action=Ctrl+Alt+R,Ctrl+Alt+R,Manually Invoke Action on Current Clipboard
++repeat_action=none,Ctrl+Alt+R,Manually Invoke Action on Current Clipboard
+ show-barcode=none,none,Show Barcode...
+ show-on-mouse-pos=none,none,Open Klipper at Mouse Position
+ 
+@@ -42,10 +47,10 @@
+ 
+ [krunner]
+ PowerDevil=none,none,Run Command (runner "PowerDevil" only)
+-Run Command=Alt+F2,Alt+F2,Run Command
+-Run Command on clipboard contents=Alt+Shift+F2,Alt+Shift+F2,Run Command on clipboard contents
+-Show System Activity=Ctrl+Esc,Ctrl+Esc,Show System Activity
+-Switch User=Ctrl+Alt+Ins,Ctrl+Alt+Ins,Switch User
++Run Command=Meta+R,Alt+F2,Run Command
++Run Command on clipboard contents=none,Alt+Shift+F2,Run Command on clipboard contents
++Show System Activity=none,Ctrl+Esc,Show System Activity
++Switch User=none,Ctrl+Alt+Ins,Switch User
+ _k_friendly_name=Run Command Interface
+ bookmarks=none,none,Run Command (runner "Bookmarks" only)
+ desktopsessions=none,none,Run Command (runner "Desktop Sessions" only)
+@@ -64,42 +69,42 @@
+ windows=none,none,Run Command (runner "Windows" only)
+ 
+ [ksmserver]
+-Halt Without Confirmation=Ctrl+Alt+Shift+PgDown,Ctrl+Alt+Shift+PgDown,Halt Without Confirmation
+-Lock Session=Ctrl+Alt+L,Ctrl+Alt+L,Lock Session
+-Log Out=Ctrl+Alt+Del,Ctrl+Alt+Del,Log Out
+-Log Out Without Confirmation=Ctrl+Alt+Shift+Del,Ctrl+Alt+Shift+Del,Log Out Without Confirmation
+-Reboot Without Confirmation=Ctrl+Alt+Shift+PgUp,Ctrl+Alt+Shift+PgUp,Reboot Without Confirmation
++Halt Without Confirmation=Ctrl+Alt+Del,Ctrl+Alt+Shift+PgDown,Halt Without Confirmation
++Lock Session=Meta+L,Ctrl+Alt+L,Lock Session
++Log Out=none,Ctrl+Alt+Del,Log Out
++Log Out Without Confirmation=none,Ctrl+Alt+Shift+Del,Log Out Without Confirmation
++Reboot Without Confirmation=none,Ctrl+Alt+Shift+PgUp,Reboot Without Confirmation
+ _k_friendly_name=The KDE Session Manager
+ 
+ [kwin]
+-Activate Window Demanding Attention=Ctrl+Alt+A,Ctrl+Alt+A,Activate Window Demanding Attention
++Activate Window Demanding Attention=none,Ctrl+Alt+A,Activate Window Demanding Attention
+ Decrease Opacity=none,none,Decrease Opacity of Active Window by 5 %
+-Expose=Ctrl+F9,Ctrl+F9,Toggle Present Windows (Current desktop)
+-ExposeAll=Ctrl+F10,Ctrl+F10,Toggle Present Windows (All desktops)
+-ExposeClass=Ctrl+F7,Ctrl+F7,Toggle Present Windows (Window class)
++Expose=none,Ctrl+F9,Toggle Present Windows (Current desktop)
++ExposeAll=none,Ctrl+F10,Toggle Present Windows (All desktops)
++ExposeClass=none,Ctrl+F7,Toggle Present Windows (Window class)
+ Increase Opacity=none,none,Increase Opacity of Active Window by 5 %
+-Invert Screen Colors=none,none,Invert Screen Colors
+-Kill Window=Ctrl+Alt+Esc,Ctrl+Alt+Esc,Kill Window
+-MoveMouseToCenter=Meta+F6,Meta+F6,Move Mouse to Center
+-MoveMouseToFocus=Meta+F5,Meta+F5,Move Mouse to Focus
+-MoveZoomDown=Meta+Down,Meta+Down,Move Zoomed Area Downwards
+-MoveZoomLeft=Meta+Left,Meta+Left,Move Zoomed Area to Left
+-MoveZoomRight=Meta+Right,Meta+Right,Move Zoomed Area to Right
+-MoveZoomUp=Meta+Up,Meta+Up,Move Zoomed Area Upwards
++Invert Screen Colors=Meta+I,none,Invert Screen Colors
++Kill Window=none,Ctrl+Alt+Esc,Kill Window
++MoveMouseToCenter=none,Meta+F6,Move Mouse to Center
++MoveMouseToFocus=none,Meta+F5,Move Mouse to Focus
++MoveZoomDown=none,Meta+Down,Move Zoomed Area Downwards
++MoveZoomLeft=none,Meta+Left,Move Zoomed Area to Left
++MoveZoomRight=none,Meta+Right,Move Zoomed Area to Right
++MoveZoomUp=none,Meta+Up,Move Zoomed Area Upwards
+ Remove Window From Group=none,none,Remove Window From Group
+ Setup Window Shortcut=none,none,Setup Window Shortcut
+-Show Desktop=none,none,Show Desktop
+-ShowDesktopGrid=Ctrl+F8,Ctrl+F8,Show Desktop Grid
+-Suspend Compositing=Alt+Shift+F12,Alt+Shift+F12,Suspend Compositing
++Show Desktop=Meta+D,none,Show Desktop
++ShowDesktopGrid=none,Ctrl+F8,Show Desktop Grid
++Suspend Compositing=none,Alt+Shift+F12,Suspend Compositing
+ Switch One Desktop Down=none,none,Switch One Desktop Down
+ Switch One Desktop Up=none,none,Switch One Desktop Up
+ Switch One Desktop to the Left=none,none,Switch One Desktop to the Left
+ Switch One Desktop to the Right=none,none,Switch One Desktop to the Right
+-Switch Window Down=Meta+Alt+Down,Meta+Alt+Down,Switch to Window Below
+-Switch Window Left=Meta+Alt+Left,Meta+Alt+Left,Switch to Window to the Left
+-Switch Window Right=Meta+Alt+Right,Meta+Alt+Right,Switch to Window to the Right
+-Switch Window Up=Meta+Alt+Up,Meta+Alt+Up,Switch to Window Above
+-Switch to Desktop 1=Ctrl+F1,Ctrl+F1,Switch to Desktop 1
++Switch Window Down=none,Meta+Alt+Down,Switch to Window Below
++Switch Window Left=Meta+Left,Meta+Alt+Left,Switch to Window to the Left
++Switch Window Right=Meta+Right,Meta+Alt+Right,Switch to Window to the Right
++Switch Window Up=none,Meta+Alt+Up,Switch to Window Above
++Switch to Desktop 1=none,Ctrl+F1,Switch to Desktop 1
+ Switch to Desktop 10=none,none,Switch to Desktop 10
+ Switch to Desktop 11=none,none,Switch to Desktop 11
+ Switch to Desktop 12=none,none,Switch to Desktop 12
+@@ -112,8 +117,8 @@
+ Switch to Desktop 19=none,none,Switch to Desktop 19
+ Switch to Desktop 2=none,Ctrl+F2,Switch to Desktop 2
+ Switch to Desktop 20=none,none,Switch to Desktop 20
+-Switch to Desktop 3=Ctrl+F3,Ctrl+F3,Switch to Desktop 3
+-Switch to Desktop 4=Ctrl+F4,Ctrl+F4,Switch to Desktop 4
++Switch to Desktop 3=none,Ctrl+F3,Switch to Desktop 3
++Switch to Desktop 4=none,Ctrl+F4,Switch to Desktop 4
+ Switch to Desktop 5=none,none,Switch to Desktop 5
+ Switch to Desktop 6=none,none,Switch to Desktop 6
+ Switch to Desktop 7=none,none,Switch to Desktop 7
+@@ -142,8 +147,8 @@
+ Walk Through Windows (Reverse)=Alt+Shift+Backtab,Alt+Shift+Backtab,Walk Through Windows (Reverse)
+ Walk Through Windows Alternative=none,none,Walk Through Windows Alternative
+ Walk Through Windows Alternative (Reverse)=none,none,Walk Through Windows Alternative (Reverse)
+-Walk Through Windows of Current Application=Alt+`,Alt+`,Walk Through Windows of Current Application
+-Walk Through Windows of Current Application (Reverse)=Alt+~,Alt+~,Walk Through Windows of Current Application (Reverse)
++Walk Through Windows of Current Application=none,Alt+`,Walk Through Windows of Current Application
++Walk Through Windows of Current Application (Reverse)=none,Alt+~,Walk Through Windows of Current Application (Reverse)
+ Walk Through Windows of Current Application Alternative=none,none,Walk Through Windows of Current Application Alternative
+ Walk Through Windows of Current Application Alternative (Reverse)=none,none,Walk Through Windows of Current Application Alternative (Reverse)
+ Window Above Other Windows=none,none,Keep Window Above Others
+@@ -153,10 +158,10 @@
+ Window Grow Horizontal=none,none,Pack Grow Window Horizontally
+ Window Grow Vertical=none,none,Pack Grow Window Vertically
+ Window Lower=none,none,Lower Window
+-Window Maximize=none,none,Maximize Window
++Window Maximize=Meta+Up,none,Maximize Window
+ Window Maximize Horizontal=none,none,Maximize Window Horizontally
+ Window Maximize Vertical=none,none,Maximize Window Vertically
+-Window Minimize=none,none,Minimize Window
++Window Minimize=Meta+Down,none,Minimize Window
+ Window Move=none,none,Move Window
+ Window No Border=none,none,Hide Window Border
+ Window On All Desktops=none,none,Keep Window on All Desktops
+@@ -164,7 +169,7 @@
+ Window One Desktop Up=none,none,Window One Desktop Up
+ Window One Desktop to the Left=none,none,Window One Desktop to the Left
+ Window One Desktop to the Right=none,none,Window One Desktop to the Right
+-Window Operations Menu=Alt+F3,Alt+F3,Window Operations Menu
++Window Operations Menu=none,Alt+F3,Window Operations Menu
+ Window Pack Down=none,none,Pack Window Down
+ Window Pack Left=none,none,Pack Window to the Left
+ Window Pack Right=none,none,Pack Window to the Right
+@@ -213,16 +218,16 @@
+ Window to Screen 6=none,none,Window to Screen 6
+ Window to Screen 7=none,none,Window to Screen 7
+ _k_friendly_name=KWin
+-view_actual_size=Meta+0,Meta+0,Actual Size
+-view_zoom_in=Meta+=,Meta+=,Zoom In
+-view_zoom_out=Meta+-,Meta+-,Zoom Out
++view_actual_size=none,Meta+0,Actual Size
++view_zoom_in=none,Meta+=,Zoom In
++view_zoom_out=none,Meta+-,Zoom Out
+ 
+ [plasma-desktop]
+-Next Activity=Meta+Tab,Meta+Tab,Next Activity
+-Previous Activity=Meta+Shift+Tab,Meta+Shift+Tab,Previous Activity
+-Show Dashboard=Ctrl+F12,Ctrl+F12,Show Dashboard
+-Stop Activity=Meta+S,Meta+S,Stop Current Activity
+-SystemTray-Klipper-6=Ctrl+Alt+V,Ctrl+Alt+V,
++Next Activity=none,Meta+Tab,Next Activity
++Previous Activity=none,Meta+Shift+Tab,Previous Activity
++Show Dashboard=none,Ctrl+F12,Show Dashboard
++Stop Activity=none,Meta+S,Stop Current Activity
++SystemTray-Klipper-6=Meta+K,Ctrl+Alt+V,
+ _k_friendly_name=Plasma Desktop Shell
+-activate widget 2=Alt+F1,Alt+F1,Activate Application Launcher Widget
+-manage activities=Meta+Q,Meta+Q,Activities...
++activate widget 2=Meta+Space,Alt+F1,Activate Application Launcher Widget
++manage activities=none,Meta+Q,Activities...
+diff -r ad1e5a3200cd config/khotkeysrc
+--- a/config/khotkeysrc	Sun Mar 22 21:27:43 2015 +0100
++++ b/config/khotkeysrc	Sun Mar 22 21:53:16 2015 +0100
+@@ -94,8 +94,7 @@
+ [Data_1]
+ Comment=KMenuEdit Global Shortcuts
+ DataCount=2
+-Enabled=true
+-ImportId=defaults
++Enabled=false
+ Name=KMenuEdit
+ SystemGroup=1
+ Type=ACTION_DATA_GROUP
+@@ -126,7 +125,7 @@
+ TriggersCount=1
+ 
+ [Data_1_1Triggers0]
+-Key=Search
++Key=
+ Type=SHORTCUT
+ Uuid={d03619b6-9b3c-48cc-9d9c-a2aadb485550}
+ 
+@@ -152,7 +151,7 @@
+ TriggersCount=1
+ 
+ [Data_1_2Triggers0]
+-Key=Launch (1)
++Key=
+ Type=SHORTCUT
+ Uuid={c8faefad-8d09-4389-8f36-09865d2bb0c2}
+ 
+@@ -160,7 +159,7 @@
+ AllowMerge=true
+ Comment=This group contains actions that are set up by default.
+ DataCount=1
+-Enabled=true
++Enabled=false
+ ImportId=printscreen
+ Name=Preset Actions
+ SystemGroup=0
+@@ -199,7 +198,7 @@
+ [Data_3]
+ Comment=Basic Konqueror gestures.
+ DataCount=14
+-Enabled=true
++Enabled=false
+ ImportId=konqueror_gestures_kde321
+ Name=Konqueror Gestures
+ SystemGroup=0
+@@ -601,8 +600,8 @@
+ 
+ [Data_4]
+ Comment=This group contains various examples demonstrating most of the features of KHotkeys. (Note that this group and all its actions are disabled by default.)
+-DataCount=8
+-Enabled=false
++DataCount=13
++Enabled=true
+ ImportId=kde32b1
+ Name=Examples
+ SystemGroup=0
+@@ -618,6 +617,110 @@
+ Name=Activate KSIRC Window
+ Type=SIMPLE_ACTION_DATA
+ 
++[Data_4_10]
++Comment=Comment
++Enabled=true
++Name=konsole
++Type=SIMPLE_ACTION_DATA
++
++[Data_4_10Actions]
++ActionsCount=1
++
++[Data_4_10Actions0]
++CommandURL=konsole
++Type=COMMAND_URL
++
++[Data_4_10Conditions]
++Comment=
++ConditionsCount=0
++
++[Data_4_10Triggers]
++Comment=Simple_action
++TriggersCount=1
++
++[Data_4_10Triggers0]
++Key=Meta+T
++Type=SHORTCUT
++Uuid={f591cc7e-50c2-4601-a564-dc519a2e9033}
++
++[Data_4_11]
++Comment=Comment
++Enabled=true
++Name=folders
++Type=SIMPLE_ACTION_DATA
++
++[Data_4_11Actions]
++ActionsCount=1
++
++[Data_4_11Actions0]
++CommandURL=dolphin
++Type=COMMAND_URL
++
++[Data_4_11Conditions]
++Comment=
++ConditionsCount=0
++
++[Data_4_11Triggers]
++Comment=Simple_action
++TriggersCount=1
++
++[Data_4_11Triggers0]
++Key=Meta+`
++Type=SHORTCUT
++Uuid={b591760f-6c31-441a-9100-5a4174f0179d}
++
++[Data_4_12]
++Comment=Comment
++Enabled=true
++Name=monitoring
++Type=SIMPLE_ACTION_DATA
++
++[Data_4_12Actions]
++ActionsCount=1
++
++[Data_4_12Actions0]
++CommandURL=ksysguard
++Type=COMMAND_URL
++
++[Data_4_12Conditions]
++Comment=
++ConditionsCount=0
++
++[Data_4_12Triggers]
++Comment=Simple_action
++TriggersCount=1
++
++[Data_4_12Triggers0]
++Key=Meta+M
++Type=SHORTCUT
++Uuid={e0fa2ac6-efa5-434e-b9d3-2aaf0707a04d}
++
++[Data_4_13]
++Comment=Comment
++Enabled=true
++Name=media_player
++Type=SIMPLE_ACTION_DATA
++
++[Data_4_13Actions]
++ActionsCount=1
++
++[Data_4_13Actions0]
++CommandURL=vlc
++Type=COMMAND_URL
++
++[Data_4_13Conditions]
++Comment=
++ConditionsCount=0
++
++[Data_4_13Triggers]
++Comment=Simple_action
++TriggersCount=1
++
++[Data_4_13Triggers0]
++Key=Meta+V
++Type=SHORTCUT
++Uuid={8269917e-9ed3-42c0-9c73-e119d03f7e24}
++
+ [Data_4_1Actions]
+ ActionsCount=1
+ 
+@@ -1013,6 +1116,32 @@
+ Type=SHORTCUT
+ Uuid={15d9f570-7ee7-413a-b59d-7bd509609ddb}
+ 
++[Data_4_9]
++Comment=Comment
++Enabled=true
++Name=internet
++Type=SIMPLE_ACTION_DATA
++
++[Data_4_9Actions]
++ActionsCount=1
++
++[Data_4_9Actions0]
++CommandURL=google-chrome
++Type=COMMAND_URL
++
++[Data_4_9Conditions]
++Comment=
++ConditionsCount=0
++
++[Data_4_9Triggers]
++Comment=Simple_action
++TriggersCount=1
++
++[Data_4_9Triggers0]
++Key=Meta+F
++Type=SHORTCUT
++Uuid={43b50dac-e59e-4a70-bc6c-83f477f309b2}
++
+ [Directories]
+ dir_html[$d]
+ dir_locale[$d]
+@@ -1030,6 +1159,10 @@
+ MouseButton=2
+ Timeout=300
+ 
++[GesturesExclude]
++Comment=
++WindowsCount=0
++
+ [KDE]
+ ChangeCursor[$d]
+ contrast[$d]
+diff -r ad1e5a3200cd config/krunnerrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/krunnerrc	Sun Mar 22 21:53:16 2015 +0100
+@@ -0,0 +1,14 @@
++[TaskDialog]
++Height 1080=419
++Width 1920=649
++filterState=0
++headerState=\x00\x00\x00ˇ\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0f‹3\x00\x00\x00\t\x00\x00\x00\r\x00\x00\x00d\x00\x00\x00\x0c\x00\x00\x00d\x00\x00\x00\t\x00\x00\x00d\x00\x00\x00\x08\x00\x00\x00d\x00\x00\x00\x07\x00\x00\x00d\x00\x00\x00\x06\x00\x00\x00d\x00\x00\x00\x04\x00\x00\x00d\x00\x00\x00\x03\x00\x00\x00d\x00\x00\x00\x02\x00\x00\x00d\x00\x00\x02t\x00\x00\x00\x0f\x01\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00dˇˇˇˇ\x00\x00\x00Å\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00»\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00G\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00N\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00e\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00≤\x00\x00\x00\x01\x00\x00\x00\x00
++ioInformation=5
++ioUnits=1
++normalizeCPUUsage=true
++showCommandLineOptions=false
++showTooltips=true
++showTotals=true
++units=1
++updateIntervalMSecs=2000
++version=5
+diff -r ad1e5a3200cd config/plasma-desktop-appletsrc
+--- a/config/plasma-desktop-appletsrc	Sun Mar 22 21:27:43 2015 +0100
++++ b/config/plasma-desktop-appletsrc	Sun Mar 22 21:53:16 2015 +0100
+@@ -119,7 +119,7 @@
+ 
+ [Containments][1][Applets][2]
+ geometry=0,3,32,32
+-immutability=1
++immutability=2
+ plugin=launcher
+ zvalue=0
+ 
+@@ -127,7 +127,7 @@
+ Order=0
+ 
+ [Containments][1][Applets][2][Shortcuts]
+-global=Alt+F1
++global=Meta+Space
+ 
+ [Containments][1][Applets][3]
+ geometry=36,3,32,32
+diff -r ad1e5a3200cd config/systemsettingsrc
+--- a/config/systemsettingsrc	Sun Mar 22 21:27:43 2015 +0100
++++ b/config/systemsettingsrc	Sun Mar 22 21:53:16 2015 +0100
+@@ -4,3 +4,6 @@
+ State=AAAA/wAAAAD9AAAAAAAAB4AAAAQGAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgEAAAAA/////wAAAAAAAAAA
+ ToolBarsMovable=Disabled
+ Width 1920=1921
++
++[Notification Messages]
++shortcuts_saved_info=false

@@ -1,0 +1,609 @@
+diff -r 9a2cc8ca5be7 .hgignore
+--- a/.hgignore	Sun Mar 22 17:05:22 2015 +0100
++++ b/.hgignore	Sun Mar 22 20:59:44 2015 +0100
+@@ -5,4 +5,5 @@
+ ^apps/klipper/history2.lst.*
+ ^apps/RecentDocuments.*
+ ^apps/nepomuk.*
++^autostart.*
+ 
+diff -r 9a2cc8ca5be7 config/gtkrc
+--- a/config/gtkrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/gtkrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -1,4 +1,4 @@
+-# created by KDE, Sun Mar 22 17:00:44 2015
++# created by KDE, Sun Mar 22 17:11:08 2015
+ #
+ # If you do not want KDE to override your GTK settings, select
+ # Appearance -> Colors in the System Settings and disable the checkbox
+diff -r 9a2cc8ca5be7 config/gtkrc-2.0
+--- a/config/gtkrc-2.0	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/gtkrc-2.0	Sun Mar 22 20:59:44 2015 +0100
+@@ -1,4 +1,4 @@
+-# created by KDE, Sun Mar 22 17:00:44 2015
++# created by KDE, Sun Mar 22 17:11:08 2015
+ #
+ # If you do not want KDE to override your GTK settings, select
+ # Appearance -> Colors in the System Settings and disable the checkbox
+diff -r 9a2cc8ca5be7 config/kcminputrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/kcminputrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -0,0 +1,3 @@
++[Mouse]
++cursorSize=32
++cursorTheme=Adwaita
+diff -r 9a2cc8ca5be7 config/kdebugrc
+--- a/config/kdebugrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/kdebugrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -16,6 +16,9 @@
+ [kdecore (KConfigSkeleton)]
+ InfoOutput=2
+ 
++[kdecore (KPluginInfo)]
++InfoOutput=2
++
+ [kdostartupconfig4]
+ InfoOutput=4
+ 
+diff -r 9a2cc8ca5be7 config/kdedrc
+--- a/config/kdedrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/kdedrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -1,2 +1,5 @@
+ [$Version]
+ update_info=kded.upd:kde3.0
++
++[Module-appmenu]
++autoload=false
+diff -r 9a2cc8ca5be7 config/kdeglobals
+--- a/config/kdeglobals	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/kdeglobals	Sun Mar 22 20:59:44 2015 +0100
+@@ -1,7 +1,135 @@
+ [$Version]
+ update_info=kded.upd:kde3.0
+ 
++[Appmenu Style]
++Style=InApplication
++
++[ColorEffects:Disabled]
++Color=56,56,56
++ColorAmount=0.5
++ColorEffect=2
++ContrastAmount=0.5
++IntensityAmount=0.05
++IntensityEffect=0
++
++[ColorEffects:Inactive]
++Color=0,0,0
++ColorAmount=0.5
++ColorEffect=1
++ContrastAmount=0.25
++IntensityAmount=0
++IntensityEffect=0
++
++[Colors:Button]
++BackgroundAlternate=12,12,12
++BackgroundNormal=0,0,0
++DecorationFocus=192,192,192
++DecorationHover=255,255,255
++ForegroundActive=192,255,255
++ForegroundInactive=160,160,160
++ForegroundLink=128,181,255
++ForegroundNegative=255,128,172
++ForegroundNeutral=255,212,128
++ForegroundNormal=255,255,255
++ForegroundPositive=128,255,128
++ForegroundVisited=192,128,255
++
++[Colors:Selection]
++BackgroundAlternate=0,52,116
++BackgroundNormal=0,49,110
++DecorationFocus=192,192,192
++DecorationHover=255,255,255
++ForegroundActive=192,255,255
++ForegroundInactive=96,148,207
++ForegroundLink=128,181,255
++ForegroundNegative=255,128,172
++ForegroundNeutral=255,212,128
++ForegroundNormal=255,255,255
++ForegroundPositive=128,255,128
++ForegroundVisited=192,128,255
++
++[Colors:Tooltip]
++BackgroundAlternate=12,12,12
++BackgroundNormal=0,0,0
++DecorationFocus=192,192,192
++DecorationHover=255,255,255
++ForegroundActive=192,255,255
++ForegroundInactive=160,160,160
++ForegroundLink=128,181,255
++ForegroundNegative=255,128,172
++ForegroundNeutral=255,212,128
++ForegroundNormal=255,255,255
++ForegroundPositive=128,255,128
++ForegroundVisited=192,128,255
++
++[Colors:View]
++BackgroundAlternate=12,12,12
++BackgroundNormal=0,0,0
++DecorationFocus=192,192,192
++DecorationHover=255,255,255
++ForegroundActive=192,255,255
++ForegroundInactive=160,160,160
++ForegroundLink=128,181,255
++ForegroundNegative=255,128,172
++ForegroundNeutral=255,212,128
++ForegroundNormal=255,255,255
++ForegroundPositive=128,255,128
++ForegroundVisited=192,128,255
++
++[Colors:Window]
++BackgroundAlternate=20,20,20
++BackgroundNormal=16,16,16
++DecorationFocus=192,192,192
++DecorationHover=255,255,255
++ForegroundActive=192,255,255
++ForegroundInactive=160,160,160
++ForegroundLink=128,181,255
++ForegroundNegative=255,128,172
++ForegroundNeutral=255,212,128
++ForegroundNormal=255,255,255
++ForegroundPositive=128,255,128
++ForegroundVisited=192,128,255
++
++[DesktopIcons]
++ActiveColor=169,156,255
++ActiveColor2=0,0,0
++ActiveEffect=togamma
++ActiveSemiTransparent=false
++ActiveValue=0.7
++Animated=false
++DefaultColor=144,128,248
++DefaultColor2=0,0,0
++DefaultEffect=none
++DefaultSemiTransparent=false
++DefaultValue=1
++DisabledColor=34,202,0
++DisabledColor2=0,0,0
++DisabledEffect=togray
++DisabledSemiTransparent=true
++DisabledValue=1
++Size=48
++
++[DialogIcons]
++ActiveColor=169,156,255
++ActiveColor2=0,0,0
++ActiveEffect=none
++ActiveSemiTransparent=false
++ActiveValue=1
++Animated=false
++DefaultColor=144,128,248
++DefaultColor2=0,0,0
++DefaultEffect=none
++DefaultSemiTransparent=false
++DefaultValue=1
++DisabledColor=34,202,0
++DisabledColor2=0,0,0
++DisabledEffect=togray
++DisabledSemiTransparent=true
++DisabledValue=1
++Size=32
++
+ [General]
++ColorScheme=Zion (Reversed)
+ dbfile=/home/cguevara/.mozilla/firefox/pzp7amt1.cguevara/places.sqlite
+ desktopFont=Droid Sans,10,-1,5,50,0,0,0,0,0
+ fixed=Droid Sans Mono,9,-1,5,50,0,0,0,0,0
+@@ -10,6 +138,100 @@
+ smallestReadableFont=Droid Sans,9,-1,5,50,0,0,0,0,0
+ taskbarFont=Droid Sans,9,-1,5,50,0,0,0,0,0
+ toolBarFont=Droid Sans,9,-1,5,50,0,0,0,0,0
++widgetStyle=oxygen
++
++[KDE]
++ShowIconsInMenuItems=true
++ShowIconsOnPushButtons=true
++
++[KDE-Global GUI Settings]
++GraphicEffectsLevel=1
++
++[MainToolbarIcons]
++ActiveColor=169,156,255
++ActiveColor2=0,0,0
++ActiveEffect=none
++ActiveSemiTransparent=false
++ActiveValue=1
++Animated=false
++DefaultColor=144,128,248
++DefaultColor2=0,0,0
++DefaultEffect=none
++DefaultSemiTransparent=false
++DefaultValue=1
++DisabledColor=34,202,0
++DisabledColor2=0,0,0
++DisabledEffect=togray
++DisabledSemiTransparent=true
++DisabledValue=1
++Size=22
++
++[PanelIcons]
++ActiveColor=169,156,255
++ActiveColor2=0,0,0
++ActiveEffect=togamma
++ActiveSemiTransparent=false
++ActiveValue=0.7
++Animated=false
++DefaultColor=144,128,248
++DefaultColor2=0,0,0
++DefaultEffect=none
++DefaultSemiTransparent=false
++DefaultValue=1
++DisabledColor=34,202,0
++DisabledColor2=0,0,0
++DisabledEffect=togray
++DisabledSemiTransparent=true
++DisabledValue=1
++Size=32
++
++[SmallIcons]
++ActiveColor=169,156,255
++ActiveColor2=0,0,0
++ActiveEffect=none
++ActiveSemiTransparent=false
++ActiveValue=1
++Animated=false
++DefaultColor=144,128,248
++DefaultColor2=0,0,0
++DefaultEffect=none
++DefaultSemiTransparent=false
++DefaultValue=1
++DisabledColor=34,202,0
++DisabledColor2=0,0,0
++DisabledEffect=togray
++DisabledSemiTransparent=true
++DisabledValue=1
++Size=16
++
++[Toolbar style]
++ToolButtonStyle=NoText
++ToolButtonStyleOtherToolbars=NoText
++
++[ToolbarIcons]
++ActiveColor=169,156,255
++ActiveColor2=0,0,0
++ActiveEffect=none
++ActiveSemiTransparent=false
++ActiveValue=1
++Animated=false
++DefaultColor=144,128,248
++DefaultColor2=0,0,0
++DefaultEffect=none
++DefaultSemiTransparent=false
++DefaultValue=1
++DisabledColor=34,202,0
++DisabledColor2=0,0,0
++DisabledEffect=togray
++DisabledSemiTransparent=true
++DisabledValue=1
++Size=22
+ 
+ [WM]
++activeBackground=0,49,110
++activeBlend=131,175,119
+ activeFont=Droid Sans,9,-1,5,50,0,0,0,0,0
++activeForeground=255,255,255
++inactiveBackground=64,64,64
++inactiveBlend=213,209,207
++inactiveForeground=128,128,128
+diff -r 9a2cc8ca5be7 config/kglobalshortcutsrc
+--- a/config/kglobalshortcutsrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/kglobalshortcutsrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -91,10 +91,10 @@
+ Show Desktop=none,none,Show Desktop
+ ShowDesktopGrid=Ctrl+F8,Ctrl+F8,Show Desktop Grid
+ Suspend Compositing=Alt+Shift+F12,Alt+Shift+F12,Suspend Compositing
+-Switch One Desktop Down=none,none,
+-Switch One Desktop Up=none,none,
+-Switch One Desktop to the Left=none,none,
+-Switch One Desktop to the Right=none,none,
++Switch One Desktop Down=none,none,Switch One Desktop Down
++Switch One Desktop Up=none,none,Switch One Desktop Up
++Switch One Desktop to the Left=none,none,Switch One Desktop to the Left
++Switch One Desktop to the Right=none,none,Switch One Desktop to the Right
+ Switch Window Down=Meta+Alt+Down,Meta+Alt+Down,Switch to Window Below
+ Switch Window Left=Meta+Alt+Left,Meta+Alt+Left,Switch to Window to the Left
+ Switch Window Right=Meta+Alt+Right,Meta+Alt+Right,Switch to Window to the Right
+@@ -110,7 +110,7 @@
+ Switch to Desktop 17=none,none,Switch to Desktop 17
+ Switch to Desktop 18=none,none,Switch to Desktop 18
+ Switch to Desktop 19=none,none,Switch to Desktop 19
+-Switch to Desktop 2=Ctrl+F2,Ctrl+F2,Switch to Desktop 2
++Switch to Desktop 2=none,Ctrl+F2,Switch to Desktop 2
+ Switch to Desktop 20=none,none,Switch to Desktop 20
+ Switch to Desktop 3=Ctrl+F3,Ctrl+F3,Switch to Desktop 3
+ Switch to Desktop 4=Ctrl+F4,Ctrl+F4,Switch to Desktop 4
+@@ -119,9 +119,9 @@
+ Switch to Desktop 7=none,none,Switch to Desktop 7
+ Switch to Desktop 8=none,none,Switch to Desktop 8
+ Switch to Desktop 9=none,none,Switch to Desktop 9
+-Switch to Next Desktop=none,none,
++Switch to Next Desktop=none,none,Switch to Next Desktop
+ Switch to Next Screen=none,none,Switch to Next Screen
+-Switch to Previous Desktop=none,none,
++Switch to Previous Desktop=none,none,Switch to Previous Desktop
+ Switch to Previous Screen=none,none,Switch to Previous Screen
+ Switch to Screen 0=none,none,Switch to Screen 0
+ Switch to Screen 1=none,none,Switch to Screen 1
+diff -r 9a2cc8ca5be7 config/ksplashrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/ksplashrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -0,0 +1,3 @@
++[KSplash]
++Engine=None
++Theme=None
+diff -r 9a2cc8ca5be7 config/kwinrc
+--- a/config/kwinrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/kwinrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -2,12 +2,172 @@
+ update_info=kwin_remove_effects.upd:kwin4.7_effects
+ 
+ [Compositing]
++AnimationSpeed=3
++Backend=OpenGL
++Enabled=false
++GLColorCorrection=false
++GLCore=false
++GLLegacy=false
++GLPreferBufferSwap=a
++GLTextureFilter=2
++GraphicsSystem=native
++HiddenPreviews=5
+ OpenGLIsUnsafe=false
++UnredirectFullscreen=false
++XRenderSmoothScale=false
++
++[Desktops]
++Number=1
++Rows=1
+ 
+ [Effect-BoxSwitch]
+ TabBox=false
+ TabBoxAlternative=false
+ 
++[Effect-CoverSwitch]
++TabBox=false
++TabBoxAlternative=false
++
++[Effect-FlipSwitch]
++TabBox=false
++TabBoxAlternative=false
++
++[Effect-PresentWindows]
++LayoutMode=0
++TabBox=false
++
++[Effect-Zoom]
++InitialZoom=1
++
++[MouseBindings]
++CommandActiveTitlebar1=Raise
++CommandActiveTitlebar2=Start window tab drag
++CommandActiveTitlebar3=Operations menu
++CommandAll1=Move
++CommandAll2=Toggle raise and lower
++CommandAll3=Resize
++CommandAllKey=Alt
++CommandAllWheel=Nothing
++CommandInactiveTitlebar1=Activate and raise
++CommandInactiveTitlebar2=Start window tab drag
++CommandInactiveTitlebar3=Operations menu
++CommandTitlebarWheel=Switch to Window Tab to the Left/Right
++CommandWindow1=Activate, raise and pass click
++CommandWindow2=Activate and pass click
++CommandWindow3=Activate and pass click
++CommandWindowWheel=Scroll
++
++[Plugins]
++desktopchangeosdEnabled=false
++kwin4_effect_blurEnabled=true
++kwin4_effect_coverswitchEnabled=false
++kwin4_effect_cubeEnabled=false
++kwin4_effect_cubeslideEnabled=false
++kwin4_effect_dashboardEnabled=true
++kwin4_effect_desktopgridEnabled=false
++kwin4_effect_dialogparentEnabled=false
++kwin4_effect_diminactiveEnabled=false
++kwin4_effect_dimscreenEnabled=false
++kwin4_effect_fadeEnabled=true
++kwin4_effect_fadedesktopEnabled=false
++kwin4_effect_fallapartEnabled=false
++kwin4_effect_flipswitchEnabled=false
++kwin4_effect_glideEnabled=false
++kwin4_effect_highlightwindowEnabled=true
++kwin4_effect_invertEnabled=false
++kwin4_effect_kscreenEnabled=true
++kwin4_effect_loginEnabled=true
++kwin4_effect_logoutEnabled=true
++kwin4_effect_lookingglassEnabled=false
++kwin4_effect_magiclampEnabled=false
++kwin4_effect_magnifierEnabled=false
++kwin4_effect_maximizeEnabled=true
++kwin4_effect_minimizeanimationEnabled=false
++kwin4_effect_mouseclickEnabled=false
++kwin4_effect_mousemarkEnabled=false
++kwin4_effect_presentwindowsEnabled=false
++kwin4_effect_resizeEnabled=false
++kwin4_effect_scaleinEnabled=false
++kwin4_effect_screenedgeEnabled=true
++kwin4_effect_screenshotEnabled=true
++kwin4_effect_sheetEnabled=false
++kwin4_effect_showfpsEnabled=false
++kwin4_effect_showpaintEnabled=false
++kwin4_effect_slideEnabled=true
++kwin4_effect_slidebackEnabled=false
++kwin4_effect_slidingpopupsEnabled=true
++kwin4_effect_snaphelperEnabled=false
++kwin4_effect_startupfeedbackEnabled=true
++kwin4_effect_taskbarthumbnailEnabled=true
++kwin4_effect_thumbnailasideEnabled=false
++kwin4_effect_trackmouseEnabled=false
++kwin4_effect_translucencyEnabled=true
++kwin4_effect_windowgeometryEnabled=false
++kwin4_effect_wobblywindowsEnabled=false
++kwin4_effect_zoomEnabled=true
++
++[Script-desktopchangeosd]
++PopupHideDelay=1000
++TextOnly=false
++
++[Style]
++BorderSize=1
++ButtonsOnLeft=MS
++ButtonsOnRight=HIAX
++CustomButtonPositions=true
++PluginLib=kwin3_oxygen
++ShowToolTips=true
++
+ [TabBox]
++ActivitiesMode=1
++ApplicationsMode=0
++DesktopMode=1
++HighlightWindows=false
++LayoutName=informative
+ ListMode=0
++MinimizedMode=0
++MultiScreenMode=0
++ShowDesktopMode=0
+ ShowTabBox=true
++SwitchingMode=0
++
++[TabBoxAlternative]
++ActivitiesMode=1
++ApplicationsMode=0
++DesktopMode=1
++HighlightWindows=true
++LayoutName=thumbnails
++MinimizedMode=0
++MultiScreenMode=0
++ShowDesktopMode=0
++ShowTabBox=true
++SwitchingMode=0
++
++[Windows]
++ActiveMouseScreen=true
++AutoRaise=false
++AutoRaiseInterval=750
++AutogroupInForeground=true
++AutogroupSimilarWindows=false
++BorderSnapZone=10
++BorderlessMaximizedWindows=false
++CenterSnapZone=0
++ClickRaise=true
++DelayFocusInterval=300
++FocusPolicy=FocusFollowsMouse
++FocusStealingPreventionLevel=1
++GeometryTip=false
++HideUtilityWindowsForInactive=true
++InactiveTabsSkipTaskbar=false
++MaximizeButtonLeftClickCommand=Maximize
++MaximizeButtonMiddleClickCommand=Maximize (vertical only)
++MaximizeButtonRightClickCommand=Maximize (horizontal only)
++NextFocusPrefersMouse=false
++Placement=Smart
++RollOverDesktops=true
++SeparateScreenFocus=false
++ShadeHover=false
++ShadeHoverInterval=250
++SnapOnlyWhenOverlapping=false
++TitlebarDoubleClickCommand=Maximize
++WindowSnapZone=10
+diff -r 9a2cc8ca5be7 config/kwinrulesrc
+--- a/config/kwinrulesrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/kwinrulesrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -2,6 +2,7 @@
+ Description=(Default) Disable focus stealing prevention for XV
+ fsplevel=0
+ fsplevelrule=2
++types=4294967295
+ wmclass=^xv .*
+ wmclasscomplete=true
+ wmclassmatch=3
+diff -r 9a2cc8ca5be7 config/oxygenrc
+--- a/config/oxygenrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/oxygenrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -1,2 +1,6 @@
+ [$Version]
+ update_info=oxygen.upd:1
++
++[Windeco]
++AnimationsEnabled=false
++FrameBorder=BorderDefault
+diff -r 9a2cc8ca5be7 config/plasma-desktop-appletsrc
+--- a/config/plasma-desktop-appletsrc	Sun Mar 22 17:05:22 2015 +0100
++++ b/config/plasma-desktop-appletsrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -139,8 +139,8 @@
+ Order=1
+ 
+ [Containments][1][Applets][4]
+-geometry=72,3,29,32
+-immutability=1
++geometry=72,3,0,32
++immutability=2
+ plugin=pager
+ zvalue=0
+ 
+@@ -151,7 +151,7 @@
+ Order=2
+ 
+ [Containments][1][Applets][5]
+-geometry=105,3,1555,32
++geometry=76,3,1612,32
+ immutability=2
+ plugin=tasks
+ zvalue=0
+@@ -176,7 +176,7 @@
+ Order=3
+ 
+ [Containments][1][Applets][6]
+-geometry=1664,3,134,32
++geometry=1692,3,106,32
+ immutability=2
+ plugin=systemtray
+ zvalue=0
+@@ -220,7 +220,7 @@
+ zvalue=0
+ 
+ [Containments][1][Applets][6][Configuration][Applets][15][PopupApplet]
+-DialogHeight=124
++DialogHeight=94
+ DialogWidth=332
+ 
+ [Containments][1][Applets][6][Configuration][Shortcuts]
+diff -r 9a2cc8ca5be7 config/plasmarc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/plasmarc	Sun Mar 22 20:59:44 2015 +0100
+@@ -0,0 +1,2 @@
++[PlasmaToolTips]
++Delay=-1
+diff -r 9a2cc8ca5be7 config/workspaceoptionsrc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/config/workspaceoptionsrc	Sun Mar 22 20:59:44 2015 +0100
+@@ -0,0 +1,19 @@
++[Compositing]
++DesktopUnredirectFullscreen=false
++
++[Effect-BoxSwitch]
++DesktopTabBox=false
++
++[Effect-CoverSwitch]
++DesktopTabBox=false
++
++[Effect-FlipSwitch]
++DesktopTabBox=false
++
++[Effect-PresentWindows]
++DesktopLayoutMode=0
++DesktopTabBox=false
++
++[TitleBarButtons]
++DesktopLeft=MS
++DesktopRight=HIAX

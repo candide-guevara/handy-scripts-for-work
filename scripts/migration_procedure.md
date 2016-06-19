@@ -28,7 +28,7 @@
 * Run a BTRFS [scrub][5] on Bifrost
 * Create snapshots on Lucian_PrioA/B/C
 * Create /home backup to /media/BifrostSnap/ArngrimHome
-* Do an extra backup : /media/Lucian_PrioA, /media/Lucian_PrioB/Kashell
+* Do an extra backup : /media/Lucian_PrioA, /media/Lucian_PrioB
 
 
 
@@ -104,6 +104,7 @@
 * Put user [~/.cache][13] into tmpfs
 * Activate [numlock][19] on boot for tty + xorg session manager (kde => sddm)
     * Option using numlockx on Xsetup is more reliable
+* If you are using ccache, change the default cache directory to a tmpfs location (see ccache man's page)    
 
 ### Desktop environment tweaks
 

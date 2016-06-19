@@ -14,7 +14,7 @@ _btrfs_completion() {
   fi
 }
 
-## *USAGE : __btrfs_comp_subcmd CURRENT PREVIOUS
+# *USAGE : __btrfs_comp_subcmd CURRENT PREVIOUS
 # Completes btrfs sub commands
 __btrfs_comp_subcmd() {
   local -a result

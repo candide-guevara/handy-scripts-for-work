@@ -255,6 +255,36 @@ delete_all_dirs() {
   colecho $bldgrn "  find -type $item_type -iname \"$pattern\" -print0 2> /dev/null | xargs -r0 rm -fr"
 }
 
+## *USAGE : vim_crypt CRYPT_FILE
+## Decrypts CRYPT_FILE edits it with vim and crypts it again
+vim_crypt() {
+  local crypt_file="$1"
+  local gpg_pwd=""
+  # For extra security better create this in a memory backed filesystem
+  local tmp_dir="/run/user/`id -u`"
+  local tmp_file=`mktemp -p "$tmp_dir"`
+
+  read -s -p "passphrase : " gpg_pwd
+  chmod 'og-rwx' "$tmp_file"
+
+  function __cleanup__() {
+    rm -f "$tmp_file"
+  }
+
+  local -a vim_cmd=( vim -c ':set nobackup' -c ':set nowritebackup' -c ':set noswapfile' )
+  local -a crypt_cmd=( gpg --symmetric --cipher-algo AES256 --passphrase "$gpg_pwd" --output '-' )
+  local -a decrypt_cmd=( gpg --decrypt --passphrase "$gpg_pwd" )
+
+  (
+    trap __cleanup__ EXIT INT TERM
+    if [[ -e "$crypt_file" ]]; then
+      "${decrypt_cmd[@]}" "$crypt_file" > "$tmp_file" || exit 1
+    fi  
+    "${vim_cmd[@]}" "$tmp_file"
+    "${crypt_cmd[@]}" "$tmp_file" > "$crypt_file"
+  )
+}
+
 ## Prints some nice bash shortcuts that I tend to forget ...
 cheatsheat() {
   echo -e "### EDITING"

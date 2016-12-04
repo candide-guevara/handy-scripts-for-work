@@ -72,6 +72,7 @@
 * Use `systemctl analyse blame` to check [boot bottle necks][21]
 * Use `/etc/mkinitcpio.conf` or `/etc/dracut.conf` to customize initial ram disk (check it with `lsinitrd or lsinitramfs`
 * Enable [transparent huge pages][23] on kernel command line (check in `/sys/kernel/mm/transparent_hugepage`)
+* Enable performance [cpufreq][26] using `man tmpfiles.d`
 
 ### Graphics card drivers
 
@@ -105,6 +106,8 @@
 * Activate [numlock][19] on boot for tty + xorg session manager (kde => sddm)
     * Option using numlockx on Xsetup is more reliable
 * If you are using ccache, change the default cache directory to a tmpfs location (see ccache man's page)    
+* Change pulse audio [sample depth and rate][25] (default and alternate), chose soxr-vhq for resampling
+    * Options listed in `man pulse-daemon.conf`
 
 ### Desktop environment tweaks
 
@@ -161,4 +164,6 @@
 [22]: http://fedoraproject.org/wiki/SELinux_FAQ#How_do_I_enable_or_disable_SELinux_.3F 
 [23]: https://www.kernel.org/doc/Documentation/kernel-parameters.txt
 [24]: https://github.com/systemd/systemd/issues/2691
+[25]: http://r3dux.org/2013/12/how-to-enable-high-quality-audio-in-linux/
+[26]: https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors
 

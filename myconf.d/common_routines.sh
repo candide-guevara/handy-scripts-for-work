@@ -261,27 +261,28 @@ vim_crypt() {
   local crypt_file="$1"
   local gpg_pwd=""
   # For extra security better create this in a memory backed filesystem
-  local tmp_dir="/run/user/`id -u`"
-  local tmp_file=`mktemp -p "$tmp_dir"`
+  local user_num=`id -u`
+  local tmp_dir=`mktemp -d -p "/run/user/$user_num"`
+  local tmp_file=`mktemp -u -p "$tmp_dir"`
 
+  chmod 'go-rwx' "$tmp_dir"
   read -s -p "passphrase : " gpg_pwd
-  chmod 'og-rwx' "$tmp_file"
 
   function __cleanup__() {
-    rm -f "$tmp_file"
+    rm -rf "$tmp_dir"
   }
 
-  local -a vim_cmd=( vim -c ':set nobackup' -c ':set nowritebackup' -c ':set noswapfile' )
+  local -a vim_cmd=( vim -c ":file $tmp_file" -c ':set nobackup' -c ':set nowritebackup' -c ':set noswapfile' )
   local -a crypt_cmd=( gpg --symmetric --cipher-algo AES256 --passphrase "$gpg_pwd" --output '-' )
   local -a decrypt_cmd=( gpg --decrypt --passphrase "$gpg_pwd" )
 
   (
     trap __cleanup__ EXIT INT TERM
     if [[ -e "$crypt_file" ]]; then
-      "${decrypt_cmd[@]}" "$crypt_file" > "$tmp_file" || exit 1
+      "${decrypt_cmd[@]}" "$crypt_file" | "${vim_cmd[@]}" -
+      [[ "${PIPESTATUS[0]}" == "0" ]] && [[ -f "$tmp_file" ]] \
+        && "${crypt_cmd[@]}" "$tmp_file" > "$crypt_file"
     fi  
-    "${vim_cmd[@]}" "$tmp_file"
-    "${crypt_cmd[@]}" "$tmp_file" > "$crypt_file"
   )
 }
 

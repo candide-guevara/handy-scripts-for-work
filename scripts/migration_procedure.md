@@ -7,16 +7,6 @@
 * Build it ! 
 * Prepare SATA+POWER connectors for drives in the current installation
 
-### Prepare installation media
-
-* Download net image and check image hash
-* Copy to usb-stick
-    * simple method : `dd if=<iso> of=<root_device> bs=8M` **Problem : Mouse fails**
-    * [live usb][18] (you need a live image, netinstaller does not work) 
-    * `livecd-iso-to-disk --efi --format --unencrypted-home --home-size-mb 2048 --overlay-size-mb 1024 --label <LESS_than_11_chars> <live_iso> /dev/<usb>`
-    * You can boot into the live system and patch xorg.conf t get the mouse working
-    * less options on installation for fedora
-
 ### Backups (use `backup_cp`)
 
 * Check examples for fstab and Xserver configs are up to date
@@ -72,7 +62,9 @@
 * Use `systemctl analyse blame` to check [boot bottle necks][21]
 * Use `/etc/mkinitcpio.conf` or `/etc/dracut.conf` to customize initial ram disk (check it with `lsinitrd or lsinitramfs`
 * Enable [transparent huge pages][23] on kernel command line (check in `/sys/kernel/mm/transparent_hugepage`)
-* Enable performance [cpufreq][26] using `man tmpfiles.d`
+* Use `man tmpfiles.d` to set some configuration
+  * Enable performance [cpufreq][26] governor by writing "performance" to /sys/devices/system/cpu/cpu\*/cpufreq/scaling\_governor
+  * Enable bpf jit for [seccomp][27] filter by writing "1" to /proc/sys/net/core/bpf\_jit\_enable
 
 ### Graphics card drivers
 
@@ -101,13 +93,17 @@
 * Install extra dnf plugins `dnf-plugins-extras-*`
 * Add keyboard layout : map=us, layout=english(us), variant="alternative, international"
 * Set the machine name on /etc/hostname
+* Set a public DNS on network manager (check `/etc/resolv.conf` too). Test using `dig +trace www.google.com`
 * Disable unneeded systemd units, create [tempfiles][9]
 * Put user [~/.cache][13] into tmpfs
 * Activate [numlock][19] on boot for tty + xorg session manager (kde => sddm)
     * Option using numlockx on Xsetup is more reliable
 * If you are using ccache, change the default cache directory to a tmpfs location (see ccache man's page)    
-* Change pulse audio [sample depth and rate][25] (default and alternate), chose soxr-vhq for resampling
-    * Options listed in `man pulse-daemon.conf`
+* Configure pulse audio options (cf `man pulse-daemon.conf`)
+    * Change [sample depth and rate][25] (default and alternate), chose soxr-vhq for resampling
+    * Do not load useless modules (filters, bluetooth ...)
+    * If using external amplifier you can blacklist all onboard-sound kernel modules in `/etc/modprobe.d`
+    * Change `nice` and `rtprio` limits for my user in `/etc/security/limits.d` so that pulse daemon has lower latency
 
 ### Desktop environment tweaks
 
@@ -157,7 +153,6 @@
 [15]: http://blog.andreas-haerter.com/2012/03/06/rpm-yum-gpg-key-verification-import-deletion-package-signature-check-cheat-sheet
 [16]: http://stackoverflow.com/questions/29594260/how-to-disable-kwallet-in-kde-plasma-5/29945946
 [17]: ../configuration/kde4_conf
-[18]: https://fedoraproject.org/wiki/How_to_create_and_use_Live_USB#Command_line_method:_Using_the_livecd-iso-to-disk_tool_.28Fedora_only.2C_non-graphical.2C_both_non-destructive_and_destructive_methods_available.29
 [19]: https://wiki.archlinux.org/index.php/Activating_Numlock_on_Bootup#Extending_getty.40.service
 [20]: http://rpmfusion.org/Howto/nVidia
 [21]: https://freedesktop.org/wiki/Software/systemd/Optimizations/
@@ -166,4 +161,5 @@
 [24]: https://github.com/systemd/systemd/issues/2691
 [25]: http://r3dux.org/2013/12/how-to-enable-high-quality-audio-in-linux/
 [26]: https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors
+[27]: https://lwn.net/Articles/656307/
 

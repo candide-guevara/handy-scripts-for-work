@@ -45,29 +45,30 @@
 * Import it to th rpm keyring `gpg --armor --export <KEY_ID> > temp.sig ; rpm --import temp.sig`
 * Check rpm package `rpm -K <PACKAGE>`
 * [rpmfusion][10] (free and non-free)
-* [google-chrome][11] and [key][12]
 * Configure the [priority][14] (lower is higher!) repo option in `/etc/yum.repos.d`
 * Remember that the keys in `/etc/pki/rpm-gpg` are [NOT used][15] to verify pacakges !!
+* [google-chrome][11] and [key][12]
+  * Or use firefox with extensions "Dark Background and Light Text" and "Zoom Page" (tweak also min font size setting)
 
 ### Linux tweaks
 
-* X server mouse and arcade stick configurations to /etc/X11/xorg.conf.d
 * Use noop scheduler for SSD block devices
     * Manually write to /sys/block/sdX/queue/scheduler or use [udev][2]
 * Set no access modification time on mount options
     * `noatime,nodiratime` but easier to adapt fstab template in this repo
+* Use `hdparm -I  --dco-identify /dev/sd?` to query (or change if supported) the advanced power mgt and acoustic mgt 
 * Blacklist modules (/etc/modprobe.d/<name>.conf) : pcspkr
 * Set the [dirty_ratio][7] `/proc/sys/vim` for virtual memory with [sysctl][6]
 * Disable or set permissive mode for [selinux][22]
-* Use `systemctl analyse blame` to check [boot bottle necks][21]
-* Use `/etc/mkinitcpio.conf` or `/etc/dracut.conf` to customize initial ram disk (check it with `lsinitrd or lsinitramfs`
-* Enable [transparent huge pages][23] on kernel command line (check in `/sys/kernel/mm/transparent_hugepage`)
 * Use `man tmpfiles.d` to set some configuration
   * Enable performance [cpufreq][26] governor by writing "performance" to /sys/devices/system/cpu/cpu\*/cpufreq/scaling\_governor
   * Enable bpf jit for [seccomp][27] filter by writing "1" to /proc/sys/net/core/bpf\_jit\_enable
 
-### Graphics card drivers
+* Use `systemctl analyse blame` to check [boot bottle necks][21]
 
+### Xorg, Graphics card drivers
+
+* X server mouse and arcade stick configurations to /etc/X11/xorg.conf.d
 * [Install propietary][20] gpu kernel modules, xorg drivers, VDPAU/VAAPI
 * Tweak [gpu settings][8]
 * Check GPU acceleration `glxinfo | grep direct` and `vblank_mode=0 glxgears`
@@ -75,6 +76,7 @@
 
 ### Initial ram disk : initramfs
 
+* Use `/etc/mkinitcpio.conf` or `/etc/dracut.conf` to customize initial ram disk (check it with `lsinitrd or lsinitramfs`
 * `man dracut` gives plenty of good advise
 * Usual options : hostonly, compress=lz4, omit plymouth and fancy filesystems ...
     * compress option can make decoding of initramfs fail
@@ -84,9 +86,10 @@
 
 * Grub options [config][3] : save last boot choice / shorten wait time / noquiet / vgamode (may conflict with gpu)
     * Prefer `GRUB_CMDLINE_LINUX_DEFAULT`, rescue mode boot options will not be changed
-* Edit templates in `/etc/grub.d/10_linux` to have more descrpitive boot menu entries
 * `/etc/default/grub` then `grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg`
 * Disable plymouth (graphical boot) by adding plymouth.enable=0 in kernel command line
+* Enable [transparent huge pages][23] on kernel command line (check in `/sys/kernel/mm/transparent_hugepage`)
+* Disable nmi watchdog on [kernel command line][23]
 
 ### Distribution tweaks
 
@@ -110,9 +113,9 @@
 * KILL [KWALLET][16] !!! Double check settings in `~/.config/kwalletrc`
 * Search [kde_conf][17] for an exhaustive list of settings and packages (careful based on kde4)
 * Just go through the conf options manually ...
-* Disable inactivity screen lock and login prompt at boot
+  * Disable inactivity screen lock and login prompt at boot
 * Restore XDG links in `~/.config/user-dirs.dirs` (point cache home to tmpfs)
-* Restore symlinks in /home
+* Restore symlinks or **bind mounts** in /home
     * ln -fs /media/Lucian_PrioA/MyProjects Programation
     * ln -fs /media/Lucian_PrioA/Images/
     * ln -fs /media/Lucian_PrioA/Important_Documents Documents
@@ -120,6 +123,11 @@
     * ln -fs /media/Lucian_PrioC/Music
     * ln -fs /media/Lucian_PrioC/Video
     * ln -fs /media/Gandar/Temp
+
+### Notebook specific tweaks
+
+* [backlight adjust][28] either directly on /sys, using udev, or systemd
+* settings in `/etc/default/tlp` and check it is working by unplugging power and check settings have changed`
 
 ### Software packages
 
@@ -157,9 +165,10 @@
 [20]: http://rpmfusion.org/Howto/nVidia
 [21]: https://freedesktop.org/wiki/Software/systemd/Optimizations/
 [22]: http://fedoraproject.org/wiki/SELinux_FAQ#How_do_I_enable_or_disable_SELinux_.3F 
-[23]: https://www.kernel.org/doc/Documentation/kernel-parameters.txt
+[23]: http://static.lwn.net/kerneldoc/admin-guide/kernel-parameters.html
 [24]: https://github.com/systemd/systemd/issues/2691
 [25]: http://r3dux.org/2013/12/how-to-enable-high-quality-audio-in-linux/
 [26]: https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors
 [27]: https://lwn.net/Articles/656307/
+[28]: https://wiki.archlinux.org/index.php/backlight
 

@@ -76,5 +76,5 @@ endif
 filetype plugin indent off
 
 " Disable plugins selectively (http://vi.stackexchange.com/questions/4257/how-do-i-prevent-vim-from-loading-plugins-on-older-configurations)
-let g:loaded_netrwPlugin = "no_thanks"
+"let g:loaded_netrwPlugin = "no_thanks"
 

@@ -44,3 +44,21 @@ backup_cp() {
   popd
 }
 
+## *USAGE: backup_home TARGET
+## Copies home files into another directory and deletes uninteresting files
+backup_home() {
+  my_assert -d "$1"
+  pushd "$1"
+  run_cmd cp -TrxPu "$HOME" ./ || return 1
+  run_cmd rm -r .cache .thumbnails
+  run_cmd rm -r .nuget .dotnet
+  run_cmd rm -r .config/retroarch/*/ .config/google-chrome
+  run_cmd rm -r RetroArch Scripts
+  run_cmd rm -r .local/share/baloo .local/share/akonadi
+  run_cmd rm -r ./.aws/shell/cache/ ./.aws/shell/*completions.json.docs
+  run_cmd rm -r ./.kde/share/apps/ktorrent ./.kde/share/apps/amarok/mysqle ./.kde/share/apps/amarok/albumcovers
+
+  run_cmd du -chPxd 1
+  popd
+}
+

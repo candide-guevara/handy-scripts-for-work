@@ -20,3 +20,12 @@ LABEL=LawferRoot   /media/LawferRoot    auto noauto,nouser,noatime,nodiratime,no
 
 tmpfs /home/cguevara/.cache tmpfs noatime,nodev,nosuid,size=2G  0 0
 
+# Bind mounts
+
+/media/Lucian_PrioA/MyProjects /home/cguevara/Programation none bind
+/media/Lucian_PrioA/Images /home/cguevara/Images none bind
+/media/Lucian_PrioA/Important_Documents /home/cguevara/Documents none bind
+/media/Lucian_PrioC/Music /home/cguevara/Music none bind
+/media/Lucian_PrioC/Video /home/cguevara/Videos none bind
+/media/Gandar/Temp /home/cguevara/Temp none bind
+

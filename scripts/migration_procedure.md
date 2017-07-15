@@ -17,7 +17,9 @@
 * Backup virtual machines disks and iso images+licences_keys
 * Run a BTRFS [scrub][5] on Bifrost
 * Create snapshots on Lucian_PrioA/B/C
-* Create /home backup to /media/BifrostSnap/ArngrimHome
+* Backup /home in /media/BifrostSnap/ArngrimHome using shell function `backup_home` (but manually snapshot)
+    * check you can restore your ssh keys
+    * check you can restore `.bash_history`
 * Do an extra backup : /media/Lucian_PrioA, /media/Lucian_PrioB
 
 
@@ -34,6 +36,7 @@
 ## Installation
 
 * If you have trouble with mouse try `xinput --set-button-map <device> <map_button>`
+    * If live image boot fails try safe graphical boot option (or in grub remove modeset)
 * Create system partitions
     * Disable LVM
     * Create [ESP partition][4] for UEFI booting
@@ -52,6 +55,7 @@
 
 ### Linux tweaks
 
+* Add your user to the `/etd/sudoers.d` file and set option to ask password
 * Use noop scheduler for SSD block devices
     * Manually write to /sys/block/sdX/queue/scheduler or use [udev][2]
 * Set no access modification time on mount options
@@ -80,11 +84,13 @@
 * `man dracut` gives plenty of good advise
 * Usual options : hostonly, compress=lz4, omit plymouth and fancy filesystems ...
     * compress option can make decoding of initramfs fail
+    * WARNING : dracut.conf has a very strict syntax **no space between `=` and values enclosed in double-qoutes**
 * Regenerate image for running kernel with `dracut -f`
+* Check disk contents with `lsinitrd or lsinitramfs`
 
 ### Boot loader
 
-* Grub options [config][3] : save last boot choice / shorten wait time / noquiet / vgamode (may conflict with gpu)
+* Grub options [config][3] : save last boot choice / shorten wait time / noquiet / remove rhgb (red hat graphical boot)
     * Prefer `GRUB_CMDLINE_LINUX_DEFAULT`, rescue mode boot options will not be changed
 * `/etc/default/grub` then `grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg`
 * Disable plymouth (graphical boot) by adding plymouth.enable=0 in kernel command line
@@ -96,8 +102,11 @@
 * Install extra dnf plugins `dnf-plugins-extras-*`
 * Add keyboard layout : map=us, layout=english(us), variant="alternative, international"
 * Set the machine name on /etc/hostname
-* Set a public DNS on network manager (check `/etc/resolv.conf` too). Test using `dig +trace www.google.com`
-* Disable unneeded systemd units, create [tempfiles][9]
+* Set a public DNS on network manager, you need to create a new connection profile and **drop the default one**
+    * Test using `dig +trace www.google.com`, check `/etc/resolv.conf` too
+* Disable unneeded systemd units 
+    * disable firewalld, sssd, auditd, bluetooth
+    * mask `sshd`
 * Put user [~/.cache][13] into tmpfs
 * Activate [numlock][19] on boot for tty + xorg session manager (kde => sddm)
     * Option using numlockx on Xsetup is more reliable
@@ -107,22 +116,6 @@
     * Do not load useless modules (filters, bluetooth ...)
     * If using external amplifier you can blacklist all onboard-sound kernel modules in `/etc/modprobe.d`
     * Change `nice` and `rtprio` limits for my user in `/etc/security/limits.d` so that pulse daemon has lower latency
-
-### Desktop environment tweaks
-
-* KILL [KWALLET][16] !!! Double check settings in `~/.config/kwalletrc`
-* Search [kde_conf][17] for an exhaustive list of settings and packages (careful based on kde4)
-* Just go through the conf options manually ...
-  * Disable inactivity screen lock and login prompt at boot
-* Restore XDG links in `~/.config/user-dirs.dirs` (point cache home to tmpfs)
-* Restore symlinks or **bind mounts** in /home
-    * ln -fs /media/Lucian_PrioA/MyProjects Programation
-    * ln -fs /media/Lucian_PrioA/Images/
-    * ln -fs /media/Lucian_PrioA/Important_Documents Documents
-    * ln -fs /media/Lucian_PrioB/Emulation 
-    * ln -fs /media/Lucian_PrioC/Music
-    * ln -fs /media/Lucian_PrioC/Video
-    * ln -fs /media/Gandar/Temp
 
 ### Notebook specific tweaks
 
@@ -136,6 +129,15 @@
 * Add themes : droid fonts, kde-gtk-config, gtk 2 and 3 theme matching KDE's (currently breeze)
 * Add libraries : all gstreamer plugins, lm_sensors
 * Restore virtual machines disk images to ssd storage
+
+### Desktop environment tweaks
+
+* KILL [KWALLET][16] !!! Double check settings in `~/.config/kwalletrc`
+* Search [kde_conf][17] for an exhaustive list of settings and packages (careful based on kde4)
+* Just go through the conf options manually ...
+* Disable inactivity screen lock and login prompt at boot
+* Restore XDG links in `~/.config/user-dirs.dirs` (point cache home to tmpfs)
+* Check bind mounts in `fstab` are configured for quick access from /home
 
 ### Open issues
 
@@ -162,8 +164,8 @@
 [16]: http://stackoverflow.com/questions/29594260/how-to-disable-kwallet-in-kde-plasma-5/29945946
 [17]: ../configuration/kde4_conf
 [19]: https://wiki.archlinux.org/index.php/Activating_Numlock_on_Bootup#Extending_getty.40.service
-[20]: http://rpmfusion.org/Howto/nVidia
-[21]: https://freedesktop.org/wiki/Software/systemd/Optimizations/
+[20]: http://rpmfusion.org/howto/nvidia
+[21]: https://freedesktop.org/wiki/software/systemd/optimizations/
 [22]: http://fedoraproject.org/wiki/SELinux_FAQ#How_do_I_enable_or_disable_SELinux_.3F 
 [23]: http://static.lwn.net/kerneldoc/admin-guide/kernel-parameters.html
 [24]: https://github.com/systemd/systemd/issues/2691

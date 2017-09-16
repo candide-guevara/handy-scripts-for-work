@@ -107,7 +107,46 @@ class undo_all_custom (gdb.Command):
     gdb.pretty_printers = []
     gdb.frame_filters = {}
     gdb.prompt_hook = lambda p : "--------- GDB ----------\n "
+
 ### END undo_all_custom
+
+@gdb_command
+class rerun (gdb.Command):
+  """Kills current inferior, deletes all breakpoints, reloads binary, adds new breakpoint and reruns the exe.
+  [USAGE] rerun BREAKPT_DESC
+  """
+
+  def invoke (self, brpt_desc, from_tty):
+    exepath = gdb.current_progspace().filename
+    gdb.execute('kill', from_tty=False)
+    gdb.execute('delete breakpoints', from_tty=False)
+    gdb.execute('file ' + exepath, from_tty=False)
+    if brpt_desc:
+      gdb.execute('break ' + brpt_desc, from_tty=False)
+    gdb.execute('run', from_tty=False)
+    gdb.execute('list', from_tty=False)
+    gdb.execute('backtrace 5', from_tty=False)
+
+  def complete (self, text, word):
+    return gdb.COMPLETE_LOCATION
+
+### END rerun
+
+@gdb_command
+class info_all_hex (gdb.Command):
+  """Prints information from different sources, integers are in hexadecimal format
+  [USAGE] info_all_hex
+  """
+
+  def invoke (self, brpt_desc, from_tty):
+    try:
+      gdb.execute('set output-radix 16', from_tty=False)
+      gdb.execute('info args', from_tty=False)
+      gdb.execute('info locals', from_tty=False)
+    finally:
+      gdb.execute('set output-radix 10', from_tty=False)
+
+### END info_all_hex
 
 @gdb_command
 class hexdump (gdb.Command):

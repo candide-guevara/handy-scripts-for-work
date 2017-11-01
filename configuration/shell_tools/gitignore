@@ -2,6 +2,7 @@
 **/.pydevproject
 **/.cproject
 **/.settings
+**/.tags
 *.o
 *.os
 *.pyc

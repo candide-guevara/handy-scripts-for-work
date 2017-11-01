@@ -1,10 +1,12 @@
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
+ 
 set nocompatible
 colorscheme darkblue
 
 set ignorecase
 set complete=.,w,b,u,t
+set tags+=.tags
 
 " Indent options and tab width
 set autoindent
@@ -20,13 +22,19 @@ set showcmd
 
 " Buffer options
 set hidden
+ 
+" Source .vimrc on current directory
+set secure
+set exrc
 
-""""""""""""""
-" Mappings """
-""""""""""""""
+""""""""""""""""""""""""""""""""" Mapings """"""""""""""""""""""""""""""""""""""""""""
+
+let mapleader='-'
+let maplocalleader='-'
+nnoremap <Leader> <Nop>
+nnoremap <LocalLeader> <Nop>
+
 nnoremap <Space> <C-D>
-nnoremap <F1> wbyw
-nnoremap <F2> wb"_dwP
 nnoremap Y y$
 nnoremap gb :bn<CR>
 
@@ -41,12 +49,11 @@ nnoremap r "_r
 
 nnoremap u <C-u>
 nnoremap U u
-nnoremap <CR> o<Esc>
 nnoremap <Backspace> i<Backspace><Esc>l
 
 " The q letter just brings troubles
 nnoremap Q q
-nnoremap q <Esc>
+nnoremap q <Nop>
 
 " Normal paste respects indentation
 nnoremap p ]p
@@ -54,16 +61,232 @@ nnoremap P [P
 
 inoremap <C-a> <Home>
 inoremap <C-e> <End>
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
 
-" C-@ is a workaround to have autocompletion using same shortcut as eclipse
-inoremap <C-Space> <C-n>
+" Fixes problem of losing updates when inserting in block selection
+inoremap <C-c> <Esc>
+
+" Enter adds new line except for quickfix and file explorer
+nnoremap <CR> o<Esc>
+augroup my_enter_noremap
+  autocmd!
+  autocmd Filetype qf,netrw nnoremap <CR> <CR>
+augroup END
+
+" Somehow on my vim install when I type <Ctrl-Space> it triggers the <Ctrl-@> mapping !
 inoremap <C-@> <C-n>
-nnoremap <C-Space> cw<C-n>
 nnoremap <C-@> cw<C-n>
 
-cnoremap sss %s///gi<Home><right><right><right>
-cnoremap lll .s///gi<Home><right><right><right>
-cnoremap rrr .,.+s///gi<Home><right><right><right><right>
+""""""""""""""""""""""""""""""""" Leader Functions """"""""""""""""""""""""""""""""""""
+
+" call code formatter on the whole file
+nnoremap <Leader>fo gg=G
+" open file explorer on vertical split
+nnoremap <Leader>ex :Vexplore<cr>
+nnoremap <Leader>ch :call My_display_cheatsheet()<cr>
+
+nnoremap <Leader>gr :call My_grep_open_files('')<left><left>
+nnoremap <Leader>sn :call My_search_files_by_name('')<left><left>
+nnoremap <Leader>sc :call My_search_files_by_content('')<left><left>
+nnoremap <Leader>ta :call My_tags_list_quickfix('')<left><left>
+nnoremap <Leader>*  viw:<c-u>call My_count_word_occurences(My_get_visual_selection('escape'))<cr>
+
+cnoremap <Leader>s %s///gi<Home><right><right><right>
+cnoremap <Leader>l .s///gi<Home><right><right><right>
+
+""""""""""""""""""""""""""""""""" Cheatsheet     """""""""""""""""""""""""""""""""""""
+function! My_display_cheatsheet()
+  let l:message=[ '# Cheatsheet',
+  \'[Good reference](http://learnvimscriptthehardway.stevelosh.com/)',
+  \'',
+  \'## Moving around',
+  \'* `CTRL_i` | `CTRL_o` : next|previous cursor position',
+  \'* `gf` : goto file under cursor (only works if same dir)',
+  \'* `{` | `[{` | `(` : begin paragraph|code|sentence block',
+  \'* `}` | `]}` | `)` : end paragraph|code|sentence block',
+  \'',
+  \'## Yanking and selecting',
+  \'* `CTRL_r`+`CTRL_w` : in command mode, paste word under cursor',
+  \'* `viw` | `vip` | `vi{` | `vi"` : select word|paragraph|code block|quoted word under cursor',
+  \'* `aiw` | `aip` | `ai{` | `ai"` : as before bu include {," ...',
+  \'',
+  \'## Looking for tags',
+  \'* `CTRL_]` : jump to tag mathcing word under cursor',
+  \'* `g]` : display list of matching tags to word under cursor',
+  \'',
+  \'## Looking for tags',
+  \'* `CTRL_g` | `g CTRL_g` : display filepath|stats for current buffer',
+  \'',
+  \'## Custom mappings',
+  \'' ]
+
+  let l:leader_maps=My_get_key_mappings('^' . g:mapleader . '.')
+  let l:leader_maps_md=map(l:leader_maps, { ix, it -> '    ' . it['type'] . ' ' . it['key'] . '   ' . it['value'] })
+  belowright new
+  call append(0,l:leader_maps_md)
+  call append(0,l:message)
+  setlocal syntax=markdown
+  setlocal nomodifiable
+  setlocal nomodified
+  normal! gg
+endfunction
+
+function! My_get_key_mappings(pattern)
+  silent let l:mapping_blob=split(execute('map'), '\n')
+  let l:result_map=[]
+  for l:line in l:mapping_blob
+    let l:tokens=split(l:line)
+    let l:map_value=join(l:tokens[3:], ' ')
+    let l:single_map={ 'type':l:tokens[0], 'key':l:tokens[1], 'value':l:map_value }
+    call add(l:result_map, l:single_map)
+  endfor
+
+  call filter(l:result_map, { idx, item -> item['key'] =~? '\v' . a:pattern })
+  return l:result_map
+endfunction
+
+""""""""""""""""""""""""""""""""" Util functions """""""""""""""""""""""""""""""""""""
+
+function! My_list_open_files()
+  let l:file_list={}
+  for buf_item in getbufinfo()
+    if has_key(buf_item, 'name') && !(buf_item['name'] ==# '')
+      let l:file_list[buf_item['name']]=1
+    endif
+  endfor
+  return keys(l:file_list)
+endfunction
+
+function! My_get_visual_selection(do_escape)
+  let l:result=''
+  if visualmode() ==# 'v'
+    let l:push_register=@@
+    normal! `<v`>y
+    let l:result=@@
+    let @@=l:push_register
+  endif
+  if a:do_escape ==? 'escape'
+    let l:result=fnameescape( l:result )
+  endif
+  return l:result
+endfunction
+
+function! My_count_word_occurences(word)
+  let l:push_cursor=getpos('.')
+  let l:command='%s/' . a:word . '//gn'
+
+  silent let l:result=execute(l:command)
+  call setpos('.', l:push_cursor)
+  echom l:result
+endfunction
+
+function! My_to_escaped_shell_list(in_list)
+  return join( map(a:in_list, { key,val -> shellescape(val) }), ' ')
+endfunction
+
+function! My_to_escaped_vim_list(in_list)
+  return join( map(a:in_list, { key,val -> fnameescape(val) }), ' ')
+endfunction
+
+""""""""""""""""""""""""""""""""" Example Functions """""""""""""""""""""""""""""""""""
+
+"function! My_example_range() " :he func-range
+"  echom 'pos vim : ' . join(getpos('.'), ',')
+"  echom 'len vim : ' . len(getline(line('.')))
+"  echom 'line vim: ' . getline(line('.'))
+"  echom 'rnge vim: ' . a:firstline . '-' . a:lastline
+"endfunction
+"
+"function! My_example_py3eval()
+"  call My_example_range()
+"  " py3eval must return a string or number
+"  echom 'pos py  : ' . py3eval('repr(vim.current.window.cursor)')
+"  echom 'len py  : ' . py3eval('len(vim.current.line)')
+"  " it is trap ! cursor line starts from 1, cursor column starts at 0
+"  echom 'line py : ' . py3eval('vim.current.buffer[vim.current.window.cursor[0]]')
+"  echom 'rnge py : ' . py3eval('repr(vim.current.range)')
+"endfunction
+"
+"python3 << eof
+"def py_example_func(line, linenr):
+"  print('line arg : %r, linenr arg : %d' % (line, linenr))
+"  print('vim module : ', dir(vim))
+"  print('tab : %d, win : %d, buf : %s' % (
+"    vim.current.tabpage.number,
+"    vim.current.tabpage.window.number, # or vim.current.window
+"    vim.current.tabpage.window.buffer.name, # or vim.current.buffer
+"  ))
+"  print('range : [%d,%d], first line : %r' % (
+"    vim.current.range.start, vim.current.range.end,
+"    vim.current.range[0]
+"  ))
+"  vim_func = vim.Function('My_example_range')
+"  vim_func()
+"eof
+
+" it is trap ! :pydo is called once for EACH line by default (however the current line is constant) 
+"nnoremap <leader>py :.,.py3do py_example_func(line, linenr)
+
+""""""""""""""""""""""""""""""""" Search functions """"""""""""""""""""""""""""""""""""
+
+function! My_grep_open_files(pattern)
+  let l:file_list=My_to_escaped_shell_list( My_list_open_files() )
+  let l:command='grep --extended-regexp --ignore-case ''' . a:pattern . ''' ' . l:file_list
+
+  silent! execute(l:command)
+  redraw!
+  copen 
+endfunction
+
+function! My_vimgrep_open_files(pattern)
+  let l:file_list=My_to_escaped_vim_list( My_list_open_files() )
+  let l:command='noautocmd vimgrep /\c\v' . a:pattern . '/j ' . l:file_list
+
+  execute(l:command)
+  copen 
+endfunction
+
+function! My_tags_list_quickfix(pattern)
+  let l:push_errorformat=&errorformat
+  let l:matches=[]
+  silent! let l:result_list=taglist(a:pattern)
+
+  for l:match in l:result_list
+    if has_key(l:match, 'cmd') && has_key(l:match, 'filename')
+      call add(l:matches, l:match['filename'] . l:match['cmd'])
+    endif 
+  endfor
+
+  let &errorformat='%f/^%s$/'
+  cgetexpr l:matches
+  let &errorformat=l:push_errorformat
+  copen
+endfunction
+
+function! My_search_files_by_name(pattern)
+  let l:command='find . -iname ''' . a:pattern . ''' | head -n 100'
+  let l:push_errorformat=&errorformat
+  silent! let l:result_list=systemlist(l:command)
+
+  set errorformat=%f
+  cgetexpr l:result_list
+  let &errorformat=l:push_errorformat
+  copen
+endfunction
+
+function! My_search_files_by_content(pattern)
+  let l:command='grep --recursive --files-with-matches --line-number --binary-files=without-match --extended-regexp --ignore-case ''' . a:pattern . ''' . | head -n 100'
+  let l:push_errorformat=&errorformat
+  silent! let l:result_list=systemlist(l:command)
+
+  set errorformat=%f
+  cgetexpr l:result_list
+  let &errorformat=l:push_errorformat
+  copen
+endfunction
+
+""""""""""""""""""""""""""""""""" Plugin options """""""""""""""""""""""""""""""""""""
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -72,9 +295,75 @@ if &t_Co > 2 || has("gui_running")
   set hlsearch
 endif
 
-" Disable f**king ftp plugins that overwrite my vimrc (http://peox.net/articles/vimconfig.html)
-filetype plugin indent off
+" Disable f**king filetype plugins that overwrite my vimrc (http://peox.net/articles/vimconfig.html)
+filetype plugin off
+filetype indent off
 
 " Disable plugins selectively (http://vi.stackexchange.com/questions/4257/how-do-i-prevent-vim-from-loading-plugins-on-older-configurations)
 "let g:loaded_netrwPlugin = "no_thanks"
+
+" Better file explorer : https://shapeshed.com/vim-netrw/
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_winsize = 25
+
+""""""""""""""""""""""""""""""""" Language specific shortcuts """""""""""""""""""""""""
+
+function! My_add_once_pragma()
+  call append(0, ['#pragma once'])
+endfunction
+
+function! My_add_cpp_include()
+  let l:filename=expand('%:t:r')
+  let l:file_ext=expand('%:t')
+
+  if line2byte('$') <# 2 && !(l:filename =~? '\v^main$') && !(l:file_ext =~? '\v\.hp?p?$')
+    let l:headername=l:filename . '.h'
+    if l:file_ext =~? '\v\.cpp$'
+      let l:headername=l:filename . '.hpp'
+    endif
+    call append(0, ['#include <' . l:headername . '>'])
+  endif
+endfunction
+
+function! My_add_cpp_namespace(ns)
+  let l:ns_list=split(a:ns, '::')
+  call reverse(l:ns_list)
+  let l:ns_lines=[]
+
+  for ns_item in l:ns_list
+    call insert(l:ns_lines, 'namespace ' . ns_item . ' {', 0)
+    call add   (l:ns_lines, '} //' . ns_item)
+  endfor 
+  call append(line('.'), l:ns_lines)
+endfunction
+
+
+augroup my_c_header
+  autocmd!
+  autocmd BufNewFile *.h,*.hpp call My_add_once_pragma()
+augroup END
+ 
+augroup my_c_and_cpp
+  autocmd!
+  autocmd Filetype c,cpp call My_add_cpp_include()
+  autocmd Filetype c,cpp nnoremap <LocalLeader>ns :call My_add_cpp_namespace('')<left><left>
+augroup END
+
+""""""""""""""""""""""""""""""""" Code Formatting """""""""""""""""""""""""""""""""""""
+
+function! My_set_code_format_prg(file_type)
+  if a:file_type ==# 'c' && executable('clang-format') ==# 1
+    setlocal equalprg=clang-format
+  elseif a:file_type ==# 'python' && executable('yapf') ==# 1
+    setlocal equalprg=yapf
+  endif
+endfunction
+
+augroup my_lang_format
+  autocmd!
+  autocmd Filetype c,cpp call My_set_code_format_prg('c')
+  autocmd Filetype python call My_set_code_format_prg('python')
+augroup END
 

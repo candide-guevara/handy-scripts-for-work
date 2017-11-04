@@ -340,15 +340,12 @@ function! My_add_cpp_namespace(ns)
 endfunction
 
 
-augroup my_c_header
+augroup my_lang_spe_cmd
   autocmd!
   autocmd BufNewFile *.h,*.hpp call My_add_once_pragma()
-augroup END
- 
-augroup my_c_and_cpp
-  autocmd!
   autocmd Filetype c,cpp call My_add_cpp_include()
   autocmd Filetype c,cpp nnoremap <LocalLeader>ns :call My_add_cpp_namespace('')<left><left>
+  autocmd Filetype make setlocal noexpandtab
 augroup END
 
 """"""""""""""""""""""""""""""""" Code Formatting """""""""""""""""""""""""""""""""""""

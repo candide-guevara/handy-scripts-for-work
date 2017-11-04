@@ -286,6 +286,16 @@ vim_crypt() {
   )
 }
 
+## *USAGE : mydiff [FILE1 FILE2]
+## Diffs 2 files or stdin and pipes it to vim
+mydiff() {
+  if [[ $# == 0 ]]; then
+    dos2unix | vim -R -c "set syntax=diff" -
+  else
+    diff -u --ignore-all-space "$@" | dos2unix | vim -R -c "set syntax=diff" -
+  fi  
+}
+
 ## Prints some nice bash shortcuts that I tend to forget ...
 cheatsheat() {
   echo -e "### EDITING"

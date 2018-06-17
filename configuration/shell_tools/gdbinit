@@ -2,6 +2,7 @@ set history save
 set history file ~/.gdb_history
 # Use ! to perform command expansion like in the shell
 set history expansion 
+add-auto-load-safe-path ~/Programation
 
 define hook-quit
   set confirm off

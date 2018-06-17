@@ -27,10 +27,38 @@ if [[ $IS_BASH == 1 ]]; then
   export bkgwht='\e[47m'   # Background white
   export txtrst='\e[0m'    # Text Reset
 
+  export sed_txtblk=$'\e[0;30m' # Black
+  export sed_txtred=$'\e[0;31m' # Red
+  export sed_txtgrn=$'\e[0;32m' # Green
+  export sed_txtylw=$'\e[0;33m' # Yellow
+  export sed_txtblu=$'\e[0;34m' # Blue
+  export sed_txtpur=$'\e[0;35m' # Purple
+  export sed_txtcyn=$'\e[0;36m' # Cyan
+  export sed_txtwht=$'\e[0;37m' # White
+  export sed_bldblk=$'\e[1;30m' # Bold Black
+  export sed_bldred=$'\e[1;31m' # Bold Red
+  export sed_bldgrn=$'\e[1;32m' # Bold Green
+  export sed_bldylw=$'\e[1;33m' # Bold Yellow
+  export sed_bldblu=$'\e[1;34m' # Bold Blue
+  export sed_bldpur=$'\e[1;35m' # Bold Purple
+  export sed_bldcyn=$'\e[1;36m' # Bold Cyan
+  export sed_bldwht=$'\e[1;37m' # Bold White
+  export sed_bkgred=$'\e[41m'   # Background red
+  export sed_bkggrn=$'\e[42m'   # Background green
+  export sed_bkgylw=$'\e[43m'   # Background yellow
+  export sed_bkgblu=$'\e[44m'   # Background blue
+  export sed_bkgpur=$'\e[45m'   # Background purple
+  export sed_bkgcyn=$'\e[46m'   # Background purple
+  export sed_bkgwht=$'\e[47m'   # Background white
+  export sed_txtrst=$'\e[0m'    # Text Reset
+
   # When using zsh the prompt is set in zshellmisc
+  # We change prompt color for root account
   if [[ `id -u` == "0" ]]; then
-    # We change prompt color for root account
     export PS1="${bldred}\u@\h : \w\$${txtrst}\n  "
+  # We change prompt if connected from ssh
+  elif [[ -n "$SSH_CONNECTION" ]] || [[ -n "$SSH_CLIENT" ]]; then
+    export PS1="${bldgrn}\u@\h : \w\$${txtrst}\n  "
   else
     export PS1="${bldblu}\u@\h : \w\$${txtrst}\n  "
   fi

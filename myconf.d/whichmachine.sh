@@ -48,18 +48,20 @@ export_win_temp_dir() {
   local drive=""
   local temp_dir=""
 
-  [[ -d /c ]] && drive=c
   [[ -d /d ]] && drive=d
-  [[ -d /f ]] && drive=f
+  [[ -d /c ]] && drive=c
+  [[ -d /e ]] && drive=f
+  [[ -d /f ]] && drive=e
   [[ -d "/$drive/tmp" ]] &&  temp_dir="/$drive/tmp"
   [[ -d "/$drive/temp" ]] && temp_dir="/$drive/temp"
 
-  if [[ -d "$temp_dir" ]]; then
-    export TEMP="$temp_dir"
-    export TMP="$temp_dir"
-  else
-    echo "[ERROR] Failed to find temp dir @ '$temp_dir' !!"
+  if [[ ! -d "$temp_dir" ]]; then
+    temp_dir="/$drive/temp"
+    echo "[WARN] Creating temp dir @ '$temp_dir' !!"
+    mkdir "$temp_dir"
   fi
+  export TEMP="$temp_dir"
+  export TMP="$temp_dir"
 }
 
 # Shared env variables for all machine types (default values)
@@ -74,13 +76,7 @@ if [[ $machinename == LU* ]]; then
 elif [[ $machinename == BNX* ]]; then
   export IS_BLOOMBERG=1
   export IS_BLOOM_BNX_NODE=1
-elif [[ $machinename == arngrim* ]]; then
-  export IS_HOME=1
-  export MY_SSH_KEY=arngrim_id_rsa
-elif [[ $machinename == llewelyn* ]]; then
-  export IS_HOME=1
-  export MY_SSH_KEY=llewelyn_id_rsa
-elif [[ $machinename == badrach* ]]; then
+elif [[ $machinename == arngrim* ]] || [[ $machinename == llewelyn* ]] || [[ $machinename == badrach* ]] || [[ $machinename == jelanda* ]]; then
   export IS_HOME=1
 else
   echo "[ERROR] Cannot find the machine type !!!"

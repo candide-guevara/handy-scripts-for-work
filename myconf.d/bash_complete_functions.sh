@@ -1,8 +1,10 @@
 #! /bin/bash
 ## Custom autocompletion options for shell commands. See also bash_settings.sh
 
-COMP_BTRFS_CMD=( `btrfs --help | sed -rn 's/^[[:space:]]*btrfs[[:space:]]*//p' | cut -d" " -f1 | sort -u` )
-COMP_BTRFS_SUBCMD=( `btrfs --help | sed -rn 's/\[[^]]+\]//g ; s/^[[:space:]]*btrfs[[:space:]]*//p' | cut -d" " --output-delimiter "::" -f1,2` )
+if command -v btrfs > /dev/null; then
+  COMP_BTRFS_CMD=( `btrfs --help | sed -rn 's/^[[:space:]]*btrfs[[:space:]]*//p' | cut -d" " -f1 | sort -u` )
+  COMP_BTRFS_SUBCMD=( `btrfs --help | sed -rn 's/\[[^]]+\]//g ; s/^[[:space:]]*btrfs[[:space:]]*//p' | cut -d" " --output-delimiter "::" -f1,2` )
+fi
 
 ## *USAGE : _btrfs_completion CMD CURRENT PREVIOUS
 ## Bash completion (see man) function for btrfs user tools

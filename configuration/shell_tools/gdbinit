@@ -20,7 +20,7 @@ define hookpost-help
   python print_color(" >> Type cheatsheet for a BADASS help !!", bldred)
 end  
 document hookpost-help
-  Just reming you there is a cheatsheet
+  Just reminding you there is a cheatsheet
 end  
 
 python

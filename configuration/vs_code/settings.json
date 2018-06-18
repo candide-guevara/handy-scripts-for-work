@@ -1,0 +1,62 @@
+{
+    "workbench.activityBar.visible": false,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.autoClosingBrackets": false,
+    "editor.renderIndentGuides": false,
+    "editor.minimap.enabled": false,
+    "explorer.confirmDelete": false,
+    "csharp.referencesCodeLens.enabled": false,
+
+    "files.exclude": {
+        "bin" : true,
+        "obj" : true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true
+    },
+
+    "git.ignoreLegacyWarning": true,
+    "git.autorefresh": false,
+    "git.enabled": false,
+
+    "vim.leader": "-",
+    "vim.visualstar": true,
+    "vim.hlsearch": true,
+    "vim.textwidth": 120,
+    "vim.handleKeys": {
+    },
+    "vim.insertModeKeyBindingsNonRecursive": [
+    ],
+    "vim.otherModesKeyBindingsNonRecursive": [
+        { "before": ["<Space>"], "after": ["<C-d>"], },
+        { "before": ["u"], "after": ["<C-u>"], },
+        { "before": ["U"], "after": ["u"], },
+        { "before": ["leader"], "after": ["<Nop>"], },
+        { "before": ["q"], "after": ["<Nop>"], },
+        { "before": ["Q"], "after": ["<Nop>"], },
+        { "before": ["Y"], "after": ["y","$"], },
+        { "before": ["r"], "after": ["\"", "_", "r"], },
+        { "before": ["x"], "after": ["\"", "_", "x"], },
+        { "before": ["D"], "after": ["\"", "_", "D"], },
+        { "before": ["<CR>"], "after": ["o","<Esc>"], }, 
+
+        /* broken
+        { "before": ["<C-a>"], "after": ["<Home>"], }, 
+        { "before": ["leader", "s"], 
+            "commands": [{"command":":%s/after//gn"}]
+        }, 
+        { "before": ["C"], "after": ["\"", "_", "C"], },
+        */
+    ],
+
+    /* for windows
+    "terminal.integrated.shell.windows": "C:\\Users\\cguevaramari\\software\\PortableGit\\bin\\sh.exe",
+    "terminal.integrated.shellArgs.windows": [
+        "--login",
+        "-i"
+    ],
+    "terminal.integrated.fontSize": 16,
+    */
+}

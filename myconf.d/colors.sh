@@ -1,7 +1,33 @@
 ## Defines some variables for color escape sequences
 ## Also has some utility functions to print in color
 
-if [[ $IS_BASH == 1 ]]; then 
+if [[ $IS_BLOOM_MAC == 1 ]]; then 
+  export txtblk=$'\e[0;30m' # Black
+  export txtred=$'\e[0;31m' # Red
+  export txtgrn=$'\e[0;32m' # Green
+  export txtylw=$'\e[0;33m' # Yellow
+  export txtblu=$'\e[0;34m' # Blue
+  export txtpur=$'\e[0;35m' # Purple
+  export txtcyn=$'\e[0;36m' # Cyan
+  export txtwht=$'\e[0;37m' # White
+  export bldblk=$'\e[1;30m' # Bold Black
+  export bldred=$'\e[1;31m' # Bold Red
+  export bldgrn=$'\e[1;32m' # Bold Green
+  export bldylw=$'\e[1;33m' # Bold Yellow
+  export bldblu=$'\e[1;34m' # Bold Blue
+  export bldpur=$'\e[1;35m' # Bold Purple
+  export bldcyn=$'\e[1;36m' # Bold Cyan
+  export bldwht=$'\e[1;37m' # Bold White
+  export bkgred=$'\e[41m'   # Background red
+  export bkggrn=$'\e[42m'   # Background green
+  export bkgylw=$'\e[43m'   # Background yellow
+  export bkgblu=$'\e[44m'   # Background blue
+  export bkgpur=$'\e[45m'   # Background purple
+  export bkgcyn=$'\e[46m'   # Background purple
+  export bkgwht=$'\e[47m'   # Background white
+  export txtrst=$'\e[0m'    # Text Reset
+
+elif [[ $IS_BASH == 1 ]]; then 
   export txtblk='\e[0;30m' # Black
   export txtred='\e[0;31m' # Red
   export txtgrn='\e[0;32m' # Green
@@ -26,7 +52,9 @@ if [[ $IS_BASH == 1 ]]; then
   export bkgcyn='\e[46m'   # Background purple
   export bkgwht='\e[47m'   # Background white
   export txtrst='\e[0m'    # Text Reset
+fi
 
+if [[ $IS_BASH == 1 ]]; then 
   export sed_txtblk=$'\e[0;30m' # Black
   export sed_txtred=$'\e[0;31m' # Red
   export sed_txtgrn=$'\e[0;32m' # Green
@@ -56,8 +84,8 @@ if [[ $IS_BASH == 1 ]]; then
   # We change prompt color for root account
   if [[ `id -u` == "0" ]]; then
     export PS1="${bldred}\u@\h : \w\$${txtrst}\n  "
-  # We change prompt if connected from ssh
   elif [[ -n "$SSH_CONNECTION" ]] || [[ -n "$SSH_CLIENT" ]]; then
+    # We change prompt color for unix machines
     export PS1="${bldgrn}\u@\h : \w\$${txtrst}\n  "
   else
     export PS1="${bldblu}\u@\h : \w\$${txtrst}\n  "

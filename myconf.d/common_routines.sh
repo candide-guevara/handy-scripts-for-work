@@ -17,12 +17,12 @@ mll() {
 
 # Some scripts in the office may break unless we do this
 alias ls='ls --color=always -C'
-if [[ $IS_BASH == 1 && $IS_HOME == 1 ]]; then
-  alias ls='ls --color=always -C'
+if [[ "$IS_BLOOM_MAC" == 1 ]]; then
+  alias ls='ls -GC'
+  alias ll='ls -lhG'
+elif [[ ("$IS_HOME" == 1 && "$IS_BASH" == 1) || "$IS_MSYS" == 1 ]]; then
   alias ll='ls -l --group-directories-first --human-readable --time-style=iso --no-group'
-elif [[ $IS_HOME == 1 ]]; then
-  alias ll='ls -l --color=always --human-readable --time-style=iso --no-group'
-elif [[ $IS_UNIX == 1 ]] || [[ $IS_MSYS == 1 ]]; then
+elif [[ "$IS_BLOOM_UNIX" == 1 || "$IS_UNIX" == 1 ]]; then
   alias ll='ls -l --color=always --human-readable --time-style=iso --no-group'
 elif [[ -z $IS_BLOOM_BNX_NODE ]]; then
   alias ll='ls -l --color=always --human-readable --no-group'
@@ -37,8 +37,8 @@ alias lll='ll | less'
 alias la='ll -A'
 alias lla='ll -A | less'
 
-alias mps='ps -ef | mgrep'
-alias menv='env | sort | mgrep'
+alias mps='ps -ef | grep -i'
+alias menv='env | sort | grep -i'
 
 alias ..='cd ..; ls'
 alias .2='cd ..; cd ..; ls'
@@ -64,7 +64,9 @@ mll() {
 ## Does NOT follow symlinks. If ROOT_DIR is not specified, the current dir will be used
 mfind() {
   colecho $bldylw "Errors are redirected to /dev/null"
-  if [[ $IS_HOME == 1 ]] || [[ $IS_UNIX == 1 ]] || [[ $IS_MSYS == 1 ]]; then
+  if [[ $IS_BLOOM_MAC == 1 ]]; then
+    find . -iname "*$1*" 2> /dev/null
+  elif [[ "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
     find -P $2 -maxdepth 9 -iname "*$1*" 2> /dev/null
   else
     find $2 -maxdepth 9 -iname "*$1*" 2> /dev/null
@@ -76,7 +78,7 @@ mfind() {
 function rgrep() {
   colecho $bldylw "Errors are redirected to /dev/null"
   grep_cmd=( grep --recursive --with-filename --line-number --binary-files=without-match --extended-regexp --ignore-case )
-  if [[ $IS_HOME == 1 ]] || [[ $IS_UNIX == 1 ]] || [[ $IS_MSYS == 1 ]]; then
+  if [[ "$IS_BLOOM_MAC" == 1 || "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
     grep_cmd=( "${grep_cmd[@]}" --color=always )
   fi
   ${grep_cmd[@]} "$@" * 2> /dev/null
@@ -90,7 +92,8 @@ mgrep() {
   local pattern="$1"
   shift
 
-  if [[ $IS_HOME == 1 ]] || [[ $IS_UNIX == 1 ]] || [[ $IS_MSYS == 1 ]]; then
+  # zgrep for sun machines is not good !
+  if [[ "$IS_BLOOM_MAC" == 1 || "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
     grep_cmd=( zgrep --color=always --line-number --binary-files=without-match --extended-regexp --ignore-case )
   else
     grep_cmd=( grep --line-number --binary-files=without-match --extended-regexp --ignore-case )
@@ -143,9 +146,8 @@ run_cmd() {
       ;;
       r) 
         shift ; shift
-        local psexec="$MY_ROOT_SOFT/psexec.exe"
         colecho $txtcyn "Running: $@"
-        "$psexec" '\\'"$OPTARG" "$@"
+        __run_rem__ "$OPTARG" "$@"
         return $?
       ;;  
       l) 
@@ -193,6 +195,16 @@ conf_source() {
   source $HOME/.bashrc
 }
 
+## *USAGE : mydiff [FILE1 FILE2]
+## Diffs 2 files or stdin and pipes it to vim
+mydiff() {
+  if [[ $# == 0 ]]; then
+    dos2unix | vim -R -c "set syntax=diff" -
+  else
+    diff -u --ignore-all-space "$@" | dos2unix | vim -R -c "set syntax=diff" -
+  fi  
+}
+
 ## *USAGE : insert_bytes FILE OFFSET BYTES
 ## Inserts bytes into file at OFFSET. BYTES is a string of escape hex numbers (ex '\x0a\xdd')
 insert_bytes() {
@@ -218,14 +230,18 @@ change_strings() {
     local pattern="${1:-XXXXXXXXX}"
     local change="${2}"
     echo "Touching files `grep -rIEl "$pattern" *`"
+
     grep -rIElZ "$pattern" * 2> /dev/null | \
       grep -Zzv ".svn"                    | \
       xargs -r0 sed -r "s/$pattern/$change/g" | less
 
     pattern=`echo "$pattern" | sed -r 's/\\\/\\\\\\\\/g'`
     change=`echo "$change"   | sed -r 's/\\\/\\\\\\\\/g'`
+    local final_cmd=( grep -rIElZ "'$pattern'" "*" "2>" /dev/null "|" grep -Zzv "'.svn'" "|" xargs -r0 sed -ri "'s/$pattern/$change/g'" )
+
     echo "Do it for real :"
-    colecho $bldgrn "  grep -rIElZ '$pattern' * 2> /dev/null | grep -Zzv '.svn' | xargs -r0 sed -ri 's/$pattern/$change/g'"
+    colecho $bldgrn "${final_cmd[@]}"
+    history -s "${final_cmd[@]}"
 }
 
 ## *USAGE : delete_all_dirs [-f] PATTERN_TO_DELETE 

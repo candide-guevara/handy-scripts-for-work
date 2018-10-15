@@ -1,7 +1,7 @@
 {
     "workbench.activityBar.visible": false,
     "editor.acceptSuggestionOnCommitCharacter": false,
-    "editor.autoClosingBrackets": false,
+    "editor.autoClosingBrackets": "never",
     "editor.renderIndentGuides": false,
     "editor.minimap.enabled": false,
     "explorer.confirmDelete": false,
@@ -26,13 +26,22 @@
     "vim.hlsearch": true,
     "vim.textwidth": 120,
     "vim.handleKeys": {
+        "<C-d>": true,
+        "<C-f>": true,
+        "<C-u>": true,
+        "<C-k>": false,
+        "<C-w>": false,
+        "<C-y>": false,
+        "<C-z>": false,
+        /* broken
+        */
     },
     "vim.insertModeKeyBindingsNonRecursive": [
     ],
-    "vim.otherModesKeyBindingsNonRecursive": [
+    "vim.normalModeKeyBindingsNonRecursive": [
         { "before": ["<Space>"], "after": ["<C-d>"], },
+        { "before": ["U"], "after": ["<Nop>"], },
         { "before": ["u"], "after": ["<C-u>"], },
-        { "before": ["U"], "after": ["u"], },
         { "before": ["leader"], "after": ["<Nop>"], },
         { "before": ["q"], "after": ["<Nop>"], },
         { "before": ["Q"], "after": ["<Nop>"], },
@@ -44,6 +53,7 @@
 
         /* broken
         { "before": ["<C-a>"], "after": ["<Home>"], }, 
+        { "before": ["U"], "after": ["u"], },
         { "before": ["leader", "s"], 
             "commands": [{"command":":%s/after//gn"}]
         }, 

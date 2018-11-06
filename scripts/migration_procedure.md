@@ -64,6 +64,7 @@
   * Manually write to /sys/block/sdX/queue/scheduler or use [udev][2]
 * Set no access modification time on mount options
   * `noatime,nodiratime` but easier to adapt fstab template in this repo
+* If using LVM restrict device scanning by setting filter patterns on `/etc/lvm/lvm.conf`
 * Use `hdparm -I  --dco-identify /dev/sd?` to query (or change if supported) the advanced power mgt and acoustic mgt 
 * Blacklist modules (/etc/modprobe.d/<name>.conf) : pcspkr
 * Set the [dirty_ratio][7] `/proc/sys/vim` for virtual memory with [sysctl][6]
@@ -73,7 +74,7 @@
   * Enable bpf jit for [seccomp][27] filter by writing "1" to /proc/sys/net/core/bpf\_jit\_enable
   * Enable [transparent huge pages][23] write `always` to `/sys/kernel/mm/transparent_hugepage`
 
-* Use `systemctl analyse blame` to check [boot bottle necks][21]
+* Use `systemd-analyse blame` to check [boot bottle necks][21]
 
 ### Xorg, Graphics card drivers
 
@@ -106,7 +107,7 @@
 * Add keyboard layout : map=us, layout=english(us), variant="alternative, international"
 * Set the machine name on /etc/hostname
 * Set a public DNS on network manager, you need to create a new connection profile and **drop the default one**
-  * Test using `dig +trace www.google.com`, check `/etc/resolv.conf` too
+  * Test using `dig +trace www.google.com`, check `/etc/resolv.conf` too    
   * Use `ethtool` to validate autonegotiation is active => otherwise we may have a slow connection
   * If connection slow try removing and reloading network kernel module (`alx`)
 * Disable unneeded systemd units 
@@ -114,8 +115,9 @@
   * mask `sshd`
 * Put user [~/.cache][13] into tmpfs
   * Check `/tmp` is also under tmpfs
-* Activate [numlock][19] on boot for tty + xorg session manager (kde => sddm)
-  * Option using numlockx on Xsetup is more reliable
+* Activate [numlock][19] on boot for tty 
+  * Activate for xorg session manager (kde => sddm) with kde gui
+  * If fails, option using numlockx on Xsetup is more reliable
 * If you are using ccache, change the default cache directory to a tmpfs location (see ccache man's page)    
 * Configure pulse audio options (cf `man pulse-daemon.conf`)
   * Change [sample depth and rate][25] (default and alternate), chose soxr-vhq for resampling
@@ -126,7 +128,8 @@
 
 ### Notebook specific tweaks
 
-* [backlight adjust][28] either directly on /sys, using udev, or systemd
+* [backlight adjust][28] with `man tmpfiles.d`
+  * you need to mask systemd backlight service
 * settings in `/etc/default/tlp` and check it is working by unplugging power and check settings have changed
 
 ### Software packages

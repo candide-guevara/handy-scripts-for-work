@@ -72,9 +72,17 @@
 * Use `man tmpfiles.d` to set some configuration
   * Enable performance [cpufreq][26] governor by writing "performance" to /sys/devices/system/cpu/cpu\*/cpufreq/scaling\_governor
   * Enable bpf jit for [seccomp][27] filter by writing "1" to /proc/sys/net/core/bpf\_jit\_enable
-  * Enable [transparent huge pages][23] write `always` to `/sys/kernel/mm/transparent_hugepage`
 
-* Use `systemd-analyse blame` to check [boot bottle necks][21]
+### [Huge pages][39]
+
+* Install libhugetlbfs package
+* Mask default hugepage mountpoint (not accessible to user) `systemctl mask dev-hugepages.mount`
+* Use `man tmpfiles.d` to set `/sys/kernel/mm/transparent_hugepage/*enabled`
+* Install [custom service unit][40] to configure hugepages at boot
+  * Check : `mount | grep huge ; grep thp /proc/vmstat ; grep -i huge /proc/meminfo ; cat /proc/sys/vm/hugetlb_shm_group`
+  * Alternative method using : `find /sys/kernel/mm/transparent_hugepage /sys/kernel/mm/hugepages -type f -print0 | xargs -0tL1 cat`
+
+* Use `systemd-analyze && systemd-analyze blame` to check [boot bottle necks][21]
 
 ### Xorg, Graphics card drivers
 
@@ -122,6 +130,7 @@
 * Configure pulse audio options (cf `man pulse-daemon.conf`)
   * Change [sample depth and rate][25] (default and alternate), chose soxr-vhq for resampling
   * Do not load useless modules (filters, bluetooth ...) in `~/.config/pulse/default.pa`
+  * Avoid annoying pops by [unloading suspend mod][38], check module was not loaded with `pacmd ls`
   * If using external amplifier you can blacklist all onboard-sound kernel modules (like `snd_hda_intel`) in `/etc/modprobe.d`
   * Disable alsa restore udev rule by creating the relevant symlink to `/dev/null` in `/etc/udev/rules.d`
   * Use `pactl list` to check options are setup ok
@@ -143,6 +152,7 @@
 * Activate hardware sensors : install `lm_sensors` and run `sensors-detect` (will active systemd unit)
 * Restore virtual machines disk images to ssd storage
 * Create `.config/chromium-flags.conf` to [disable kwallet][33] integration and speedup start
+  * You can also enable [hardware acceleration][37] on chrome
 * Install [retroarch][34] and reate `~/.config/retroarch/retroarch.cfg`
   * Use online updater to get **assets** to have icons
 
@@ -216,4 +226,9 @@ Do this at the end since it may take into account any blacklisted modules
 [34]: https://wiki.archlinux.org/index.php/RetroArch#Configuration
 [35]: http://download.nvidia.com/XFree86/Linux-x86_64/396.54/README/xconfigoptions.html
 [36]: https://wiki.archlinux.org/index.php/NVIDIA/Tips_and_tricks#Manual_configuration
+[37]: https://wiki.archlinux.org/index.php/chromium#Force_GPU_acceleration
+[38]: https://wiki.archlinux.org/index.php/PulseAudio/Troubleshooting#Pops_when_starting_and_stopping_playback
+[39]: https://lwn.net/Articles/376606/
+[40]: ../configuration/shell_tools/huge_pages.service
+[41]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 

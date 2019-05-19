@@ -14,6 +14,14 @@ start_sshd() {
   run_cmd ${check_cmd[@]}
 }
 
+## *USAGE: launch_steam
+## Launches steam inside a systemd unit to contain all of its sneaky child processes
+launch_steam() {
+  local name=mysteam
+  systemd-run --unit=$name --collect --nice=1 --user --no-ask-password --quiet --no-block steam
+  colecho $txtcyn "Kill all steam processes with : systemctl --user stop $name"
+}
+
 ## *USAGE: backup_cp SOURCE TARGET
 ## Copies SOURCE into TARGET/SOURCE_date, calculates and checks md5 sums
 backup_cp() {
@@ -51,8 +59,13 @@ backup_home() {
   pushd "$1"
   run_cmd cp -TrxPu "$HOME" ./ || return 1
   run_cmd rm -r .cache .thumbnails
-  run_cmd rm -r .nuget .dotnet
-  run_cmd rm -r .config/retroarch/*/ .config/google-chrome
+  run_cmd rm -r .nuget .dotnet .templateengine .vscode/extensions
+  run_cmd rm -r .mono .gem .gnupg .jak .mozilla 
+  run_cmd rm -r .config/google-chrome .config/chromium .config/Code
+  run_cmd mkdir .config/__retroarch .__spring
+  run_cmd cp -r .config/retroarch/retroarch.cfg .config/retroarch/config .config/__retroarch
+  run_cmd cp -r .spring/springsettings.cfg .__spring
+  run_cmd rm -r .config/retroarch .spring
   run_cmd rm -r RetroArch Scripts
   run_cmd rm -r .local/share/baloo .local/share/akonadi
   run_cmd rm -r ./.aws/shell/cache/ ./.aws/shell/*completions.json.docs

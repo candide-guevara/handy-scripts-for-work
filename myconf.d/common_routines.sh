@@ -187,22 +187,12 @@ conf_source() {
   unset BASHPROFILE_ALREADY_SOURCED
   pushd "$MY_ROOT_SRC/handy-scripts-for-work"
   my_assert -f install.sh
-  install.sh -i
+  bash ./install.sh -i
   popd
   my_assert -d $MY_ROOT_CONF_DIR
   [[ -z $1 ]] || vim -p $MY_ROOT_CONF_DIR/*.sh
   my_assert -e $HOME/.bashrc
   source $HOME/.bashrc
-}
-
-## *USAGE : mydiff [FILE1 FILE2]
-## Diffs 2 files or stdin and pipes it to vim
-mydiff() {
-  if [[ $# == 0 ]]; then
-    dos2unix | vim -R -c "set syntax=diff" -
-  else
-    diff -u --ignore-all-space "$@" | dos2unix | vim -R -c "set syntax=diff" -
-  fi  
 }
 
 ## *USAGE : insert_bytes FILE OFFSET BYTES
@@ -294,10 +284,13 @@ vim_crypt() {
 ## *USAGE : mydiff [FILE1 FILE2]
 ## Diffs 2 files or stdin and pipes it to vim
 mydiff() {
+  local filter=cat
+  [[ -z "$IS_WINDOWS" ]] || filter=dos2unix
+  which "$filter" 2> /dev/null || return 1
   if [[ $# == 0 ]]; then
-    dos2unix | vim -R -c "set syntax=diff" -
+    "$filter" | vim -R -c "set syntax=diff" -
   else
-    diff -u --ignore-all-space "$@" | dos2unix | vim -R -c "set syntax=diff" -
+    diff -u --ignore-all-space "$@" | "$filter" | vim -R -c "set syntax=diff" -
   fi  
 }
 

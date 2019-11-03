@@ -90,7 +90,7 @@
 * [Install propietary][20] gpu kernel modules, xorg drivers
   * Nvidia cards use the [VDPAU API for video decoding][30] : use `vdpauinfo` to see it is accessible
   * Intel cards use VAAPI : it can be emulated by `libva-vdpau`, use `vainfo` to see it is accessible
-* Check GPU acceleration `glxinfo | grep direct` and `vblank_mode=0 glxgears` (last result 23000 FPS)
+* Check GPU acceleration `glxinfo | grep direct` and `__GL_SYNC_TO_VBLANK=0 vblank_mode=0 glxgears` (last result 23000 FPS)
 * Go to `/etc/X11/xorg.conf.d/*` and check for overconfigured files -> leave a [minimal gpu config][36] with ["IgnoreDisplayDevices" option][35]
 * If HDMI does not work on QHD : (still not sure of instructions)
   * plug using displayport and hdmi
@@ -119,8 +119,11 @@
   * Use `ethtool` to validate autonegotiation is active => otherwise we may have a slow connection
   * If connection slow try removing and reloading network kernel module (`alx`)
 * Disable unneeded systemd units 
-  * disable firewalld, sssd, auditd, bluetooth, avahi-daemon (service and socket)
-  * mask `sshd`
+  * disable iptables, ip6tables, firewalld, sssd(NOT a typo), sshd (service), auditd, bluetooth, avahi-daemon (service and socket)
+  * mask sshd@, sshd.socket
+* Make sshd a bit more secure
+  * create iptable rules to only allow ssh connection from home network in `/etc/iptables/(ip|ip6)tables.rules`
+  * tweak the sshd.service unit to depend on [systemd-iptables][8] so that iptable kernel module is only loaded when opening sshd
 * Put user [~/.cache][13] into tmpfs
   * Check `/tmp` is also under tmpfs
 * Activate [numlock][19] on boot for tty 
@@ -199,6 +202,7 @@ Do this at the end since it may take into account any blacklisted modules
 [5]: https://wiki.archlinux.org/index.php/Btrfs#Scrub
 [6]: https://wiki.archlinux.org/index.php/Sysctl#Virtual_memory
 [7]: http://lwn.net/Articles/572911/
+[8]: https://wiki.archlinux.org/index.php/iptables#Configuration_and_usage
 [9]: https://wiki.archlinux.org/index.php/Systemd#Temporary_files
 [10]: http://rpmfusion.org/Configuration
 [11]: https://www.google.com/chrome/browser/desktop/index.html

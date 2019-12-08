@@ -1,0 +1,12 @@
+# Cf doc in mysteam.service unit file
+
+[Unit]
+Description=mysteam_popup.timer
+# will stop the timer if steam closes before expiration
+PartOf=mysteam.service
+
+[Timer]
+OnActiveSec=7200s
+#AccuracySec=1s
+RemainAfterElapse=no
+

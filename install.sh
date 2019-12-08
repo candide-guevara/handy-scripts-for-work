@@ -12,12 +12,13 @@ KV_TO_COPY=(
   "configuration/shell_tools/gdb_prompt_and_help.py:$HOME/.myconf.d"
 
   "configuration/shell_tools/pythonrc.py:$HOME/.myconf.d"
+  "configuration/kde4_conf/mysteam.desktop:$HOME/.local/share/applications"
 )
-DIRS_TO_COPY=( 
+DIRS_TO_COPY=(
   "myconf.d:$HOME/.myconf.d"
-  "scripts:$HOME/Scripts"
+  "configuration/systemd_user:$HOME/.config/systemd/user"
 )
-FILES_TO_COPY=( 
+FILES_TO_COPY=(
   "myconf.d/bashrc"
 
   "configuration/shell_tools/inputrc"
@@ -26,7 +27,7 @@ FILES_TO_COPY=(
   "configuration/shell_tools/gdbinit" 
   "configuration/shell_tools/hgrc"
 )
-DIRS_TO_CREATE=( "$HOME/.myconf.d" )
+DIRS_TO_WIPE=( "$HOME/.myconf.d" )
 
 main_install "$@"
 echo "ALL DONE !!"

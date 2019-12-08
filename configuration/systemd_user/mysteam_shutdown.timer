@@ -1,0 +1,13 @@
+# Cf doc in mysteam.service unit file
+
+[Unit]
+Description=mysteam_shutdown.timer
+# will stop the timer if steam closes before expiration
+PartOf=mysteam.service
+
+[Timer]
+OnActiveSec=7230s
+#AccuracySec=1s
+RemainAfterElapse=no
+
+

@@ -1,0 +1,10 @@
+# Cf doc in mysteam.service unit file
+
+[Unit]
+Description=mysteam_popup
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo "shutting at `date "+%%D %%H:%%M:%%S"`" >> /tmp/mysteam.log'
+ExecStart=systemctl --user stop mysteam
+

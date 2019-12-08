@@ -1,0 +1,21 @@
+# Launches steam inside a systemd unit.
+# Useful to clean all of its sneaky child processes when the unit is stopped.
+# Additionally it will auto shutdown itself after a set delay.
+#
+# The implementation of shutdown relies on systemd timers.
+# * mysteam will start timers mysteam_poppup and mysteam_shutdown
+# * mysteam_poppup.timer activates mysteam_poppup.service which issues a warning to save progress
+# * mysteam_shutdown.timer activates mysteam_shutdown.service to stop mysteam.service
+
+[Unit]
+Description=mysteam
+Requires=mysteam_shutdown.timer
+Requires=mysteam_popup.timer
+Nice=1
+
+[Service]
+#Type=oneshot
+ExecStartPre=/bin/bash -c 'echo "started at `date "+%%D %%H:%%M:%%S"`" >> /tmp/mysteam.log'
+ExecStart=steam
+ExecStopPost=/bin/bash -c 'echo "stopped at `date "+%%D %%H:%%M:%%S"`" >> /tmp/mysteam.log'
+

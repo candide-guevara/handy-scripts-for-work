@@ -14,9 +14,10 @@ test_is_windows() {
   return 1
 }
 
-create_dirs() {
-  for dir in "${DIRS_TO_CREATE[@]}"; do
-    [[ -e "$dir" ]] || run_cmd mkdir -p "$dir"
+wipe_dirs() {
+  for dir in "${DIRS_TO_WIPE[@]}"; do
+    [[ -e "$dir" ]] && run_cmd rm -r "$dir"
+    run_cmd mkdir -p "$dir"
   done
 }
 
@@ -47,8 +48,11 @@ install_files() {
     local src="${kv%%:*}"
     local dest="${kv#*:}"
     [[ -d "$src" ]] || exit 1
-    [[ -d "$dest" ]] && run_cmd rm -r "$dest"
-    run_cmd cp --no-dereference --one-file-system --recursive "$src" "$dest"
+    [[ -f "$dest" ]] && run_cmd rm "$dest"
+    # Note the trailing '/'
+    # It is used to copy the contents of $src **directly** inside $dest if it exists
+    # Example: coucou/*.txt -> salut/*.txt (NOT salut/coucou/*.txt)
+    run_cmd rsync --links --one-file-system --recursive "$src/" "$dest"
   done
 
   for kv in "${KV_TO_COPY[@]}"; do
@@ -62,6 +66,9 @@ install_files() {
     [[ -f "$file" ]] || exit 1
     run_cmd cp --no-dereference --one-file-system --no-target-directory "$file" "$HOME/.`basename $file`"
   done
+
+  # reload systemd units if they changed
+  systemctl --user daemon-reload
 }
 
 diff_files() {
@@ -101,8 +108,8 @@ diff_files() {
 main_install() {
   while getopts 'ivscd' opt; do
     case $opt in
-      i) create_dirs && install_files && install_vim ;;
-      s) create_dirs && install_ssh ;;
+      i) wipe_dirs && install_files && install_vim ;;
+      s) wipe_dirs && install_ssh ;;
       d) diff_files ;;
       \?) echo -e " USAGE: install.sh 
           -i    install bash profile scripts

@@ -1,0 +1,16 @@
+# Cf doc in mysteam.service unit file
+
+[Unit]
+Description=mysteam_poppup
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo "warning at `date "+%%D %%H:%%M:%%S"`" >> /tmp/mysteam.log'
+# use this for kde based systems
+# geometry looks broken :-(
+ExecStart=/bin/bash -c 'kdialog --error "STEAM is shutting down in 30 seconds :\nAt `date "+%%D %%H:%%M:%%S" -d "+30 second"`" --title mysteam --geometry 300x300'
+
+# use this for gnome based systems
+#ExecStart=/bin/bash -c 'zenity --error --text "STEAM is shutting down in 30 seconds :\nAt `date "+%%D %%H:%%M:%%S" -d "+30 second"`" --title mysteam --width=300 --height=300'
+
+

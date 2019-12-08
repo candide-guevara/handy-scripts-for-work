@@ -14,12 +14,16 @@ start_sshd() {
   run_cmd ${check_cmd[@]}
 }
 
-## *USAGE: launch_steam
+## *USAGE: mysteam
 ## Launches steam inside a systemd unit to contain all of its sneaky child processes
-launch_steam() {
+mysteam() {
   local name=mysteam
-  systemd-run --unit=$name --collect --nice=1 --user --no-ask-password --quiet --no-block steam
-  colecho $txtcyn "Kill all steam processes with : systemctl --user stop $name"
+  if systemctl --user is-active --quiet "$name"; then
+    systemctl --user stop "$name"
+  else
+    systemctl --user start "$name"
+    colecho $txtcyn "Stop steam by running '${FUNCNAME[0]}' again"
+  fi
 }
 
 ## *USAGE: backup_cp SOURCE TARGET

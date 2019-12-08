@@ -2,12 +2,13 @@
 ## Imports changesets from original blog repo
 
 REPO_DIR="$1"
-COMMIT="$2"
+shift
+COMMIT=( "$@" )
 
 [[ -d "$REPO_DIR" ]] || exit 1
 
 pushd "$REPO_DIR"
-PATCHES=( `git format-patch "$COMMIT"` )
+PATCHES=( `git format-patch "${COMMIT[@]}"` )
 [[ ${#PATCHES[@]} -gt 0 ]] || exit 2
 popd
 
@@ -20,7 +21,11 @@ read -p "y/n ? " go_for_it
 for patch in "${PATCHES[@]}"; do
   echo "Processing patch : $patch"
   mv "$REPO_DIR/$patch" . || exit 3
-  git apply --check --verbose "$patch" || exit 4
+  if ! git apply --check --verbose "$patch"; then
+    echo "Failed, try patching manually : "
+    echo "patch --merge -p1 -u -i '$patch'"
+    exit 4
+  fi
   git am --ignore-whitespace "$patch" || exit 5
 done
 

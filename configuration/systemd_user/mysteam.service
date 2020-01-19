@@ -11,10 +11,10 @@
 Description=mysteam
 Requires=mysteam_shutdown.timer
 Requires=mysteam_popup.timer
-Nice=1
 
 [Service]
 #Type=oneshot
+Nice=1
 ExecStartPre=/bin/bash -c 'echo "started at `date "+%%D %%H:%%M:%%S"`" >> /tmp/mysteam.log'
 ExecStart=steam
 ExecStopPost=/bin/bash -c 'echo "stopped at `date "+%%D %%H:%%M:%%S"`" >> /tmp/mysteam.log'

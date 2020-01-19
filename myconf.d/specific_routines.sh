@@ -26,6 +26,16 @@ mysteam() {
   fi
 }
 
+## *USAGE: pdf_shrink DOCS
+## Transforms pdf to a lower quality to share over email.
+pdf_shrink() {
+  for name in "$@"; do
+    local new_name="__`basename "$name"`"
+    run_cmd gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH \
+      -sOutputFile="$new_name" "$name"
+  done
+}
+
 ## *USAGE: backup_cp SOURCE TARGET
 ## Copies SOURCE into TARGET/SOURCE_date, calculates and checks md5 sums
 backup_cp() {

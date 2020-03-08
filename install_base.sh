@@ -49,6 +49,7 @@ install_files() {
     local dest="${kv#*:}"
     [[ -d "$src" ]] || exit 1
     [[ -f "$dest" ]] && run_cmd rm "$dest"
+    [[ -d "$dest" ]] || run_cmd mkdir -p "$dest"
     # Note the trailing '/'
     # It is used to copy the contents of $src **directly** inside $dest if it exists
     # Example: coucou/*.txt -> salut/*.txt (NOT salut/coucou/*.txt)

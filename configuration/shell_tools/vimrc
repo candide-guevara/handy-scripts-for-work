@@ -2,6 +2,8 @@
 " This must be first, because it changes other options as a side effect.
  
 set nocompatible
+set encoding=utf-8
+set fileencodings=ucs-bom,utf-8,prc
 colorscheme darkblue
 
 set ignorecase

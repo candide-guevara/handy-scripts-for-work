@@ -140,27 +140,27 @@ run_cmd() {
       n) 
         shift ; shift
         local out_file="${OPTARG}_`date +%y%m%d-%H%M%S`"
-        colecho $txtcyn "Running: $@"
+        colecho $txtcyn "Running: $@" >&2
         nohup "$@" > "${out_file}.stdout" 2> "${out_file}.stderr" &
         return $?
       ;;
       r) 
         shift ; shift
-        colecho $txtcyn "Running: $@"
+        colecho $txtcyn "Running: $@" >&2
         __run_rem__ "$OPTARG" "$@"
         return $?
       ;;  
       l) 
         shift
+        colecho $txtcyn "Running: $@" >&2
         "$@" | less
-        colecho $txtcyn "Running: $@"
         return 0
       ;;  
     esac
   done
   shift $((OPTIND-1))
 
-  colecho $txtcyn "Running: $@"
+  colecho $txtcyn "Running: $@" >&2
   "$@"
   return $?
 }
@@ -264,6 +264,10 @@ vim_crypt() {
   read -s -p "passphrase : " gpg_pwd
 
   function __cleanup__() {
+    local -a msg=( "delete" "$tmp_dir"/.ssh "$tmp_dir"/* " [y/N] : ")
+    local doit=n
+    read -p "${msg[*]}" doit
+    [[ "$doit" == "y" ]] || return 3
     rm -rf "$tmp_dir"
   }
 
@@ -292,6 +296,86 @@ mydiff() {
   else
     diff -u --ignore-all-space "$@" | "$filter" | vim -R -c "set syntax=diff" -
   fi  
+}
+
+## *USAGE : rotate_ssh_keys
+## Rotates all keys found under $HOME/.ssh
+rotate_ssh_keys() {
+  [[ -d "$HOME/.ssh" ]] || return 1
+  local nonce=`date '+%Y%m%d_%s'`
+  local github_user='candide-guevara'
+  pushd "$HOME/.ssh"
+  [[ -f authorized_keys ]] && rm authorized_keys
+
+  # BE CAREFUL IT IS A TRAP !
+  # Any ssh keys created using a personal token are only valid as long as the token is not revoked
+  # You cannot use temporal tokens to rotate keys
+  #colecho $bldgrn "go to https://github.com/settings/tokens/new and create a token with admin privileges"
+  #read -p 'token : ' access_token
+  #local -a curl_opts=(
+  #  --silent
+  #  --tlsv1.2
+  #  --header "Authorization: token $access_token"
+  #)
+
+  for pubkey in `find -type f -iname '*.pub'`; do
+    echo -e "\n##### FOUND $pubkey #####\n"
+    local pubkey="${pubkey#./}"
+    local privkey="${pubkey%.pub}"
+    mv "$pubkey" "${privkey}_${nonce}.pub.bk"
+    mv "$privkey" "${privkey}_${nonce}.bk"
+    run_cmd ssh-keygen -t rsa -b 4096 -f "$privkey" -C "${privkey}_${nonce}" -N "''"
+
+    case "$privkey" in
+    *arngrim*)
+      cat "$pubkey" >> authorized_keys
+      chmod og-wx authorized_keys
+    ;;
+
+    *global_github*)
+      colecho $txtgrn "go to https://github.com/settings/keys"
+      echo "${privkey}_${nonce}"
+      cat "$pubkey"
+      read -r -s -n 1 -p 'done' ; echo
+      #local data="{
+      #  \"title\": \"${privkey}_${nonce}\",
+      #  \"key\": \"`cat "$pubkey" | tr -d "\n"`\"
+      #}"
+      #curl "${curl_opts[@]}" https://api.github.com/users/"$github_user"/keys \
+      #  | grep -E '^\s*.id.:\s+[[:digit:]]+,' \
+      #  | sed -r 's/^\s*.id.:\s+([[:digit:]]+),/\1/' \
+      #  | while read keyid; do
+      #      run_cmd curl "${curl_opts[@]}" -X DELETE https://api.github.com/user/keys/"$keyid"
+      #    done
+      #run_cmd curl "${curl_opts[@]}" -X POST --data "$data" https://api.github.com/user/keys
+      #run_cmd curl "${curl_opts[@]}" https://api.github.com/users/"$github_user"/keys
+    ;;
+
+    *repo_github*)
+      local reponame="${privkey%_repo_github}"
+      colecho $txtgrn "go to https://github.com/candide-guevara/browser_extensions/settings/keys"
+      echo "${privkey}_${nonce}"
+      cat "$pubkey"
+      read -r -s -n 1 -p 'done' ; echo
+      #local data="{
+      #  \"title\": \"${privkey}_${nonce}\",
+      #  \"key\": \"`cat "$pubkey" | tr -d "\n"`\",
+      #  \"read_only\": false
+      #}"
+      #curl "${curl_opts[@]}" https://api.github.com/repos/"$github_user"/"$reponame"/keys \
+      #  | grep -E '^\s*.id.:\s+[[:digit:]]+,' \
+      #  | sed -r 's/^\s*.id.:\s+([[:digit:]]+),/\1/' \
+      #  | while read keyid; do
+      #      run_cmd curl "${curl_opts[@]}" -X DELETE https://api.github.com/repos/"$github_user"/"$reponame"/keys/"$keyid"
+      #    done
+      #run_cmd curl "${curl_opts[@]}" -X POST --data "$data" https://api.github.com/repos/"$github_user"/"$reponame"/keys
+      #run_cmd curl "${curl_opts[@]}" https://api.github.com/repos/"$github_user"/"$reponame"/keys
+    ;;
+    esac
+  done
+  popd
+  #access_token=bananas
+  #colecho $txtylw "do not forget to delete the access token"
 }
 
 ## Prints some nice bash shortcuts that I tend to forget ...

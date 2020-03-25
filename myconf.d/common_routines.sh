@@ -304,6 +304,7 @@ rotate_ssh_keys() {
   [[ -d "$HOME/.ssh" ]] || return 1
   local nonce=`date '+%Y%m%d_%s'`
   local github_user='candide-guevara'
+  read -s -p 'enter passphare for ssh keys' passphrase
   pushd "$HOME/.ssh"
   [[ -f authorized_keys ]] && rm authorized_keys
 
@@ -324,7 +325,7 @@ rotate_ssh_keys() {
     local privkey="${pubkey%.pub}"
     mv "$pubkey" "${privkey}_${nonce}.pub.bk"
     mv "$privkey" "${privkey}_${nonce}.bk"
-    run_cmd ssh-keygen -t rsa -b 4096 -f "$privkey" -C "${privkey}_${nonce}" -N "''"
+    run_cmd ssh-keygen -t rsa -b 4096 -f "$privkey" -C "${privkey}_${nonce}" -N "$passphrase"
 
     case "$privkey" in
     *arngrim*)

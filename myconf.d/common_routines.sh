@@ -17,15 +17,13 @@ mll() {
 
 # Some scripts in the office may break unless we do this
 alias ls='ls --color=always -C'
-if [[ "$IS_BLOOM_MAC" == 1 ]]; then
+if [[ "$IS_GOOGLE_MAC" == 1 ]]; then
   alias ls='ls -GC'
   alias ll='ls -lhG'
 elif [[ ("$IS_HOME" == 1 && "$IS_BASH" == 1) || "$IS_MSYS" == 1 ]]; then
   alias ll='ls -l --group-directories-first --human-readable --time-style=iso --no-group'
-elif [[ "$IS_BLOOM_UNIX" == 1 || "$IS_UNIX" == 1 ]]; then
+elif [[ "$IS_GOOGLE_UNIX" == 1 || "$IS_UNIX" == 1 ]]; then
   alias ll='ls -l --color=always --human-readable --time-style=iso --no-group'
-elif [[ -z $IS_BLOOM_BNX_NODE ]]; then
-  alias ll='ls -l --color=always --human-readable --no-group'
 else
   alias ll='ls -lh'
 fi
@@ -37,19 +35,40 @@ alias lll='ll | less'
 alias la='ll -A'
 alias lla='ll -A | less'
 
-alias mps='ps -ef | grep -i'
 alias menv='env | sort | grep -i'
 
 alias ..='cd ..; ls'
 alias .2='cd ..; cd ..; ls'
 alias .3='cd ..; cd ..; cd ..; ls'
 
+## *USAGE : mps PROCESS_PAT
+## Looks for running processes matching PROCESS_PAT in their whole command line.
+function mps() {
+  local -a allpids=`pgrep -f "${1}"`
+  ps -ef | grep -i "${1}"
+  echo "${allpids[@]}" | to_space_separated
+}
+
+## *USAGE : list_cnx PROCESS_PAT
+## Looks for running processes matching PROCESS_PAT and displays their network connections
+list_cnx() {
+  local allpids=`pgrep -f "${1}" | paste -s -d,`
+  local oredpids=`echo "$allpids" | sed 's/,/|/g'`
+  local message="All the following are equivalent :
+    sudo lsof -p '$allpids' -a #-iTCP -sTCP:LISTEN
+    sudo netstat -anp --tcp | grep -E '$oredpids'
+    sudo ss -anpe --tcp | grep -E '$oredpids'
+  "
+  colecho $txtcyn "$message"
+  sudo lsof -p "$allpids" -a #-iTCP -sTCP:LISTEN
+}
+
 ## *USAGE : mll [PATTERN] [EXTRA_FLAG]
 ## Like ls with long listing but PATTERN is case insensitive and
 ## matches any part of the file name
 mll() {
   [[ $IS_BASH == 1 && $IS_HOME == 1 ]] && local option="--group-directories-first"
-  [[ ! -z $1 && $1 != -* ]] && local pattern="*$1*" 
+  [[ ! -z $1 && $1 != -* ]] && local pattern="*$1*"
   local ls_command
   ls_command=( ls "-l" "--color=always" "--human-readable" "--time-style=iso" "--no-group" $option )
 
@@ -64,13 +83,23 @@ mll() {
 ## Does NOT follow symlinks. If ROOT_DIR is not specified, the current dir will be used
 mfind() {
   colecho $bldylw "Errors are redirected to /dev/null"
-  if [[ $IS_BLOOM_MAC == 1 ]]; then
+  if [[ $IS_GOOGLE_MAC == 1 ]]; then
     find . -iname "*$1*" 2> /dev/null
   elif [[ "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
     find -P $2 -maxdepth 9 -iname "*$1*" 2> /dev/null
   else
     find $2 -maxdepth 9 -iname "*$1*" 2> /dev/null
-  fi  
+  fi
+}
+
+## *USAGE : h
+## Triggers command line completion from history (requires fzf)
+h() {
+  if which fzf > /dev/null; then
+    HISTTIMEFORMAT= history | sed -r 's/^[[:space:]]*[[:digit:]]+[[:space:]]*//' | fzf --no-mouse --no-hscroll
+  else
+    history | less
+  fi
 }
 
 ## *USAGE : rgrep [GREP_OPTIONS] SEARCH_REGEX
@@ -78,7 +107,7 @@ mfind() {
 function rgrep() {
   colecho $bldylw "Errors are redirected to /dev/null"
   grep_cmd=( grep --recursive --with-filename --line-number --binary-files=without-match --extended-regexp --ignore-case )
-  if [[ "$IS_BLOOM_MAC" == 1 || "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
+  if [[ "$IS_GOOGLE_MAC" == 1 || "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
     grep_cmd=( "${grep_cmd[@]}" --color=always )
   fi
   ${grep_cmd[@]} "$@" * 2> /dev/null
@@ -93,7 +122,7 @@ mgrep() {
   shift
 
   # zgrep for sun machines is not good !
-  if [[ "$IS_BLOOM_MAC" == 1 || "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
+  if [[ "$IS_GOOGLE_MAC" == 1 || "$IS_UNIX" == 1 || "$IS_MSYS" == 1 ]]; then
     grep_cmd=( zgrep --color=always --line-number --binary-files=without-match --extended-regexp --ignore-case )
   else
     grep_cmd=( grep --line-number --binary-files=without-match --extended-regexp --ignore-case )
@@ -119,6 +148,16 @@ cat_burst() {
   done
 }
 
+## *USAGE : to_epoch [DATE_STR]
+## Gives seconds since epoch, usefull for tweaking urls parameters on some monitoring tools.
+to_epoch() {
+  colecho $bldylw Here are some examples
+  echo '  today 13:13 pdt'
+  echo '  2 days ago 00:00 pdt'
+  echo '  20190615 0000 utc'
+  run_cmd date '+%s' --date="$*"
+}
+
 ## *USAGE : is_subdirectory ROOT_DIR CHILD_DIR
 ## Return 0 if CHILD_DIR is contained in ROOT_DIR, 1 otherwise
 is_subdirectory() {
@@ -134,28 +173,28 @@ is_subdirectory() {
 ## -l option will pipe stdout to less
 ## -r option will execute remotely on HOSTNAME
 run_cmd() {
-  local OPTIND 
+  local OPTIND
   while getopts ':n:r:l' opt; do
     case $opt in
-      n) 
+      n)
         shift ; shift
         local out_file="${OPTARG}_`date +%y%m%d-%H%M%S`"
         colecho $txtcyn "Running: $@" >&2
         nohup "$@" > "${out_file}.stdout" 2> "${out_file}.stderr" &
         return $?
       ;;
-      r) 
+      r)
         shift ; shift
         colecho $txtcyn "Running: $@" >&2
         __run_rem__ "$OPTARG" "$@"
         return $?
-      ;;  
-      l) 
+      ;;
+      l)
         shift
         colecho $txtcyn "Running: $@" >&2
         "$@" | less
         return 0
-      ;;  
+      ;;
     esac
   done
   shift $((OPTIND-1))
@@ -184,6 +223,7 @@ my_assert() {
 ## *USAGE: conf_source [-e]
 ## Re sources the bash customization scripts. -e allows to edit the files before sourcing.
 conf_source() {
+  pushd "$MY_HANDY_REPO_ROOT"
   unset BASHPROFILE_ALREADY_SOURCED
   my_assert -f install.sh || return 1
   bash ./install.sh -i
@@ -195,7 +235,21 @@ conf_source() {
 
   pushd "$HOME" > /dev/null
   source .bashrc
-  source $HOME/.bashrc
+  popd > /dev/null
+}
+
+## *USAGE : mydiff [FILE1 FILE2]
+## Diffs 2 files or stdin and pipes it to vim
+mydiff() {
+  local filter_cmd=cat
+  [[ "$IS_WINDOWS" == 1 ]] && filter_cmd=dos2unix
+  if [[ $# == 0 ]]; then
+    "$filter_cmd" | vim -R -c "set syntax=diff" -
+  else
+    diff --unified --expand-tabs --tabsize=2 --minimal --ignore-blank-lines --ignore-all-space "$@" \
+      | "$filter_cmd" \
+      | vim -R -c "set syntax=diff" -
+  fi  
 }
 
 ## *USAGE : insert_bytes FILE OFFSET BYTES
@@ -237,7 +291,7 @@ change_strings() {
     history -s "${final_cmd[@]}"
 }
 
-## *USAGE : delete_all_dirs [-f] PATTERN_TO_DELETE 
+## *USAGE : delete_all_dirs [-f] PATTERN_TO_DELETE
 ## Deletes all items (directories by default) which match PATTERN_TO_DELETE. Be careful !
 delete_all_dirs() {
   local item_type=d
@@ -246,7 +300,7 @@ delete_all_dirs() {
     shift
   fi
   local pattern=${1:-XXXXXXXXX}
-  
+
   echo -e "You will delete files :\n`find -type $item_type -iname \"$pattern\"`"
   #find -type $item_type -iname "$pattern" -print0 2> /dev/null | xargs -r0 rm -fr
   echo "Do it for real :"
@@ -267,16 +321,13 @@ vim_crypt() {
   read -s -p "passphrase : " gpg_pwd
 
   function __cleanup__() {
-    local -a msg=( "delete" "$tmp_dir"/.ssh "$tmp_dir"/* " [y/N] : ")
-    local doit=n
-    read -p "${msg[*]}" doit
-    [[ "$doit" == "y" ]] || return 3
     rm -rf "$tmp_dir"
   }
 
+  # why --batch ? https://unix.stackexchange.com/questions/60213/gpg-asks-for-password-even-with-passphrase
   local -a vim_cmd=( vim -c ":file $tmp_file" -c ':set nobackup' -c ':set nowritebackup' -c ':set noswapfile' )
-  local -a crypt_cmd=( gpg --symmetric --cipher-algo AES256 --passphrase "$gpg_pwd" --output '-' )
-  local -a decrypt_cmd=( gpg --decrypt --passphrase "$gpg_pwd" )
+  local -a crypt_cmd=( gpg --symmetric --cipher-algo AES256 --batch --passphrase "$gpg_pwd" --output '-' )
+  local -a decrypt_cmd=( gpg --decrypt --batch --passphrase "$gpg_pwd" )
 
   (
     trap __cleanup__ EXIT INT TERM
@@ -288,17 +339,52 @@ vim_crypt() {
   )
 }
 
-## *USAGE : mydiff [FILE1 FILE2]
-## Diffs 2 files or stdin and pipes it to vim
-mydiff() {
-  local filter=cat
-  [[ -z "$IS_WINDOWS" ]] || filter=dos2unix
-  which "$filter" 2> /dev/null || return 1
-  if [[ $# == 0 ]]; then
-    "$filter" | vim -R -c "set syntax=diff" -
-  else
-    diff -u --ignore-all-space "$@" | "$filter" | vim -R -c "set syntax=diff" -
-  fi  
+## *USAGE: my_vim_edit_all [PATTERN] [START_WITH]
+## Opens all files matching PATTERN one at a time
+## START_WITH will skip all files lexicographicaly less than it
+my_vim_edit_all() {
+  local -a posts=( `find . -iname "$1" | sort` )
+  local start_with="$2"
+  for post in "${posts[@]}"; do
+    colecho $txtcyn "$post"
+    [[ "$start_with" < "$post" ]] || continue
+    [[ -f "$post" ]] && vim "$post"
+
+    read -p 'continue with next [Y|n] ? ' keepon
+    [[ "$keepon" == "n" ]] && return 1
+  done
+}
+
+## *USAGE : pack_ssh [FILE1 FILE2]
+## Packs ssh config into scripts repo
+pack_ssh() {
+  [[ -d "$HOME/.ssh" ]] || return 1
+  local curdir=`readlink -f .`
+  local tmp_dir=`mktemp -d`
+  chmod 'go-rwx' "$tmp_dir" || return 2
+
+  function __cleanup__() {
+    local -a msg=( "delete" "$tmp_dir"/.ssh "$tmp_dir"/* " [y/N] : ")
+    local doit=n
+    read -p "${msg[*]}" doit
+    [[ "$doit" == "y" ]] || return 3
+    shred "$tmp_dir"/.ssh/*
+    shred "$tmp_dir"/*
+    rm -rf "$tmp_dir"
+  }
+
+  (
+    trap __cleanup__ EXIT INT TERM
+    pushd "$HOME"
+    cp -rf .ssh "$tmp_dir"
+    pushd "$tmp_dir/.ssh"
+    colecho $txtcyn "$tmp_dir : choose files to keep and exit"
+    PS1=" > " bash --noprofile --norc
+    pushd "$tmp_dir"
+    tar zcf ssh.tar .ssh
+    gpg --symmetric --cipher-algo AES256 --output 'ssh.tar.gpg' 'ssh.tar'
+    cp ssh.tar.gpg "$curdir"
+  )
 }
 
 ## import_patch_list ORIGING_REPO COMMIT_RANGE
@@ -371,29 +457,40 @@ man() {
   man "$@"
 }
 
-## *USAGE: helpme [-f] [COMMAND_REGEX] 
+## *USAGE: is_too_old FILEPATH MIN_COUNT
+## Exits withour error if FILEPATH desgins a file which has been modified in the last MIN_COUNT minutes.
+is_recent_enough() {
+  find "$1" -mmin "-$2" -type f 2> /dev/null \
+    | grep -E '.*' &> /dev/null
+}
+
+## *USAGE: to_space_separated < STDIN
+## Transforms a new line separated list to a space separated list.
+## Convienient to use with here-docs.
+to_space_separated() {
+  paste -s -d" " | sed -r 's/^[[:space:]]+|[[:space:]]+$//g'
+}
+
+## *USAGE: helpme [-f] [COMMAND_REGEX]
 ## Creates the help text you are reading :-D
 ## The __-f__ flag will force the help file generation in case the scripts have changed
 helpme() {
-  # Cryptic, we just concat the 2 searches with a newline
-  if [[ $IS_BLOOMBERG == 1 ]]; then
-    find_options=( -type f -iname '*.sh' -or -iname '*.awk' -or -iname '*.py' )
-  else
-    find_options=( "-regextype" "posix-extended" "-type" "f" "-iregex" '.*(sh|py|awk)$' )
-  fi
+  local file_filter="sh|awk|ps1"
+  local -a find_options=( "-regextype" "posix-extended" "-type" "f" "-iregex" ".*($file_filter)\$" )
   local conffiles="`find $MY_ROOT_CONF_DIR $MY_ROOT_SCRIPT "${find_options[@]}" 2> /dev/null`"
-  # run_cmd find $MY_ROOT_CONF_DIR $MY_ROOT_SCRIPT "${find_options[@]}" 2> /dev/null
+  run_cmd find $MY_ROOT_CONF_DIR $MY_ROOT_SCRIPT "${find_options[@]}" 2> /dev/null
   split_words "$conffiles"
-  
-  if [[ ! -f $TMP_HELP_FILE || $1 == "-f" ]]; then 
+
+  if [[ ! -f $TMP_HELP_FILE || $1 == "-f" ]]; then
     set +o noclobber
     echo > $TMP_HELP_FILE
     for item in ${SPLIT_WORDS_RESULT[*]}; do
+      local last_dir=$(basename "`dirname "$item"`")
       local name=${item##*/}
-      if regexmatch $name "sh$"; then
-        gawk -f $AWK_COLOR_SCRIPT -f $AWK_MAN_FORMAT -v "FILE_TITLE=$name" $item  >> $TMP_HELP_FILE
+      if regexmatch $name "($file_filter)$"; then
+        gawk -f $AWK_COLOR_SCRIPT -f $AWK_MAN_FORMAT -v "FILE_TITLE=$last_dir/$name" $item  >> $TMP_HELP_FILE
         echo "Processing $item ..."
-      fi  
+      fi
     done
   fi
 

@@ -7,7 +7,7 @@ if [[ $SHELL == *bash* ]] || [[ "$shell_version" == *bash* ]]; then
   export IS_BASH=1
 elif [[ $SHELL == *zsh* ]] || [[ "$shell_version" == *zsh* ]]; then
   export IS_ZSH=1
-else 
+else
   echo "[ERROR] COULD NOT DETERMINE SHELL !!"
 fi
 
@@ -19,7 +19,7 @@ test_is_windows() {
   if [[ $osname == mingw* ]] || [[ $osname == msys* ]]; then 
     export IS_MSYS=1
     return 0
-  fi  
+  fi
   return 1
 }
 
@@ -71,19 +71,24 @@ export_win_temp_dir() {
   export TMP="$temp_dir"
 }
 
-# Shared env variables for all machine types (default values)
-export MY_UNIX_HOST="linxdev20"
-export MY_SSH_KEY=
+## *USAGE : export_nix_temp_dir
+## Sets the environment variables pointing to the temporary directory
+export_nix_temp_dir() {
+  if [[ -z "$TEMP" ]]; then
+    if ! [[ -z "$TMP" ]]; then
+      export TEMP="$TMP"
+    else
+      export TEMP=/tmp
+    fi
+  fi
+  [[ -z "$TMP" ]] && export TMP="$TEMP"
+}
 
 # Here we determine in which kind of machine we are
 machinename=`hostname`
 
-if [[ $machinename == CZC* ]] || [[ $machinename == LU* ]]; then
-  export IS_BLOOM_HOME=1
-elif [[ $machinename == BNX* ]]; then
-  export IS_BLOOMBERG=1
-  export IS_BLOOM_BNX_NODE=1
-elif [[ $machinename == arngrim* ]] || [[ $machinename == llewelyn* ]] || [[ $machinename == badrach* ]] || [[ $machinename == jelanda* ]]; then
+# desktop, laptop, windows_vm, surface, emergency_boot
+if [[ $machinename == arngrim* ]] || [[ $machinename == llewelyn* ]] || [[ $machinename == badrach* ]] || [[ $machinename == jelanda* ]] || [[ $machinename == lawfer* ]]; then
   export IS_HOME=1
 elif [[ $machinename == penguin* ]]; then
   export IS_WORK=1
@@ -91,16 +96,16 @@ else
   echo "[ERROR] Cannot find the machine type !!!"
 fi
 
-if test_is_windows; then 
+if test_is_windows; then
   export IS_WINDOWS=1
   export_win_temp_dir
-elif test_is_linux; then 
+elif test_is_linux; then
   export IS_LINUX=1
   export IS_UNIX=1
-elif test_is_unix; then 
+  export_nix_temp_dir
+elif test_is_unix; then
   export IS_UNIX=1
-elif test_is_mac; then 
-  export IS_BLOOM_MAC=1
+  export_nix_temp_dir
 else 
   echo "[ERROR] COULD NOT DETERMINE OS TYPE !!"
 fi

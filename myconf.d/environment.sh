@@ -42,18 +42,8 @@ export MY_ROOT_CONF_DIR="$HOME/.myconf.d"
 export MY_ROOT_SCRIPT="$MY_HANDY_REPO_ROOT/scripts"
 export MY_ROOT_RCDIR="$MY_HANDY_REPO_ROOT/configuration/shell_tools"
 
-#
-# This variables contain default values for custom scripts
-export MY_ROOT_SRC=$HOME/Programation
-export MY_ROOT_CONF_DIR=$HOME/.myconf.d
-export MY_ROOT_SCRIPT=$HOME/Scripts
-
 # Awk script to include to get colors
 export AWK_COLOR_SCRIPT="$MY_ROOT_SCRIPT/awk/colors.awk"
 
 export PYTHONSTARTUP="$MY_ROOT_CONF_DIR/pythonrc.py"
-# Common python modules look-up path
-if [[ $PYTHONPATH != *$MY_ROOT_SCRIPT* ]]; then
-  export PYTHONPATH="$PYTHONPATH:$MY_ROOT_SCRIPT"
-fi
 

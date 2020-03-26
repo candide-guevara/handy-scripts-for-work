@@ -85,6 +85,8 @@ elif [[ $machinename == BNX* ]]; then
   export IS_BLOOM_BNX_NODE=1
 elif [[ $machinename == arngrim* ]] || [[ $machinename == llewelyn* ]] || [[ $machinename == badrach* ]] || [[ $machinename == jelanda* ]]; then
   export IS_HOME=1
+elif [[ $machinename == penguin* ]]; then
+  export IS_WORK=1
 else
   echo "[ERROR] Cannot find the machine type !!!"
 fi

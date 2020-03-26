@@ -379,6 +379,38 @@ rotate_ssh_keys() {
   #colecho $txtylw "do not forget to delete the access token"
 }
 
+## import_patch_list ORIGING_REPO COMMIT_RANGE
+## Get patches for each revision in COMMIT_RANGE and apply it to the git repo under the current directory.
+import_patch_list() {
+  local origin_repo_root="$1"
+  shift
+  local -a commit_range=( "$@" )
+
+  [[ -d "$origin_repo_root" ]] || return 1
+
+  pushd "$origin_repo_root"
+  local -a patch_list=( `git format-patch "${commit_range[@]}"` )
+  [[ ${#patch_list[@]} -gt 0 ]] || return 2
+  popd
+
+  echo "
+  Apply patch_list ?
+  ${patch_list[@]}"
+  read -p "y/n ? " go_for_it
+  [[ "$go_for_it" == 'y' ]] || return 6
+
+  for patch in "${patch_list[@]}"; do
+    colecho $txtcyn "Processing patch : $patch"
+    mv "$origin_repo_root/$patch" . || return 3
+    if ! git apply --check --verbose "$patch"; then
+      errecho "Failed, try patching manually : "
+      echo "patch --merge -p1 -u -i '$patch'"
+      return 4
+    fi
+    git am --ignore-whitespace "$patch" || return 5
+  done
+}
+
 ## Prints some nice bash shortcuts that I tend to forget ...
 cheatsheat() {
   echo -e "### EDITING"

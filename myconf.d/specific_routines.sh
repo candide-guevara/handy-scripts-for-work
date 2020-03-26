@@ -39,7 +39,7 @@ pdf_shrink() {
 ## *USAGE: backup_cp SOURCE TARGET
 ## Copies SOURCE into TARGET/SOURCE_date, calculates and checks md5 sums
 backup_cp() {
-  my_assert -d $1 -a -d $2
+  my_assert -d $1 -a -d $2 || return 1
   local full_source="`readlink -f $1`"
   local base_source="`basename $full_source`"
   local date_str=`date +%y%m%d`
@@ -49,7 +49,8 @@ backup_cp() {
   local result_file="result_${base_source}_${date_str}.txt"
 
   my_assert -m "[ERROR] Invalid source ($full_source) or destination ($full_dest)" \
-    -d "$full_source" -a ! -e "$full_dest" 
+    -d "$full_source" -a ! -e "$full_dest" \
+    || return 2
 
   pushd $full_source
   find -P . -type f -print0 | xargs -0 md5sum > $tmp_file
@@ -62,14 +63,15 @@ backup_cp() {
 
   pushd $full_dest
   md5sum -c $check_file > $result_file
-  my_assert -m "[ERROR] Bad copy $full_source -> $full_dest" "$?" '==' 0
+  my_assert -m "[ERROR] Bad copy $full_source -> $full_dest" "$?" '==' 0 \
+    || return 3
   popd
 }
 
 ## *USAGE: backup_home TARGET
 ## Copies home files into another directory and deletes uninteresting files
 backup_home() {
-  my_assert -d "$1"
+  my_assert -d "$1" || return 1
   pushd "$1"
   run_cmd cp -TrxPu "$HOME" ./ || return 1
   run_cmd rm -r .cache .thumbnails

@@ -166,10 +166,10 @@ run_cmd() {
 }
 
 ## *USAGE: my_assert [-m MESSAGE] PREDICATE
-## Asserts predicate or die and print MESSAGE
+## Asserts predicate or returns non-zero and print MESSAGE
 my_assert() {
   local message=''
-  if [[ x$1 == x-m ]]; then
+  if [[ "$1" == "-m" ]]; then
     message=$2
     shift ; shift
   fi
@@ -177,7 +177,7 @@ my_assert() {
   if [[ $? != 0 ]]; then
     errecho "[ASSERT FAIL] $@"
     [[ -z $message ]] || echo " => $message"
-    exit 1
+    return 1
   fi
 }
 
@@ -185,13 +185,16 @@ my_assert() {
 ## Re sources the bash customization scripts. -e allows to edit the files before sourcing.
 conf_source() {
   unset BASHPROFILE_ALREADY_SOURCED
-  pushd "$MY_ROOT_SRC/handy-scripts-for-work"
-  my_assert -f install.sh
+  my_assert -f install.sh || return 1
   bash ./install.sh -i
   popd
-  my_assert -d $MY_ROOT_CONF_DIR
+
+  my_assert -d $MY_ROOT_CONF_DIR || return 2
   [[ -z $1 ]] || vim -p $MY_ROOT_CONF_DIR/*.sh
-  my_assert -e $HOME/.bashrc
+  my_assert -e $HOME/.bashrc || return 3
+
+  pushd "$HOME" > /dev/null
+  source .bashrc
   source $HOME/.bashrc
 }
 

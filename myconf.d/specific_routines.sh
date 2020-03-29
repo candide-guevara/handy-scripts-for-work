@@ -98,8 +98,10 @@ rotate_ssh_keys() {
   local nonce=`date '+%Y%m%d_%s'`
   local github_user='candide-guevara'
   read -s -p 'enter passphare for ssh keys' passphrase
+  read -s -p 'enter llewelyn ip for exporting ssh keys' llewelyn_scp
   pushd "$HOME/.ssh"
   [[ -f authorized_keys ]] && rm authorized_keys
+  [[ -z "$llewelyn_scp" ]] || llewelyn_scp="${USER}@${llewelyn_scp}"
 
   # BE CAREFUL IT IS A TRAP !
   # Any ssh keys created using a personal token are only valid as long as the token is not revoked
@@ -124,6 +126,7 @@ rotate_ssh_keys() {
     *arngrim*)
       cat "$pubkey" >> authorized_keys
       chmod og-wx authorized_keys
+      [[ -z "$llewelyn_scp" ]] || scp -i "${privkey}_${nonce}.bk" authorized_keys "${llewelyn_scp}:.ssh"
     ;;
 
     *global_github*)
@@ -166,6 +169,8 @@ rotate_ssh_keys() {
       #run_cmd curl "${curl_opts[@]}" https://api.github.com/repos/"$github_user"/"$reponame"/keys
     ;;
     esac
+
+    [[ -z "$llewelyn_scp" ]] || scp "$privkey" "$pubkey" "${llewelyn_scp}:.ssh"
   done
   popd
   #access_token=bananas

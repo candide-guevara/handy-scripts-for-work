@@ -5,6 +5,106 @@ alias jls="sudo journalctl"
 alias cgls="sudo systemd-cgls"
 alias sc="sudo systemctl"
 
+## *USAGE: gdrive_file_download LAST_DAYS CLIENT_ID CLIENT_SECRET FOLDER_ID
+## Downloads all files created in the LAST_DAYS under a given google drive folder.
+## OAuth inspiration from https://gist.github.com/LindaLawton/cff75182aac5fa42930a09f58b63a309#file-googleauthenticationcurl-sh
+gdrive_file_download() {
+  # API console : https://console.developers.google.com/apis/credentials?project=api-project-603840956042
+  local days_thres="${1:-365}"
+  local client_id="$2"
+  local client_secret="$3"
+  local folder_id="$4"
+
+  local discovery_doc="`mktemp`"
+  local token_response="`mktemp`"
+  local passphrase="`dd if=/dev/random bs=64 count=1 | base64`"
+
+  local discover_auth_url="https://accounts.google.com/.well-known/openid-configuration"
+  run_cmd curl --silent "$discover_auth_url" > "$discovery_doc" \
+    || errecho "Could not get discovery_doc"
+  local auth_endpt_url="`grep '"authorization_endpoint"' "$discovery_doc" | sed -r 's/.*"([^"]+)",?$/\1/'`"
+  local token_endpt_url="`grep '"token_endpoint"'        "$discovery_doc" | sed -r 's/.*"([^"]+)",?$/\1/'`"
+  local drive_v3_url='https://www.googleapis.com/drive/v3/files'
+
+  local drive_read_scope="https://www.googleapis.com/auth/drive.readonly"
+  # This value indicates that Google's authorization server should return the authorization code in the browser's title bar
+  local redirection_url="urn:ietf:wg:oauth:2.0:oob"
+  local code_fetch_url="${auth_endpt_url}?client_id=${client_id}&redirect_uri=${redirection_url}&scope=${drive_read_scope}&response_type=code"
+  local oauth_code=""
+
+  read -p "go to '$code_fetch_url' and paste code : " oauth_code
+
+  curl --silent \
+    --data-urlencode "code=${oauth_code}" \
+    --data-urlencode "client_id=${client_id}" \
+    --data-urlencode "client_secret=${client_secret}" \
+    --data-urlencode "redirect_uri=${redirection_url}" \
+    --data-urlencode "grant_type=authorization_code" \
+    "$token_endpt_url" \
+    | gpg --batch --symmetric --passphrase "$passphrase" \
+    > "$token_response" \
+    || errecho "Could not get token from '$token_endpt_url'"
+  oauth_code=""
+
+  #{
+  #  "access_token": "ya29.a0Ae-IDNNv7n-slj",
+  #  "expires_in": 3599,
+  #  "refresh_token": "1//03VFvcnVfJKRdC-L9I-VkLgy-JErsdf",
+  #  "scope": "https://www.googleapis.com/auth/drive.readonly",
+  #  "token_type": "Bearer"
+  #}
+  local access_token="`gpg --batch --passphrase "$passphrase" --decrypt "$token_response" | grep '"access_token"' | sed -r 's/.*"([^"]+)",?$/\1/'`"
+
+  #{
+  #  "kind": "drive#file",
+  #  "id": "1D-rM9-fvf",
+  #  "name": "filenamedummy",
+  #  "mimeType": "image/png"
+  #},
+  local list_response="`mktemp`"
+  local time_thres_utc="`date --utc --date="$days_thres days ago" '+%Y-%m-%dT%H:%M:%S'`"
+  local pageToken=""
+  colecho $txtcyn "listing files from folder since '$time_thres_utc'"
+  while true; do
+    local one_response="`mktemp`"
+    echo "Listing files pageToken='$pageToken'"
+    curl --silent --get \
+      --header "Authorization: Bearer $access_token" \
+      --data-urlencode "q=('$folder_id' in parents) and (modifiedTime > '$time_thres_utc')" \
+      --data-urlencode "orderBy=name" \
+      --data-urlencode "pageToken=$pageToken" \
+      "$drive_v3_url" \
+      | tee --append "$list_response" \
+      > "$one_response" \
+      || errecho "Could not get folder listing from '$drive_v3_url'"
+
+      pageToken="`grep '"nextPageToken"' "$one_response" | sed -r 's/.*"([^"]+)",?$/\1/'`"
+      [[ -z "$pageToken" ]] && break
+      sleep 1
+  done
+
+  local ids_file="`mktemp`"
+  local names_file="`mktemp`"
+  grep '"id"' "$list_response" | sed -r 's/.*"([^"]+)",?$/\1/' \
+    > "$ids_file" \
+    || errecho "No file ids found in '$list_response'"
+  grep '"name"' "$list_response" | sed -r 's/.*"([^"]+)",?$/\1/' \
+    > "$names_file" \
+    || errecho "No file names found in '$list_response'"
+
+  colecho $txtcyn "Downloading `wc -l "$ids_file"` files"
+  while read fileid <&3 && read filename <&4; do
+    echo "Downloading '$filename'='$fileid'"
+    curl --silent --get \
+      --header "Authorization: Bearer $access_token" \
+      --data-urlencode "alt=media" \
+      "$drive_v3_url/$fileid" \
+      > "$filename" \
+      || errecho "Could not download '$filename'='$fileid'"
+    sleep 1
+  done 3< "$ids_file" 4< "$names_file"
+}
+
 ## *USAGE: start_sshd
 ## Starts the sshd daemon (using systemd)
 start_sshd() {
@@ -97,7 +197,7 @@ rotate_ssh_keys() {
   [[ -d "$HOME/.ssh" ]] || return 1
   local nonce=`date '+%Y%m%d_%s'`
   local github_user='candide-guevara'
-  read -s -p 'enter passphare for ssh keys' passphrase
+  read -s -p 'enter passphrase for ssh keys' passphrase
   read -s -p 'enter llewelyn ip for exporting ssh keys' llewelyn_scp
   read -s -p 'enter jelanda ip for exporting ssh keys' jelanda_scp
   pushd "$HOME/.ssh"

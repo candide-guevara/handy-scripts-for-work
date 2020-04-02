@@ -99,9 +99,11 @@ rotate_ssh_keys() {
   local github_user='candide-guevara'
   read -s -p 'enter passphare for ssh keys' passphrase
   read -s -p 'enter llewelyn ip for exporting ssh keys' llewelyn_scp
+  read -s -p 'enter jelanda ip for exporting ssh keys' jelanda_scp
   pushd "$HOME/.ssh"
   [[ -f authorized_keys ]] && rm authorized_keys
   [[ -z "$llewelyn_scp" ]] || llewelyn_scp="${USER}@${llewelyn_scp}"
+  [[ -z "$jelanda_scp" ]] || jelanda_scp="cguev@${jelanda_scp}"
 
   # BE CAREFUL IT IS A TRAP !
   # Any ssh keys created using a personal token are only valid as long as the token is not revoked
@@ -127,6 +129,20 @@ rotate_ssh_keys() {
       cat "$pubkey" >> authorized_keys
       chmod og-wx authorized_keys
       [[ -z "$llewelyn_scp" ]] || scp -i "${privkey}_${nonce}.bk" authorized_keys "${llewelyn_scp}:.ssh"
+      if ! [[ -z "$jelanda_scp" ]]; then
+        cp authorized_keys authorized_keys_win
+        unix2dos authorized_keys_win
+        scp -i "${privkey}_${nonce}.bk" authorized_keys_win "${jelanda_scp}:.ssh"
+        local -a win_ssh_ps=( ssh -i "${privkey}_${nonce}.bk" "$jelanda_scp" powershell /C )
+        # https://github.com/PowerShell/Win32-OpenSSH/wiki/Security-protection-of-various-files-in-Win32-OpenSSH
+        # the authorized_keys file should have the following access rights
+        # NT AUTHORITY\SYSTEM:(F)
+        # BUILTIN\Administrators:(F)
+        # JELANDA\cguev:(F)
+        "${win_ssh_ps[@]}" 'icacls    .ssh\authorized_keys_win .ssh\authorized_keys'
+        "${win_ssh_ps[@]}" 'mv -Force .ssh\authorized_keys_win .ssh\authorized_keys'
+        rm authorized_keys_win
+      fi
     ;;
 
     *global_github*)

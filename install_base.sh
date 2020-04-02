@@ -22,13 +22,18 @@ wipe_dirs() {
 }
 
 install_ssh() {
-  run_cmd cp "$SSH_PATH" "$HOME/ssh.tar.gpg"
+  local install_target="$HOME"
+  local return_code=1
+  #local install_target="/tmp"
+  run_cmd cp "configuration/ssh.tar.gpg" "$install_target"
 
-  pushd "$HOME"
-  run_cmd gpg ssh.tar.gpg
-  run_cmd tar xf ssh.tar
-  run_cmd rm --recursive ssh.tar ssh.tar.gpg
+  pushd "$install_target"
+  run_cmd gpg --decrypt --output ssh.tar ssh.tar.gpg \
+    &&  run_cmd tar xf ssh.tar \
+    &&  run_cmd shred -u ssh.tar ssh.tar.gpg \
+    &&  return_code=0
   popd
+  return "$return_code"
 }
 
 install_vim() {

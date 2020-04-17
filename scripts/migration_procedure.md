@@ -75,7 +75,7 @@
 
 ### [Huge pages][39]
 
-* Install libhugetlbfs package
+* Install libhugetlbfs package (AFAIK only available on AUR)
 * Mask default hugepage mountpoint (not accessible to user) `systemctl mask dev-hugepages.mount`
 * Use `man tmpfiles.d` to set `/sys/kernel/mm/transparent_hugepage/*enabled`
 * Install [custom service unit][40] to configure hugepages at boot
@@ -104,10 +104,13 @@
 * Grub options [config][3] 
   * save last boot choice / shorten wait time / noquiet / remove rhgb (red hat graphical boot)
 * Set kernel boot params in `GRUB_CMDLINE_LINUX_DEFAULT` (rescue mode boot options will not be changed)
-  * [Meltdown/Specter][29] : `spectre_v2=off nopti` then check `/sys/devices/system/cpu/vulnerabilities/*` (you should be vulnerable now)
+  * [Security vulnerabilities mitigations][43] (and [this one][29]): check which ones can be disabled for perf
+    * As of this writing `nospectre_v1 spectre_v2=off nopti mds=off spec_store_bypass_disable=off`
+    * Check `/sys/devices/system/cpu/vulnerabilities/*` (you should be vulnerable now)
   * Disable plymouth (graphical boot) by adding plymouth.enable=0 in kernel command line
   * Disable `nmi_watchdog=0` on [kernel command line][23] if `grep -i nmi /proc/interrupts` has a high count
-* `/etc/default/grub` then `grub2-mkconfig -o /boot/grub/grub.cfg`
+  * Looks for other options in article [hunting linux boot errors][42]
+* `/etc/default/grub` then `grub-mkconfig -o /boot/grub/grub.cfg`
 
 ### Distribution tweaks
 
@@ -222,7 +225,7 @@ Do this at the end since it may take into account any blacklisted modules
 [26]: https://wiki.archlinux.org/index.php/CPU_frequency_scaling#Scaling_governors
 [27]: https://lwn.net/Articles/656307/
 [28]: https://wiki.archlinux.org/index.php/backlight
-[29]: https://access.redhat.com/articles/3311301#disabling-the-cves-3
+[29]: https://wiki.ubuntu.com/SecurityTeam/KnowledgeBase/Variant4
 [30]: https://wiki.archlinux.org/index.php/Hardware_video_acceleration#Verification
 [31]: https://wiki.archlinux.org/index.php/GnuPG#pinentry
 [32]: https://wiki.archlinux.org/index.php/Polkit#Authorization_rules
@@ -233,6 +236,8 @@ Do this at the end since it may take into account any blacklisted modules
 [37]: https://wiki.archlinux.org/index.php/chromium#Force_GPU_acceleration
 [38]: https://wiki.archlinux.org/index.php/PulseAudio/Troubleshooting#Pops_when_starting_and_stopping_playback
 [39]: https://lwn.net/Articles/376606/
-[40]: ../configuration/shell_tools/huge_pages.service
+[40]: ../configuration/systemd/huge_pages.service
 [41]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
+[42]: https://candide-guevara.github.io/cs_related/linux/2020/04/12/linux-hunting-boot-log-errors.html
+[43]: https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/index.html
 

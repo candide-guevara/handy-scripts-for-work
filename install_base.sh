@@ -6,6 +6,15 @@ run_cmd() {
   "$@"
 }
 
+my_assert() {
+  if test "$@"; then
+    true
+  else
+    echo "[ERROR] 'test $@' is false"
+    exit 1
+  fi
+}
+
 test_is_windows() {
   osname=`uname -s | tr '[A-Z]' '[a-z]'`
   [[ $osname == cygwin* ]] && return 0
@@ -52,7 +61,7 @@ install_files() {
   for kv in "${DIRS_TO_COPY[@]}"; do
     local src="${kv%%:*}"
     local dest="${kv#*:}"
-    [[ -d "$src" ]] || exit 1
+    my_assert -d "$src"
     [[ -f "$dest" ]] && run_cmd rm "$dest"
     [[ -d "$dest" ]] || run_cmd mkdir -p "$dest"
     # Note the trailing '/'
@@ -64,12 +73,12 @@ install_files() {
   for kv in "${KV_TO_COPY[@]}"; do
     local src="${kv%%:*}"
     local dest="${kv#*:}"
-    [[ -f "$src" ]] || exit 1
+    my_assert -f "$src"
     run_cmd cp --no-dereference --one-file-system "$src" "$dest"
   done
 
   for file in "${FILES_TO_COPY[@]}"; do
-    [[ -f "$file" ]] || exit 1
+    my_assert -f "$file"
     run_cmd cp --no-dereference --one-file-system --no-target-directory "$file" "$HOME/.`basename $file`"
   done
 

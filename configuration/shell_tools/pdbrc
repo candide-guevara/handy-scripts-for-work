@@ -1,0 +1,6 @@
+import os, sys
+sys.path.append(os.environ['MY_ROOT_RCDIR'])
+import mypdbrc
+
+__my_bootstrap__
+

@@ -13,6 +13,8 @@ KV_TO_COPY=(
 
   "configuration/shell_tools/pythonrc.py:$HOME/.myconf.d"
   "configuration/kde4_conf/mysteam.desktop:$HOME/.local/share/applications"
+
+  "configuration/chromium-flags.conf:$HOME/.config/chromium-flags.conf"
 )
 DIRS_TO_COPY=(
   "myconf.d:$HOME/.myconf.d"

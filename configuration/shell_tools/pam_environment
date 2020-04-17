@@ -1,0 +1,3 @@
+# fixes annoying `man: can't set the locale; make sure $LC_* and $LANG are correct`
+# this file sets env vars for graphical applications too.
+LC_ALL DEFAULT=en_US.UTF-8

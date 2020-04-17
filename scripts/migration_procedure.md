@@ -61,7 +61,7 @@
 * Add your user to the `/etd/sudoers.d` file and set option to ask password
   * `Defaults   rootpw <br/>cguevara        ALL=(ALL)       ALL`
 * Use noop scheduler for SSD block devices
-  * Manually write to /sys/block/sdX/queue/scheduler or use [udev][2]
+  * Manually write to `/sys/block/*/queue/scheduler` or use [udev][2]
 * Set no access modification time on mount options
   * `noatime,nodiratime` but easier to adapt fstab template in this repo
 * If using LVM restrict device scanning by setting filter patterns on `/etc/lvm/lvm.conf`
@@ -109,6 +109,7 @@
     * Check `/sys/devices/system/cpu/vulnerabilities/*` (you should be vulnerable now)
   * Disable plymouth (graphical boot) by adding plymouth.enable=0 in kernel command line
   * Disable `nmi_watchdog=0` on [kernel command line][23] if `grep -i nmi /proc/interrupts` has a high count
+  * Disable [kauditd][44] `audit=0`
   * Looks for other options in article [hunting linux boot errors][42]
 * `/etc/default/grub` then `grub-mkconfig -o /boot/grub/grub.cfg`
 
@@ -122,8 +123,8 @@
   * Use `ethtool` to validate autonegotiation is active => otherwise we may have a slow connection
   * If connection slow try removing and reloading network kernel module (`alx`)
 * Disable unneeded systemd units 
-  * disable iptables, ip6tables, firewalld, sssd(NOT a typo), sshd (service), auditd, bluetooth, avahi-daemon (service and socket)
-  * mask sshd@, sshd.socket
+  * disable iptables, ip6tables, firewalld, sssd(NOT a typo), sshd (service), bluetooth, avahi-daemon (service and socket)
+  * mask sshd@, sshd.socket, systemd-journald-audit.socket
 * Make sshd a bit more secure
   * create iptable rules to only allow ssh connection from home network in `/etc/iptables/(ip|ip6)tables.rules`
   * tweak the sshd.service unit to depend on [systemd-iptables][8] so that iptable kernel module is only loaded when opening sshd
@@ -140,6 +141,8 @@
   * If using external amplifier you can blacklist all onboard-sound kernel modules (like `snd_hda_intel`) in `/etc/modprobe.d`
   * Disable alsa restore udev rule by creating the relevant symlink to `/dev/null` in `/etc/udev/rules.d`
   * Use `pactl list` to check options are setup ok
+* There are too many option for power management : powerdevil, acpid, sytemd-logind, TLP, upower...
+  * pick one and disable the others (via systemd services ?)
 
 ### Notebook specific tweaks
 
@@ -157,8 +160,8 @@
 * Add themes : droid fonts, kde-gtk-config, gtk 2 and 3 theme matching KDE's (currently breeze)
 * Activate hardware sensors : install `lm_sensors` and run `sensors-detect` (will active systemd unit)
 * Restore virtual machines disk images to ssd storage
-* Create `.config/chromium-flags.conf` to [disable kwallet][33] integration and speedup start
-  * You can also enable [hardware acceleration][37] on chrome
+* Check [`.config/chromium-flags.conf`][33] was installed by handy-scripts-for-work
+  * [hardware acceleration][37] can be checked by going to `chrome://gpu/`
 * Install [retroarch][34] and reate `~/.config/retroarch/retroarch.cfg`
   * Use online updater to get **assets** to have icons
 
@@ -240,4 +243,5 @@ Do this at the end since it may take into account any blacklisted modules
 [41]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [42]: https://candide-guevara.github.io/cs_related/linux/2020/04/12/linux-hunting-boot-log-errors.html
 [43]: https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/index.html
+[44]: https://wiki.archlinux.org/index.php/Audit_framework
 

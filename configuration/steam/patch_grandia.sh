@@ -111,8 +111,8 @@ unremove_smooth_sprites() {
   done
 }
 
-#patch_launcher
-patch_config
-#remove_smooth_sprites
+patch_launcher
+#patch_config
+remove_smooth_sprites
 #unremove_smooth_sprites
 

@@ -339,6 +339,53 @@ vim_crypt() {
   )
 }
 
+## *USAGE : encrypt_dir DIR
+## Tars and symmetrically encrypts DIR into current folder.
+encrypt_dir() {
+  local source_dir="$1"
+  local gpg_pwd=""
+  local out_archive="`basename "$source_dir"`_`date +"%Y%m%d"`.tar.gz.gpg"
+  read -s -p "passphrase : " gpg_pwd
+
+  # why --batch ? https://unix.stackexchange.com/questions/60213/gpg-asks-for-password-even-with-passphrase
+  if which gpgtar &> /dev/null; then
+    gpgtar --symmetric --output "$out_archive" \
+      --gpg-args --cipher-algo=AES256 \
+      --gpg-args --passphrase="$gpg_pwd" \
+      --gpg-args --batch \
+      "$source_dir"
+  else
+    tar zcf - "$source_dir" \
+    | gpg --symmetric \
+      --cipher-algo AES256 \
+      --passphrase="$gpg_pwd" --batch \
+      --output "$out_archive" -
+  fi
+}
+
+## *USAGE : decrypt_archive ARCH
+## Decrypts and untars ARCH into current folder.
+decrypt_archive() {
+  local source_arch="$1"
+  local gpg_pwd=""
+  local out_dir="`basename "${source_arch%%.*}"`_decrypted"
+  read -s -p "passphrase : " gpg_pwd
+
+  # tar you really make my life difficult
+  # https://unix.stackexchange.com/questions/11018/how-to-choose-directory-name-during-untarring
+  mkdir "$out_dir"
+  if which gpgtar &> /dev/null; then
+    # NOT SUPPORTED : --tar-args --strip-components=1 \
+    gpgtar --decrypt --directory "$out_dir" \
+      --gpg-args --passphrase="$gpg_pwd" \
+      --gpg-args --batch \
+      "$source_arch"
+  else
+    gpg --decrypt --passphrase "$gpg_pwd" --batch "$source_arch" \
+    | tar -C "$out_dir" -zxf -
+  fi
+}
+
 ## *USAGE: my_vim_edit_all [PATTERN] [START_WITH]
 ## Opens all files matching PATTERN one at a time
 ## START_WITH will skip all files lexicographicaly less than it

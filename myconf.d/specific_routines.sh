@@ -132,12 +132,12 @@ import_pics_from_jelanda() {
   local jelanda_host="${JELANDA_HOSTNAME}@${jelanda_ip}"
   local docs_dir="Documents"
   local dates=( `date +"%Y%m%d"` )
-  local indexes=( `seq 1 9` )
+  local indexes=( `seq --format="%04.0f" 1 20` )
 
   run_cmd ssh "${jelanda_host}" dir "$docs_dir" | grep IMG
   for date_str in "${dates[@]}"; do
   for index in "${indexes[@]}"; do
-    local filename="IMG_${date_str}_000${index}.pdf"
+    local filename="IMG_${date_str}_${index}.pdf"
     run_cmd scp "${jelanda_host}:${docs_dir}/$filename" .
   done
   done

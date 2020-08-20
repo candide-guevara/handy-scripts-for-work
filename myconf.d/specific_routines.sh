@@ -160,8 +160,23 @@ mysteam() {
 pdf_shrink() {
   for name in "$@"; do
     local new_name="__`basename "$name"`"
-    run_cmd gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH \
+    # To raster (version is always 1.3 ?!), use 'pdfimage8' for grayscale
+    # https://www.ghostscript.com/doc/current/Use.htm#Invoking
+    # gs -sDEVICE=pdfimage32 -dCompatibilityLevel=1.4 \
+    #   -r300 -dGraphicsAlphaBits=4 -dTextAlphaBits=4 \
+    #   -dNOPAUSE -dQUIET -dBATCH -dSAFER
+
+    # To transform to grayscale add
+    # https://ghostscript.com/doc/9.20/VectorDevices.htm#PDFWRITE
+    #-sColorConversionStrategy=Gray -dProcessColorModel=/DeviceGray \
+    run_cmd gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook \
+      -dNumRenderingThreads=`nproc` \
+      -dSAFER -dNOPAUSE -dQUIET -dBATCH \
       -sOutputFile="$new_name" "$name"
+    # Some perf options (do not make much difference)
+    #-dMaxPatternBitmap=$((64 * 1024 * 1024)) -dMaxBitmap=$((64 * 1024 * 1024)) -dBufferSpace=$((1024 * 1024 * 1024)) \
+    # Looks like BS this only makes gs crash
+    #-c $((1024 * 1024 * 1024)) setvmthreshold -f \
   done
 }
 

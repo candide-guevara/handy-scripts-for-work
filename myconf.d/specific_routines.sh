@@ -115,7 +115,7 @@ start_sshd() {
   run_cmd ${check_cmd[@]}
 }
 
-## *USAGE: import_pics_from_jelanda IP
+## *USAGE: import_pics_from_jelanda IP [DAY_OFFSET]
 ## Gets all scanned docs via scp from jelanda host.
 import_pics_from_jelanda() {
   if pgrep ssh-agent; then
@@ -128,17 +128,21 @@ import_pics_from_jelanda() {
   fi
 
   local jelanda_ip="$1"
+  local day_offset="$2"
   [[ -z "$jelanda_ip" ]] && read -s -p 'enter jelanda ip' jelanda_ip
   local jelanda_host="${JELANDA_HOSTNAME}@${jelanda_ip}"
   local docs_dir="Documents"
-  local dates=( `date +"%Y%m%d"` )
-  local indexes=( `seq --format="%04.0f" 1 20` )
+  local -a dates=( `date +"%Y%m%d"` )
+  [[ ! -z "$day_offset" ]] && dates=( `date +"%Y%m%d" --date="$day_offset days ago"` )
+  local -a indexes=( `seq --format="%04.0f" 1 20` )
+  local all_remote_imgs="`mktemp`"
 
-  run_cmd ssh "${jelanda_host}" dir "$docs_dir" | grep IMG
+  ssh "${jelanda_host}" dir "$docs_dir" | grep IMG > "$all_remote_imgs"
   for date_str in "${dates[@]}"; do
   for index in "${indexes[@]}"; do
     local filename="IMG_${date_str}_${index}.pdf"
-    run_cmd scp "${jelanda_host}:${docs_dir}/$filename" .
+    grep "$filename" "$all_remote_imgs" \
+      && run_cmd scp "${jelanda_host}:${docs_dir}/$filename" .
   done
   done
 }

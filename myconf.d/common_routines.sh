@@ -343,47 +343,63 @@ vim_crypt() {
 ## Tars and symmetrically encrypts DIR into current folder.
 encrypt_dir() {
   local source_dir="$1"
+  local source_dirname="`basename "$1"`"
+  local source_root="`readlink -f "$source_dir"`"
+  source_root="`dirname "$source_root"`"
   local gpg_pwd=""
-  local out_archive="`basename "$source_dir"`_`date +"%Y%m%d"`.tar.gz.gpg"
+  local out_archive="${source_dirname}_`date +"%Y%m%d"`.tar.gz.gpg"
+  out_archive="`readlink -f "$out_archive"`"
   read -s -p "passphrase : " gpg_pwd
 
   # why --batch ? https://unix.stackexchange.com/questions/60213/gpg-asks-for-password-even-with-passphrase
-  if which gpgtar &> /dev/null; then
+  #if which gpgtar &> /dev/null; then
+  pushd "$source_root"
+  if false; then
+    # BE CAREFUL IT IS A TRAP ! absolute paths not supported for source_dir
+    # https://gitlab.com/gitlab-org/charts/deploy-image-helm-base/blob/c90885e8a0674c854dc1a7a00156c0fcbe88650b/container/source/gnupg/tools/gpgtar-create.c
     gpgtar --symmetric --output "$out_archive" \
       --gpg-args --cipher-algo=AES256 \
       --gpg-args --passphrase="$gpg_pwd" \
       --gpg-args --batch \
-      "$source_dir"
+      "$source_dirname"
   else
-    tar zcf - "$source_dir" \
+    tar zcf - "$source_dirname" \
     | gpg --symmetric \
       --cipher-algo AES256 \
       --passphrase="$gpg_pwd" --batch \
       --output "$out_archive" -
   fi
+  popd
 }
 
 ## *USAGE : decrypt_archive ARCH
 ## Decrypts and untars ARCH into current folder.
 decrypt_archive() {
   local source_arch="$1"
+  local source_dirname="`basename "$1"`"
+  local source_root="`readlink -f "$source_arch"`"
+  source_root="`dirname "$source_root"`"
   local gpg_pwd=""
-  local out_dir="`basename "${source_arch%%.*}"`_decrypted"
+  local out_dir="${source_dirname%%.*}_decrypted"
+  out_dir="`readlink -f "$out_dir"`"
   read -s -p "passphrase : " gpg_pwd
 
   # tar you really make my life difficult
   # https://unix.stackexchange.com/questions/11018/how-to-choose-directory-name-during-untarring
+  pushd "$source_root"
   mkdir "$out_dir"
-  if which gpgtar &> /dev/null; then
+  #if which gpgtar &> /dev/null; then
+  if false; then
     # NOT SUPPORTED : --tar-args --strip-components=1 \
     gpgtar --decrypt --directory "$out_dir" \
       --gpg-args --passphrase="$gpg_pwd" \
       --gpg-args --batch \
-      "$source_arch"
+      "$source_dirname"
   else
-    gpg --decrypt --passphrase "$gpg_pwd" --batch "$source_arch" \
-    | tar -C "$out_dir" -zxf -
+    gpg --decrypt --passphrase "$gpg_pwd" --batch "$source_dirname" \
+    | tar -C "$out_dir" --strip-components=1 -zxf -
   fi
+  popd
 }
 
 ## *USAGE: my_vim_edit_all [PATTERN] [START_WITH]

@@ -339,6 +339,28 @@ vim_crypt() {
   )
 }
 
+## *USAGE : re_encrypt_pw_file CRYPT_FILE
+## Decrypts CRYPT_FILE, encrypts it under a new password and deletes the old.
+re_encrypt_pw_file() {
+  local src_crypted="$1"
+  local tmp_clear_text="/dev/shm/clear_`date +%s`"
+  local tmp_oldcrypted="/dev/shm/oldcrypted_`date +%s`"
+  [[ -f "$src_crypted" ]] || return 1
+
+  function __cleanup__() {
+    shred --remove "$tmp_clear_text"
+    [[ -f "$tmp_oldcrypted" ]] && shred --remove "$tmp_oldcrypted"
+  }
+
+  (
+    trap __cleanup__ EXIT INT TERM
+    gpg --decrypt "$src_crypted" > "$tmp_clear_text" || return 2
+    mv "$src_crypted" "$tmp_oldcrypted" || return 3
+    gpg --symmetric --cipher-algo AES256 --output "$src_crypted" "$tmp_clear_text" \
+      || mv "$tmp_oldcrypted" "$src_crypted"
+  )
+}
+
 ## *USAGE : encrypt_dir DIR
 ## Tars and symmetrically encrypts DIR into current folder.
 encrypt_dir() {

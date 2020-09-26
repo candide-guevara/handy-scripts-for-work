@@ -143,6 +143,7 @@
   * Use `pactl list` to check options are setup ok
 * There are too many option for power management : powerdevil, acpid, sytemd-logind, TLP, upower...
   * pick one and disable the others (via systemd services ?)
+  * Make sure there are no actions that can suspend/sleep the system in `/etc/systemd/logind.conf`
 
 ### Notebook specific tweaks
 

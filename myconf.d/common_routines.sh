@@ -372,6 +372,11 @@ encrypt_dir() {
   local out_archive="${source_dirname}_`date +"%Y%m%d"`.tar.gz.gpg"
   out_archive="`readlink -f "$out_archive"`"
   read -s -p "passphrase : " gpg_pwd
+  read -s -p "repeat passphrase : " gpg_pwd2
+  if [[ "$gpg_pwd" != "$gpg_pwd2" ]]; then
+    errecho 'Passphrase mismatch, abort !'
+    return 1
+  fi
 
   # why --batch ? https://unix.stackexchange.com/questions/60213/gpg-asks-for-password-even-with-passphrase
   #if which gpgtar &> /dev/null; then

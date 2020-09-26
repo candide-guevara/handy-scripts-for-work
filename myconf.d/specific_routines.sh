@@ -4,6 +4,7 @@ alias blkid="sudo blkid"
 alias jls="sudo journalctl"
 alias cgls="sudo systemd-cgls"
 alias sc="sudo systemctl"
+JELANDA_HOSTNAME=cguev
 
 ## *USAGE: gdrive_file_download LAST_DAYS CLIENT_ID CLIENT_SECRET FOLDER_ID
 ## Downloads all files created in the LAST_DAYS under a given google drive folder.
@@ -114,6 +115,34 @@ start_sshd() {
   run_cmd ${check_cmd[@]}
 }
 
+## *USAGE: import_pics_from_jelanda IP
+## Gets all scanned docs via scp from jelanda host.
+import_pics_from_jelanda() {
+  if pgrep ssh-agent; then
+    echo "ssh-agent already started"
+  else
+    local ssh_agent_cfg="`mktemp`"
+    ssh-agent > "$ssh_agent_cfg"
+    run_cmd source "$ssh_agent_cfg"
+    run_cmd ssh-add "$HOME/.ssh/arngrim_id_rsa"
+  fi
+
+  local jelanda_ip="$1"
+  [[ -z "$jelanda_ip" ]] && read -s -p 'enter jelanda ip' jelanda_ip
+  local jelanda_host="${JELANDA_HOSTNAME}@${jelanda_ip}"
+  local docs_dir="Documents"
+  local dates=( `date +"%Y%m%d"` )
+  local indexes=( `seq 1 9` )
+
+  run_cmd ssh "${jelanda_host}" dir "$docs_dir" | grep IMG
+  for date_str in "${dates[@]}"; do
+  for index in "${indexes[@]}"; do
+    local filename="IMG_${date_str}_000${index}.pdf"
+    run_cmd scp "${jelanda_host}:${docs_dir}/$filename" .
+  done
+  done
+}
+
 ## *USAGE: mysteam
 ## Launches steam inside a systemd unit to contain all of its sneaky child processes
 mysteam() {
@@ -199,11 +228,11 @@ rotate_ssh_keys() {
   local github_user='candide-guevara'
   read -s -p 'enter passphrase for ssh keys' passphrase
   read -s -p 'enter llewelyn ip for exporting ssh keys' llewelyn_scp
-  read -s -p 'enter jelanda ip for exporting ssh keys' jelanda_scp
+  read -s -p 'enter jelanda ip for exporting ssh keys' jelanda_ip
   pushd "$HOME/.ssh"
   [[ -f authorized_keys ]] && rm authorized_keys
   [[ -z "$llewelyn_scp" ]] || llewelyn_scp="${USER}@${llewelyn_scp}"
-  [[ -z "$jelanda_scp" ]] || jelanda_scp="cguev@${jelanda_scp}"
+  [[ -z "$jelanda_ip" ]] || jelanda_scp="${JELANDA_HOSTNAME}@${jelanda_ip}"
 
   # BE CAREFUL IT IS A TRAP !
   # Any ssh keys created using a personal token are only valid as long as the token is not revoked

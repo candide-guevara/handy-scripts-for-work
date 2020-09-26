@@ -24,15 +24,11 @@ DIRS_TO_COPY=(
 FILES_TO_COPY=(
   "myconf.d/bashrc"
 
+  `find configuration/shell_tools -type f -name '*rc'`
   "configuration/shell_tools/gitconfig"
   "configuration/shell_tools/gdbinit"
-  "configuration/shell_tools/hgrc"
-  "configuration/shell_tools/inputrc"
   "configuration/shell_tools/pam_environment"
-  "configuration/shell_tools/pdbrc"
-  "configuration/shell_tools/screenrc"
   "configuration/shell_tools/tmux.conf"
-  "configuration/shell_tools/vimrc"
 )
 DIRS_TO_WIPE=( "$HOME/.myconf.d" )
 

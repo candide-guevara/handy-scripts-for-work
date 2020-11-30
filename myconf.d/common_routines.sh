@@ -477,7 +477,26 @@ pack_ssh() {
   )
 }
 
-## import_patch_list ORIGING_REPO COMMIT_RANGE
+## *USAGE: my_verify_cert SERVER:PORT|URL
+## Uses openssl to connect and verifies TLS certificate.
+## You can test it works by checking cert for 'untrusted-root.badssl.com'
+my_verify_cert() {
+  local target="$1"
+  local server_port="`echo "$target" | sed -r 's|^https://([^/]+).*|\1|'`"
+  [[ "$server_port" = *:* ]] || server_port="${server_port}:443"
+  # The 'Q' in stdin is to avoid openssl to wait for the cnx timeout
+  run_cmd openssl s_client -brief -showcerts -no_ssl3 -connect "$server_port" 2>&1 <<< 'Q' \
+    | gawk -f $AWK_COLOR_SCRIPT -e '
+    /TLSv1.[01]/ { $0 = bldred $0; }
+    /^Peer certificate:/ { $0 = txtcyn $0; }
+    /^Verification:/ { $0 = bldgrn $0; }
+    /^Verification error:/ { $0 = bldred $0; }
+    { print $0 txtrst; }
+  '
+}
+
+
+## *USAGE: import_patch_list ORIGING_REPO COMMIT_RANGE
 ## Get patches for each revision in COMMIT_RANGE and apply it to the git repo under the current directory.
 import_patch_list() {
   local origin_repo_root="$1"

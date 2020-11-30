@@ -163,6 +163,7 @@
 * Restore virtual machines disk images to ssd storage
 * Check [`.config/chromium-flags.conf`][33] was installed by handy-scripts-for-work
   * [hardware acceleration][37] can be checked by going to `chrome://gpu/`
+  * Some testing with 1080p60 on youtube shows cpu video decode works perfectly fine anyway
 * Install [retroarch][34] and reate `~/.config/retroarch/retroarch.cfg`
   * Use online updater to get **assets** to have icons
 
@@ -180,6 +181,7 @@
   * Reduce the time to live for gpg passwords
 * Run `ss -pltun` and `sudo lsof -nPi` to detect listening ports, remove any application opening ports (ex avahi)
 * Create a [polkit rule][32] in `/etc/polkit-1/rules.d` to avoid udisks2 (used by Dolphin) to mount arbitrary devices
+* Create [window rule][45] to not show title bars (gets back a bit of screen real state)
 
 ### Initial ram disk : initramfs
 
@@ -201,6 +203,11 @@ Do this at the end since it may take into account any blacklisted modules
 
 * notification daemon call fail on dbus
 * why did alx module suddenly started failing ?
+
+### Stuff I am testing
+
+* `/etc/systemd/sleep.conf.d/99-mycustom.conf`
+* `/etc/modprobe.d/sound.conf`
 
 [1]: http://forum.fobby.net/index.php?t=msg&goto=2082&
 [2]: https://wiki.archlinux.org/index.php/Maximizing_performance#Using_udev_for_one_device_or_HDD.2FSSD_mixed_environment
@@ -245,4 +252,5 @@ Do this at the end since it may take into account any blacklisted modules
 [42]: https://candide-guevara.github.io/cs_related/linux/2020/04/12/linux-hunting-boot-log-errors.html
 [43]: https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/index.html
 [44]: https://wiki.archlinux.org/index.php/Audit_framework
+[45]: https://docs.kde.org/trunk5/en/kde-workspace/kcontrol/windowspecific/kwin-rule-editor.html
 

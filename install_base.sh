@@ -83,7 +83,7 @@ install_files() {
   done
 
   # reload systemd units if they changed
-  systemctl --user daemon-reload
+  #systemctl --user daemon-reload
 }
 
 diff_files() {

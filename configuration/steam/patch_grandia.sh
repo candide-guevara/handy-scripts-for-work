@@ -1,8 +1,7 @@
 ## Some fixes for grandia HD so that it plays on linux
+source common.sh
 
-STEAM_LIB_ROOT='/media/llewelyn_data_b/SteamLibrary'
-GAME_ROOT="$STEAM_LIB_ROOT/steamapps/common/GRANDIA HD Remaster"
-EMU_CDRIVE_ROOT="$STEAM_LIB_ROOT/steamapps/compatdata/1034860/pfx/drive_c"
+set_environment_vars "330390" "Grandia II Anniversary Edition"
 USER_CFG_ROOT="$EMU_CDRIVE_ROOT/users/steamuser/Application Data/GRANDIA1"
 PREFIX=zzz__
 SUFFIX=.bk

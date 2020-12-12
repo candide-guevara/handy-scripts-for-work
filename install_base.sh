@@ -78,7 +78,7 @@ install_files() {
   done
 
   for file in "${FILES_TO_COPY[@]}"; do
-    my_assert -f "$file"
+    my_assert \( -f "$file" \) -o \( -L "$file" \)
     run_cmd cp --no-dereference --one-file-system --no-target-directory "$file" "$HOME/.`basename $file`"
   done
 

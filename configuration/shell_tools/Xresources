@@ -1,0 +1,9 @@
+! Otherwise you get tiny ugy xterm
+! Auto merged by `xrdb` by `~/.xinitrc`
+! https://wiki.archlinux.org/index.php/X_resources
+xterm*VT100*geometry: 120x30
+xterm*faceName: mono
+xterm*faceSize: 11
+xterm*background: black
+xterm*foreground: lightgrey
+

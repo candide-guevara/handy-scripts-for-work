@@ -22,13 +22,14 @@ DIRS_TO_COPY=(
   "configuration/systemd/systemd_user_env:$HOME/.config/environment.d"
 )
 FILES_TO_COPY=(
-  "myconf.d/bashrc"
-
-  `find configuration/shell_tools -type f -name '*rc'`
+  `find configuration/shell_tools -type f,l -name '*rc'`
+  "configuration/shell_tools/bash_profile"
   "configuration/shell_tools/gitconfig"
   "configuration/shell_tools/gdbinit"
   "configuration/shell_tools/pam_environment"
+  "configuration/shell_tools/profile"
   "configuration/shell_tools/tmux.conf"
+  "configuration/shell_tools/Xresources"
 )
 DIRS_TO_WIPE=( "$HOME/.myconf.d" )
 

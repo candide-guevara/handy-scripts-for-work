@@ -1,6 +1,8 @@
 ## Common routines used by steam patch scripts.
 STEAM_LIB_ROOT='/media/llewelyn_data_b/SteamLibrary'
 VS_RUNTIME_DOWN_SRV="aka.ms"
+PROTON_ROOT="$STEAM_LIB_ROOT/steamapps/common/Proton 5.13"
+CURRENT_PROTON_SETTINGS="user_settings_5_13.py"
 
 set_environment_vars() {
   local steam_id="$1"
@@ -59,7 +61,7 @@ patch_visual_studio_runtime_helper() {
     wget "$download_url" 
     cabextract vc_redist.x64.exe || exit 1
     cabextract a10 || exit 1
-    cabextract a11 || exit 1
+    #cabextract a11 || exit 1
     local -a libs=( `find -type f -iname '*.dll' | sed -r 's/^\.\///' | sort -u` )
 
     for library in "${libs[@]}"; do
@@ -86,5 +88,13 @@ rename_game_data_dir_matching() {
       mv "$data_dir" "$renamed_dir"
     fi
   done
+}
+
+copy_user_settings() {
+  local target_path="$PROTON_ROOT/user_settings.py"
+  local backup_path="$PROTON_ROOT/user_settings.py.bak"
+  [[ -f "$CURRENT_PROTON_SETTINGS" ]] || exit 1
+  [[ -f "$target_path" ]] && mv "$target_path" "$backup_path"
+  cp "$CURRENT_PROTON_SETTINGS" "$target_path"
 }
 

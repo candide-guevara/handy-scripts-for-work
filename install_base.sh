@@ -114,6 +114,7 @@ diff_files() {
   for file in "${FILES_TO_COPY[@]}"; do
     local dest="$HOME/.`basename $file`"
     [[ "${done_files[$dest]}" == 1 ]] && continue
+    [[ -L "$file" ]] && continue
     run_cmd diff -u $file "$dest"
     echo -e "------------------------------------------------------------\n"
     done_files+=( ["$dest"]="1" )

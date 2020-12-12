@@ -238,6 +238,18 @@ conf_source() {
   popd > /dev/null
 }
 
+## *USAGE: conf_source_root
+## Install the handy scripts suite on the root home.
+conf_source_root() {
+  sudo bash --norc --noprofile -c "
+    pushd \"\$HOME\" || exit 1
+    cp -fr '$MY_HANDY_REPO_ROOT' .
+    pushd '`basename "$MY_HANDY_REPO_ROOT"`' || exit 1
+    [[ -f install.sh ]] || exit 1
+    bash ./install.sh -i
+  "
+}
+
 ## *USAGE : mydiff [FILE1 FILE2]
 ## Diffs 2 files or stdin and pipes it to vim
 mydiff() {

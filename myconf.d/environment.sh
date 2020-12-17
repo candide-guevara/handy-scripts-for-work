@@ -24,6 +24,9 @@ for candidate in "${candidates[@]}"; do
 done
 
 candidates=(
+ "$HOME/private-handy-scripts-for-work"
+ "$HOME/Programation/private-handy-scripts-for-work"
+ "$HOME/Documents/private-handy-scripts-for-work"
  "$HOME/handy-scripts-for-work"
  "$HOME/Programation/handy-scripts-for-work"
  "$HOME/Documents/handy-scripts-for-work"

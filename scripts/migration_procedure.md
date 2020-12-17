@@ -13,8 +13,7 @@
 * Export browser parameters : bookmarks
 * Backup virtual machines disks and iso images+licences_keys
 * Backup **encrypted** `/etc` in /media/BifrostSnap/ArngrimHome 
-* Ensure git repo modifs are all commited and pushed to github
-  * handy-scripts-for-work, candide-guevara.github.io, programming_challenges, git_stripped_from_sensitive_info
+* Ensure git repo modifs are all commited and pushed to github (run `git_check_all_pushed`)
 
 * Run a BTRFS [scrub][5] on Bifrost
 * Create snapshots on Lucian_PrioA/B/C
@@ -161,7 +160,7 @@
 * Add themes : droid fonts, kde-gtk-config, gtk 2 and 3 theme matching KDE's (currently breeze)
 * Activate hardware sensors : install `lm_sensors` and run `sensors-detect` (will active systemd unit)
 * Restore virtual machines disk images to ssd storage
-* Check [`.config/chromium-flags.conf`][33] was installed by handy-scripts-for-work
+* Check [`.config/chromium-flags.conf`][33] was installed by private-handy-scripts-for-work
   * [hardware acceleration][37] can be checked by going to `chrome://gpu/`
   * Some testing with 1080p60 on youtube shows cpu video decode works perfectly fine anyway
 * Install [retroarch][34] and reate `~/.config/retroarch/retroarch.cfg`

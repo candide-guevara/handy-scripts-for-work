@@ -315,15 +315,18 @@ backup_home() {
 }
 
 ## *USAGE: ssh_agent_load_key [KEY_NAMES]
-## Starts the ssh-agent if not started already and loads KEY_NAME.
+## Starts the ssh-agent (kill if already started) and loads KEY_NAME.
+## We need to kill the agent if already started since we can only connect to it is the magic envvars are set.
+## This only works in the same terminal where the agent was originally started.
 ssh_agent_load_key() {
+  local ssh_agent_cfg="`mktemp`"
   if pgrep ssh-agent; then
-    echo "ssh-agent already started"
-  else
-    local ssh_agent_cfg="`mktemp`"
-    ssh-agent > "$ssh_agent_cfg"
-    run_cmd source "$ssh_agent_cfg"
+    echo "ssh-agent already started => killing"
+    pkill ssh-agent
   fi
+
+  ssh-agent > "$ssh_agent_cfg"
+  run_cmd source "$ssh_agent_cfg"
   for keyname in "$@"; do
     run_cmd ssh-add "$HOME/.ssh/$keyname"
   done

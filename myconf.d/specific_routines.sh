@@ -10,18 +10,19 @@ JELANDA_HOSTNAME=cguev
 ## Finds all git repos under the current directory and checks all local modifications have been pushed.
 git_check_all_pushed() {
   local -a repo_roots=( `find . -type d -name '.git' | xargs dirname` )
-  ssh_agent_load_key "global_github"
+  ssh_agent_load_key "arngrim_id_rsa" "global_github"
 
   for repo in "${repo_roots[@]}"; do
   pushd "$repo" &> /dev/null
     colecho $txtcyn "CHECKING '${repo}'"
-    IFS=$'\n' local -a modified_tracked=( `git status --porcelain --untracked-files=no` )
+    local -a modified_tracked=( `git status --porcelain --untracked-files=no | xargs -d"\n" -I{} echo "{}"` )
     if [[ "${#modified_tracked[@]}" -gt 0 ]]; then
       colecho $txtylw "[WARN] '$repo' has modification to tracked files"
       printf "  %s\n" "${modified_tracked[@]}"
     fi
     if ! git remote --verbose | grep 'git@github.com' > /dev/null; then
-      colecho $txtylw "[WARN] '$repo' does not have a github remote"
+      git_check_other_host_uptodate . \
+        || colecho $txtylw "[WARN] '$repo' failed to check other host"
       popd &> /dev/null
       continue
     fi
@@ -31,25 +32,61 @@ git_check_all_pushed() {
       return 1
     fi
     local -a remote_branches=( `git branch --remote | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
-    for branch in "${remote_branches[@]}"; do
-      local local_branch="`basename "$branch"`"
-      if ! git branch | grep -E " $local_branch\$" > /dev/null; then
-        errecho "In '$repo' remote branch '$branch' does not match any local branch (expected '$local_branch')"
-        popd &> /dev/null
-        return 1
-      fi
-      #for rev_range in "${local_branch}..${branch}" "${branch}..${local_branch}"; do
-      for rev_range in "${branch}..${local_branch}"; do
-        IFS=$'\n' local -a missing_changes=( `git log --pretty=oneline "$rev_range"` )
-        if [[ "${#missing_changes[@]}" -gt 0 ]]; then
-          colecho $txtylw "[WARN] '${repo}:${branch}' '$rev_range' misses changes :"
-          printf "  %s\n" "${missing_changes[@]}"
-        fi
-      done
-    done
+    __git_check_remote_branches__ "${remote_branches[@]}"
   popd &> /dev/null
   done
   colecho $txtcyn "DONE ${#repo_roots[@]} checked"
+}
+
+## *USAGE: git_check_other_host_uptodate REPOPATH
+## Checks the same repo on my other machine is in sync with this one.
+git_check_other_host_uptodate() {
+  local repo_this_host="`readlink -f "$1"`"
+  local repo_name="`basename "$repo_this_host"`"
+  local repo_other_host="${repo_this_host#$HOME/}"
+  local other_host="llewelyn"
+  [[ "`hostname`" == "$other_host" ]] && other_host="arngrim"
+  __error_if_unreachable__ "$other_host" || return 1
+  ssh "$other_host" test -d "$repo_other_host" || return 1
+
+  pushd "$repo_this_host" &> /dev/null
+  run_cmd git remote add "$other_host" "${USER}@${other_host}:${repo_other_host}" \
+    || return 1
+  run_cmd git fetch "$other_host"
+  local -a remote_branches=( `git branch --remote | grep "$other_host" | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
+  __git_check_remote_branches__ "${remote_branches[@]}"
+  run_cmd git remote remove "$other_host" || return 1
+  popd &> /dev/null
+}
+
+
+# *USAGE: __git_check_remote_branches__ [--both-ways] BRANCHES
+# Checks if there are commit differences between the local and remote branches.
+# Expects current dir the root of the repo to check.
+__git_check_remote_branches__() {
+  if [[ "$1" == "--both-ways" ]]; then
+    shift
+    local both_ways=1
+  fi
+  for branch in "$@"; do
+    local local_branch="`basename "$branch"`"
+    local -a ranges=( "${branch}..${local_branch}" )
+    [[ -z "$both_ways" ]] || ranges+=( "${local_branch}..${branch}" )
+
+    if ! git branch | grep -E " $local_branch\$" > /dev/null; then
+      errecho "In '`basename $PWD`' remote branch '$branch' does not match any local branch (expected '$local_branch')"
+      popd &> /dev/null
+      return 1
+    fi
+
+    for rev_range in "${ranges[@]}"; do
+      local -a missing_changes=( `git log --pretty=oneline "$rev_range" | xargs -d"\n" -I{} echo "{}"` )
+      if [[ "${#missing_changes[@]}" -gt 0 ]]; then
+        colecho $txtylw "[WARN] '`basename ${PWD}`:${branch}' '$rev_range' misses changes :"
+        printf "  %s\n" "${missing_changes[@]}"
+      fi
+    done
+  done
 }
 
 ## *USAGE: gdrive_file_download LAST_DAYS

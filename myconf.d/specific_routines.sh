@@ -52,10 +52,10 @@ git_check_other_host_uptodate() {
   pushd "$repo_this_host" &> /dev/null
   run_cmd git remote add "$other_host" "${USER}@${other_host}:${repo_other_host}" \
     || return 1
-  run_cmd git fetch "$other_host"
+  git fetch "$other_host"
   local -a remote_branches=( `git branch --remote | grep "$other_host" | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
-  __git_check_remote_branches__ "${remote_branches[@]}"
-  run_cmd git remote remove "$other_host" || return 1
+  __git_check_remote_branches__ --both-ways "${remote_branches[@]}"
+  git remote remove "$other_host" || return 1
   popd &> /dev/null
 }
 

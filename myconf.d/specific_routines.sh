@@ -15,10 +15,10 @@ git_check_all_pushed() {
   for repo in "${repo_roots[@]}"; do
   pushd "$repo" &> /dev/null
     colecho $txtcyn "CHECKING '${repo}'"
-    local -a modified_tracked=( `git status --porcelain --untracked-files=no | xargs -d"\n" -I{} echo "{}"` )
-    if [[ "${#modified_tracked[@]}" -gt 0 ]]; then
+    local modified_tracked="`git status --porcelain --untracked-files=no`"
+    if [[ ! -z "${modified_tracked}" ]]; then
       colecho $txtylw "[WARN] '$repo' has modification to tracked files"
-      printf "  %s\n" "${modified_tracked[@]}"
+      echo "${modified_tracked}"
     fi
     if ! git remote --verbose | grep 'git@github.com' > /dev/null; then
       git_check_other_host_uptodate . \
@@ -80,10 +80,10 @@ __git_check_remote_branches__() {
     fi
 
     for rev_range in "${ranges[@]}"; do
-      local -a missing_changes=( `git log --pretty=oneline "$rev_range" | xargs -d"\n" -I{} echo "{}"` )
-      if [[ "${#missing_changes[@]}" -gt 0 ]]; then
+      local missing_changes="`git log --pretty=oneline "$rev_range"`"
+      if [[ ! -z "${missing_changes}" ]]; then
         colecho $txtylw "[WARN] '`basename ${PWD}`:${branch}' '$rev_range' misses changes :"
-        printf "  %s\n" "${missing_changes[@]}"
+        echo "${missing_changes}"
       fi
     done
   done

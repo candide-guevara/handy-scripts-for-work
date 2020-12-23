@@ -508,17 +508,20 @@ my_verify_cert() {
 }
 
 
-## *USAGE: import_patch_list ORIGING_REPO COMMIT_RANGE
-## Get patches for each revision in COMMIT_RANGE and apply it to the git repo under the current directory.
+## *USAGE: import_patch_list ORIGING_REPO FROM_COMMIT [TO_COMMIT]
+## Get patches for each revision in FROM_COMMIT^..TO_COMMIT and apply it to the git repo under the current directory.
+## If TO_COMMIT is not set then the sinlge commit FROM_COMMIT is imported.
 import_patch_list() {
   local origin_repo_root="$1"
-  shift
-  local -a commit_range=( "$@" )
+  local from_commit="$2"
+  local to_commit="$3"
+  local commit_range="${from_commit}^..${to_commit}"
+  [[ -z "$to_commit" ]] && commit_range="${from_commit}^..${from_commit}"
 
   [[ -d "$origin_repo_root" ]] || return 1
 
   pushd "$origin_repo_root"
-  local -a patch_list=( `git format-patch "${commit_range[@]}"` )
+  local -a patch_list=( `git format-patch "$commit_range"` )
   [[ ${#patch_list[@]} -gt 0 ]] || return 2
   popd
 

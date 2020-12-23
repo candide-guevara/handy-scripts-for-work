@@ -53,27 +53,39 @@ git_check_other_host_uptodate() {
   git remote add "$other_host" "${USER}@${other_host}:${repo_other_host}" \
     || return 1
   git fetch "$other_host" > /dev/null
-  local fix_script="`mktemp --tmpdir "${repo_name}.XXXXXX"`"
   local -a remote_branches=( `git branch --remote | grep "$other_host" | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
-  echo "
-    pushd '$repo_this_host'
-    git remote add '$other_host' '${USER}@${other_host}:${repo_other_host}'
-    git fetch '$other_host'
-    for branch in ${remote_branches[@]}; do
-      local_branch=\"\`basename \$branch\`\"
-      git checkout \"\$local_branch\" || break
-      git pull --dry-run '$other_host' || break
-      git push --dry-run '$other_host' \"\$local_branch\" || break
-    done
-    git remote remove '$other_host'
-    popd
-  " > "$fix_script"
-  __git_check_remote_branches__ --both-ways "${remote_branches[@]}" \
-    || echo "fix with : bash '$fix_script'"
+  __git_check_remote_branches__ --both-ways "${remote_branches[@]}"
   git remote remove "$other_host" || return 1
+  echo "git_sync_host '$other_host' '$repo_this_host'"
   popd &> /dev/null
 }
 
+## *USAGE: git_sync_host HOST REPOPATH
+## Syncs git REPOPATH between this machine and HOST.
+git_sync_host() {
+  local other_host="$1"
+  local repo_full_path="$2"
+  local this_host="`hostname`"
+  local repo_path="${repo_full_path#$HOME/}"
+
+  pushd "$repo_full_path" &> /dev/null || return 1
+  git remote add "$other_host" "${USER}@${other_host}:${repo_path}"
+  git fetch "$other_host"
+  local -a remote_branches=( `git branch --remote | grep "$other_host" | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
+  for branch in "${remote_branches[@]}"; do
+    local local_branch="`basename "$branch"`"
+    git checkout "$local_branch" || break
+    git pull --dry-run --autostash "$other_host" "$local_branch" || break
+  done
+  git remote remove "$other_host"
+  popd &> /dev/null
+
+  # Be careful it is a trap ! Git will refuse to push to the other repo
+  # (maybe because it can clobber working dir changes ?)
+  # This is why we need to 'pull' from both sides instead of 'pull/push'.
+  __error_if_unreachable__ "$other_host" || return 1
+  ssh "$other_host" bash --login -c "git_sync_host '$this_host' '$repo_path'"
+}
 
 # *USAGE: __git_check_remote_branches__ [--both-ways] BRANCHES
 # Checks if there are commit differences between the local and remote branches.
@@ -83,7 +95,6 @@ __git_check_remote_branches__() {
     shift
     local both_ways=1
   fi
-  local is_missing=0
   for branch in "$@"; do
     local local_branch="`basename "$branch"`"
     local -a ranges=( "${branch}..${local_branch}" )
@@ -98,13 +109,11 @@ __git_check_remote_branches__() {
     for rev_range in "${ranges[@]}"; do
       local missing_changes="`git log --pretty=oneline "$rev_range"`"
       if [[ ! -z "${missing_changes}" ]]; then
-        is_missing=2
         colecho $txtylw "[WARN] '`basename ${PWD}`:${branch}' '$rev_range' misses changes :"
         echo "${missing_changes}"
       fi
     done
   done
-  return "$is_missing"
 }
 
 ## *USAGE: gdrive_file_download LAST_DAYS

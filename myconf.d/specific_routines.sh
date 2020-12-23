@@ -56,26 +56,34 @@ git_check_other_host_uptodate() {
   local -a remote_branches=( `git branch --remote | grep "$other_host" | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
   __git_check_remote_branches__ --both-ways "${remote_branches[@]}"
   git remote remove "$other_host" || return 1
-  echo "git_sync_host '$other_host' '$repo_this_host'"
+  echo "git_sync_host --dry-run '$other_host' '$repo_this_host'"
   popd &> /dev/null
 }
 
-## *USAGE: git_sync_host HOST REPOPATH
+## *USAGE: git_sync_host [--dry-run] [--no-ssh] HOST REPOPATH
 ## Syncs git REPOPATH between this machine and HOST.
 git_sync_host() {
+  if [[ "$1" == "--dry-run" ]] || [[ "$2" == "--dry-run" ]]; then
+    shift
+    local dry_run="--dry-run"
+  fi
+  if [[ "$1" == "--no-ssh" ]] || [[ "$2" == "--no-ssh" ]]; then
+    shift
+    local no_ssh=1
+  fi
   local other_host="$1"
   local repo_full_path="$2"
   local this_host="`hostname`"
   local repo_path="${repo_full_path#$HOME/}"
 
   pushd "$repo_full_path" &> /dev/null || return 1
-  git remote add "$other_host" "${USER}@${other_host}:${repo_path}"
+  run_cmd git remote add "$other_host" "${USER}@${other_host}:${repo_path}"
   git fetch "$other_host"
   local -a remote_branches=( `git branch --remote | grep "$other_host" | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
   for branch in "${remote_branches[@]}"; do
     local local_branch="`basename "$branch"`"
     git checkout "$local_branch" || break
-    git pull --dry-run --autostash "$other_host" "$local_branch" || break
+    run_cmd git pull $dry_run --autostash "$other_host" "$local_branch" || break
   done
   git remote remove "$other_host"
   popd &> /dev/null
@@ -83,8 +91,12 @@ git_sync_host() {
   # Be careful it is a trap ! Git will refuse to push to the other repo
   # (maybe because it can clobber working dir changes ?)
   # This is why we need to 'pull' from both sides instead of 'pull/push'.
-  __error_if_unreachable__ "$other_host" || return 1
-  ssh "$other_host" bash --login -c "git_sync_host '$this_host' '$repo_path'"
+  if [[ -z "$no_ssh" ]]; then
+    __error_if_unreachable__ "$other_host" || return 1
+    # Uses agent forwarding so it expects this host to have the maste git key loaded on its agent
+    run_cmd ssh -o ForwardAgent=yes "$other_host" \
+      bash --login -c "\"git_sync_host $dry_run --no-ssh '$this_host' '$repo_path'\""
+  fi
 }
 
 # *USAGE: __git_check_remote_branches__ [--both-ways] BRANCHES

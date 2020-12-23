@@ -620,3 +620,14 @@ helpme() {
   less $pattern $TMP_HELP_FILE
 }
 
+# *USAGE: __error_if_unreachable__ HOSTS
+__error_if_unreachable__() {
+  for host in "$@"; do
+    if ! ping -c 1 -q "$host" &> /dev/null; then
+      errecho "Cannot ping '$host'"
+      return 1
+    fi
+  done
+  return 0
+}
+

@@ -161,15 +161,14 @@ start_sshd() {
   run_cmd ${check_cmd[@]}
 }
 
-## *USAGE: import_pics_from_jelanda IP [DAY_OFFSET]
+## *USAGE: import_pics_from_jelanda [DAY_OFFSET]
 ## Gets all scanned docs via scp from jelanda host.
 import_pics_from_jelanda() {
   ssh_agent_load_key "arngrim_id_rsa"
 
-  local jelanda_ip="$1"
   local day_offset="$2"
-  [[ -z "$jelanda_ip" ]] && read -s -p 'enter jelanda ip' jelanda_ip
-  local jelanda_host="${JELANDA_HOSTNAME}@${jelanda_ip}"
+  __error_if_unreachable__ "jelanda" || return 1
+  local jelanda_host="${JELANDA_HOSTNAME}@jelanda"
   local docs_dir="Documents"
   local -a dates=( `date +"%Y%m%d"` )
   [[ ! -z "$day_offset" ]] && dates=( `date +"%Y%m%d" --date="$day_offset days ago"` )
@@ -278,33 +277,89 @@ backup_home() {
   popd
 }
 
-## *USAGE: ssh_agent_load_key [KEY_NAME]
+## *USAGE: ssh_agent_load_key [KEY_NAMES]
 ## Starts the ssh-agent if not started already and loads KEY_NAME.
 ssh_agent_load_key() {
-  local keyname="$1"
   if pgrep ssh-agent; then
     echo "ssh-agent already started"
   else
     local ssh_agent_cfg="`mktemp`"
     ssh-agent > "$ssh_agent_cfg"
     run_cmd source "$ssh_agent_cfg"
-    run_cmd ssh-add "$HOME/.ssh/$keyname"
   fi
+  for keyname in "$@"; do
+    run_cmd ssh-add "$HOME/.ssh/$keyname"
+  done
 }
 
 ## *USAGE : rotate_ssh_keys
 ## Rotates all keys found under $HOME/.ssh
 rotate_ssh_keys() {
-  [[ -d "$HOME/.ssh" ]] || return 1
+  my_assert -d "$HOME/.ssh" || return 1
+  my_assert "`hostname`" == "arngrim" || return 1
+  # Windows firewall refuses pings by default : https://kb.iu.edu/d/aopy
+  __error_if_unreachable__ "llewelyn" "jelanda"
   local nonce=`date '+%Y%m%d_%s'`
   local github_user='candide-guevara'
   read -s -p 'enter passphrase for ssh keys' passphrase
-  read -s -p 'enter llewelyn ip for exporting ssh keys' llewelyn_scp
-  read -s -p 'enter jelanda ip for exporting ssh keys' jelanda_ip
   pushd "$HOME/.ssh"
   [[ -f authorized_keys ]] && rm authorized_keys
-  [[ -z "$llewelyn_scp" ]] || llewelyn_scp="${USER}@${llewelyn_scp}"
-  [[ -z "$jelanda_ip" ]] || jelanda_scp="${JELANDA_HOSTNAME}@${jelanda_ip}"
+  local llewelyn_scp="${USER}@llewelyn"
+  local jelanda_scp="${JELANDA_HOSTNAME}@jelanda"
+  ssh_agent_load_key "arngrim_id_rsa"
+
+  for pubkey in `find -type f -iname '*.pub'`; do
+    echo -e "\n##### FOUND $pubkey #####\n"
+    local pubkey="${pubkey#./}"
+    local privkey="${pubkey%.pub}"
+    mv "$pubkey" "${privkey}_${nonce}.pub.bk"
+    mv "$privkey" "${privkey}_${nonce}.bk"
+    run_cmd ssh-keygen -t rsa -b 4096 -f "$privkey" -C "${privkey}_${nonce}" -N "$passphrase"
+
+    case "$privkey" in
+    arngrim_id_rsa)
+      cat "$pubkey" >> authorized_keys
+      chmod og-wx authorized_keys
+      run_cmd scp -i "${privkey}_${nonce}.bk" authorized_keys "${llewelyn_scp}:.ssh"
+
+      cp authorized_keys authorized_keys_win
+      unix2dos authorized_keys_win
+      run_cmd scp -i "${privkey}_${nonce}.bk" authorized_keys_win "${jelanda_scp}:.ssh"
+      local -a win_ssh_ps=( ssh -i "${privkey}_${nonce}.bk" "$jelanda_scp" powershell /C )
+      # https://github.com/PowerShell/Win32-OpenSSH/wiki/Security-protection-of-various-files-in-Win32-OpenSSH
+      # the authorized_keys file should have the following access rights
+      # NT AUTHORITY\SYSTEM:(F)
+      # BUILTIN\Administrators:(F)
+      # JELANDA\cguev:(F)
+      run_cmd "${win_ssh_ps[@]}" 'icacls    .ssh/authorized_keys_win .ssh/authorized_keys'
+      run_cmd "${win_ssh_ps[@]}" 'mv -Force .ssh/authorized_keys_win .ssh/authorized_keys'
+      run_cmd "${win_ssh_ps[@]}" 'write-host .ssh/authorized_keys installed OK' \
+        || errecho "Could not install .ssh/authorized_keys in jelanda"
+      rm authorized_keys_win
+      ssh_agent_load_key "arngrim_id_rsa"
+    ;;
+
+    global_github)
+      colecho $txtgrn "go to https://github.com/settings/keys"
+      echo "${privkey}_${nonce}"
+      cat "$pubkey"
+      read -r -s -n 1 -p 'done' ; echo
+    ;;
+
+    private_*)
+      local reponame="${privkey%_repo_github}"
+      colecho $txtgrn "go to https://github.com/candide-guevara/$reponame/settings/keys"
+      echo "${privkey}_${nonce}"
+      cat "$pubkey"
+      read -r -s -n 1 -p 'done' ; echo
+    ;;
+
+    *) errecho "Unknown key public='$pubkey' private='$privkey'" ;;
+    esac
+
+    run_cmd scp "$privkey" "$pubkey" "${llewelyn_scp}:.ssh"
+  done
+  popd
 
   # BE CAREFUL IT IS A TRAP !
   # Any ssh keys created using a personal token are only valid as long as the token is not revoked
@@ -317,79 +372,22 @@ rotate_ssh_keys() {
   #  --header "Authorization: token $access_token"
   #)
 
-  for pubkey in `find -type f -iname '*.pub'`; do
-    echo -e "\n##### FOUND $pubkey #####\n"
-    local pubkey="${pubkey#./}"
-    local privkey="${pubkey%.pub}"
-    mv "$pubkey" "${privkey}_${nonce}.pub.bk"
-    mv "$privkey" "${privkey}_${nonce}.bk"
-    run_cmd ssh-keygen -t rsa -b 4096 -f "$privkey" -C "${privkey}_${nonce}" -N "$passphrase"
+  #local data="{
+  #  \"title\": \"${privkey}_${nonce}\",
+  #  \"key\": \"`cat "$pubkey" | tr -d "\n"`\",
+  #  \"read_only\": false   # for specific repo only
+  #}"
+  #local url_root="users/$github_user/keys"
+  #local url_root="repos/$github_user/$reponame/keys"
+  #curl "${curl_opts[@]}" https://api.github.com/"$url_root" \
+  #  | grep -E '^\s*.id.:\s+[[:digit:]]+,' \
+  #  | sed -r 's/^\s*.id.:\s+([[:digit:]]+),/\1/' \
+  #  | while read keyid; do
+  #      run_cmd curl "${curl_opts[@]}" -X DELETE https://api.github.com/"$url_root/$keyid"
+  #    done
+  #run_cmd curl "${curl_opts[@]}" -X POST --data "$data" https://api.github.com/"$url_root"
+  #run_cmd curl "${curl_opts[@]}" https://api.github.com/"$url_root"
 
-    case "$privkey" in
-    *arngrim*)
-      cat "$pubkey" >> authorized_keys
-      chmod og-wx authorized_keys
-      [[ -z "$llewelyn_scp" ]] || scp -i "${privkey}_${nonce}.bk" authorized_keys "${llewelyn_scp}:.ssh"
-      if ! [[ -z "$jelanda_scp" ]]; then
-        cp authorized_keys authorized_keys_win
-        unix2dos authorized_keys_win
-        scp -i "${privkey}_${nonce}.bk" authorized_keys_win "${jelanda_scp}:.ssh"
-        local -a win_ssh_ps=( ssh -i "${privkey}_${nonce}.bk" "$jelanda_scp" powershell /C )
-        # https://github.com/PowerShell/Win32-OpenSSH/wiki/Security-protection-of-various-files-in-Win32-OpenSSH
-        # the authorized_keys file should have the following access rights
-        # NT AUTHORITY\SYSTEM:(F)
-        # BUILTIN\Administrators:(F)
-        # JELANDA\cguev:(F)
-        "${win_ssh_ps[@]}" 'icacls    .ssh\authorized_keys_win .ssh\authorized_keys'
-        "${win_ssh_ps[@]}" 'mv -Force .ssh\authorized_keys_win .ssh\authorized_keys'
-        rm authorized_keys_win
-      fi
-    ;;
-
-    *global_github*)
-      colecho $txtgrn "go to https://github.com/settings/keys"
-      echo "${privkey}_${nonce}"
-      cat "$pubkey"
-      read -r -s -n 1 -p 'done' ; echo
-      #local data="{
-      #  \"title\": \"${privkey}_${nonce}\",
-      #  \"key\": \"`cat "$pubkey" | tr -d "\n"`\"
-      #}"
-      #curl "${curl_opts[@]}" https://api.github.com/users/"$github_user"/keys \
-      #  | grep -E '^\s*.id.:\s+[[:digit:]]+,' \
-      #  | sed -r 's/^\s*.id.:\s+([[:digit:]]+),/\1/' \
-      #  | while read keyid; do
-      #      run_cmd curl "${curl_opts[@]}" -X DELETE https://api.github.com/user/keys/"$keyid"
-      #    done
-      #run_cmd curl "${curl_opts[@]}" -X POST --data "$data" https://api.github.com/user/keys
-      #run_cmd curl "${curl_opts[@]}" https://api.github.com/users/"$github_user"/keys
-    ;;
-
-    *repo_github*)
-      local reponame="${privkey%_repo_github}"
-      colecho $txtgrn "go to https://github.com/candide-guevara/browser_extensions/settings/keys"
-      echo "${privkey}_${nonce}"
-      cat "$pubkey"
-      read -r -s -n 1 -p 'done' ; echo
-      #local data="{
-      #  \"title\": \"${privkey}_${nonce}\",
-      #  \"key\": \"`cat "$pubkey" | tr -d "\n"`\",
-      #  \"read_only\": false
-      #}"
-      #curl "${curl_opts[@]}" https://api.github.com/repos/"$github_user"/"$reponame"/keys \
-      #  | grep -E '^\s*.id.:\s+[[:digit:]]+,' \
-      #  | sed -r 's/^\s*.id.:\s+([[:digit:]]+),/\1/' \
-      #  | while read keyid; do
-      #      run_cmd curl "${curl_opts[@]}" -X DELETE https://api.github.com/repos/"$github_user"/"$reponame"/keys/"$keyid"
-      #    done
-      #run_cmd curl "${curl_opts[@]}" -X POST --data "$data" https://api.github.com/repos/"$github_user"/"$reponame"/keys
-      #run_cmd curl "${curl_opts[@]}" https://api.github.com/repos/"$github_user"/"$reponame"/keys
-    ;;
-    esac
-
-    [[ -z "$llewelyn_scp" ]] || scp "$privkey" "$pubkey" "${llewelyn_scp}:.ssh"
-  done
-  popd
   #access_token=bananas
   #colecho $txtylw "do not forget to delete the access token"
 }

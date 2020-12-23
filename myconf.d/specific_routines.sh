@@ -6,7 +6,53 @@ alias cgls="sudo systemd-cgls"
 alias sc="sudo systemctl"
 JELANDA_HOSTNAME=cguev
 
-## *USAGE: gdrive_file_download LAST_DAYS CLIENT_ID CLIENT_SECRET FOLDER_ID
+## *USAGE: git_check_all_pushed
+## Finds all git repos under the current directory and checks all local modifications have been pushed.
+git_check_all_pushed() {
+  local -a repo_roots=( `find . -type d -name '.git' | xargs dirname` )
+  ssh_agent_load_key "global_github"
+
+  for repo in "${repo_roots[@]}"; do
+  pushd "$repo" &> /dev/null
+    colecho $txtcyn "CHECKING '${repo}'"
+    IFS=$'\n' local -a modified_tracked=( `git status --porcelain --untracked-files=no` )
+    if [[ "${#modified_tracked[@]}" -gt 0 ]]; then
+      colecho $txtylw "[WARN] '$repo' has modification to tracked files"
+      printf "  %s\n" "${modified_tracked[@]}"
+    fi
+    if ! git remote --verbose | grep 'git@github.com' > /dev/null; then
+      colecho $txtylw "[WARN] '$repo' does not have a github remote"
+      popd &> /dev/null
+      continue
+    fi
+    if ! git fetch --all > /dev/null; then
+      errecho "Failed to fetch branches for '$repo'"
+      popd &> /dev/null
+      return 1
+    fi
+    local -a remote_branches=( `git branch --remote | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
+    for branch in "${remote_branches[@]}"; do
+      local local_branch="`basename "$branch"`"
+      if ! git branch | grep -E " $local_branch\$" > /dev/null; then
+        errecho "In '$repo' remote branch '$branch' does not match any local branch (expected '$local_branch')"
+        popd &> /dev/null
+        return 1
+      fi
+      #for rev_range in "${local_branch}..${branch}" "${branch}..${local_branch}"; do
+      for rev_range in "${branch}..${local_branch}"; do
+        IFS=$'\n' local -a missing_changes=( `git log --pretty=oneline "$rev_range"` )
+        if [[ "${#missing_changes[@]}" -gt 0 ]]; then
+          colecho $txtylw "[WARN] '${repo}:${branch}' '$rev_range' misses changes :"
+          printf "  %s\n" "${missing_changes[@]}"
+        fi
+      done
+    done
+  popd &> /dev/null
+  done
+  colecho $txtcyn "DONE ${#repo_roots[@]} checked"
+}
+
+## *USAGE: gdrive_file_download LAST_DAYS
 ## Downloads all files created in the LAST_DAYS under a given google drive folder.
 ## OAuth inspiration from https://gist.github.com/LindaLawton/cff75182aac5fa42930a09f58b63a309#file-googleauthenticationcurl-sh
 gdrive_file_download() {
@@ -118,14 +164,7 @@ start_sshd() {
 ## *USAGE: import_pics_from_jelanda IP [DAY_OFFSET]
 ## Gets all scanned docs via scp from jelanda host.
 import_pics_from_jelanda() {
-  if pgrep ssh-agent; then
-    echo "ssh-agent already started"
-  else
-    local ssh_agent_cfg="`mktemp`"
-    ssh-agent > "$ssh_agent_cfg"
-    run_cmd source "$ssh_agent_cfg"
-    run_cmd ssh-add "$HOME/.ssh/arngrim_id_rsa"
-  fi
+  ssh_agent_load_key "arngrim_id_rsa"
 
   local jelanda_ip="$1"
   local day_offset="$2"
@@ -237,6 +276,20 @@ backup_home() {
 
   run_cmd du -chPxd 1
   popd
+}
+
+## *USAGE: ssh_agent_load_key [KEY_NAME]
+## Starts the ssh-agent if not started already and loads KEY_NAME.
+ssh_agent_load_key() {
+  local keyname="$1"
+  if pgrep ssh-agent; then
+    echo "ssh-agent already started"
+  else
+    local ssh_agent_cfg="`mktemp`"
+    ssh-agent > "$ssh_agent_cfg"
+    run_cmd source "$ssh_agent_cfg"
+    run_cmd ssh-add "$HOME/.ssh/$keyname"
+  fi
 }
 
 ## *USAGE : rotate_ssh_keys

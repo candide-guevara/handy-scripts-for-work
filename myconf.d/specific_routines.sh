@@ -50,11 +50,26 @@ git_check_other_host_uptodate() {
   ssh "$other_host" test -d "$repo_other_host" || return 1
 
   pushd "$repo_this_host" &> /dev/null
-  run_cmd git remote add "$other_host" "${USER}@${other_host}:${repo_other_host}" \
+  git remote add "$other_host" "${USER}@${other_host}:${repo_other_host}" \
     || return 1
-  git fetch "$other_host"
+  git fetch "$other_host" > /dev/null
+  local fix_script="`mktemp --tmpdir "${repo_name}.XXXXXX"`"
   local -a remote_branches=( `git branch --remote | grep "$other_host" | sed -r 's/^[ *]*([^ ]+).*/\1/'` )
-  __git_check_remote_branches__ --both-ways "${remote_branches[@]}"
+  echo "
+    pushd '$repo_this_host'
+    git remote add '$other_host' '${USER}@${other_host}:${repo_other_host}'
+    git fetch '$other_host'
+    for branch in ${remote_branches[@]}; do
+      local_branch=\"\`basename \$branch\`\"
+      git checkout \"\$local_branch\" || break
+      git pull --dry-run '$other_host' || break
+      git push --dry-run '$other_host' \"\$local_branch\" || break
+    done
+    git remote remove '$other_host'
+    popd
+  " > "$fix_script"
+  __git_check_remote_branches__ --both-ways "${remote_branches[@]}" \
+    || echo "fix with : bash '$fix_script'"
   git remote remove "$other_host" || return 1
   popd &> /dev/null
 }
@@ -68,6 +83,7 @@ __git_check_remote_branches__() {
     shift
     local both_ways=1
   fi
+  local is_missing=0
   for branch in "$@"; do
     local local_branch="`basename "$branch"`"
     local -a ranges=( "${branch}..${local_branch}" )
@@ -82,11 +98,13 @@ __git_check_remote_branches__() {
     for rev_range in "${ranges[@]}"; do
       local missing_changes="`git log --pretty=oneline "$rev_range"`"
       if [[ ! -z "${missing_changes}" ]]; then
+        is_missing=2
         colecho $txtylw "[WARN] '`basename ${PWD}`:${branch}' '$rev_range' misses changes :"
         echo "${missing_changes}"
       fi
     done
   done
+  return "$is_missing"
 }
 
 ## *USAGE: gdrive_file_download LAST_DAYS

@@ -15,6 +15,7 @@ KV_TO_COPY=(
   "configuration/kde4_conf/mysteam.desktop:$HOME/.local/share/applications"
 
   "configuration/chromium-flags.conf:$HOME/.config/chromium-flags.conf"
+  "configuration/shell_tools/xdg_session_envvars.sh:$HOME/.config/plasma-workspace/env/xdg_session_envvars.sh"
 )
 DIRS_TO_COPY=(
   "myconf.d:$HOME/.myconf.d"

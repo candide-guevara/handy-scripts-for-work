@@ -89,7 +89,7 @@
 * [Install propietary][20] gpu kernel modules, xorg drivers
   * Nvidia cards use the [VDPAU API for video decoding][30] : use `vdpauinfo` to see it is accessible
   * Intel cards use VAAPI : it can be emulated by `libva-vdpau`, use `vainfo` to see it is accessible
-* Check GPU acceleration `glxinfo | grep direct` and `__GL_SYNC_TO_VBLANK=0 vblank_mode=0 glxgears` (last result 23000 FPS)
+* Check GPU acceleration `glxinfo | grep direct` and `__GL_SYNC_TO_VBLANK=0 vblank_mode=0 glxgears` (last result 1070=28000 FPS)
 * Go to `/etc/X11/xorg.conf.d/*` and check for overconfigured files -> leave a [minimal gpu config][36] with ["IgnoreDisplayDevices" option][35]
 * If HDMI does not work on QHD : (still not sure of instructions)
   * plug using displayport and hdmi

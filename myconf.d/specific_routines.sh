@@ -120,22 +120,21 @@ start_sshd() {
 import_pics_from_jelanda() {
   ssh_agent_load_key "arngrim_id_rsa"
 
-  local day_offset="$2"
+  local day_offset="${1:-0}"
   __error_if_unreachable__ "jelanda" || return 1
   local jelanda_host="${JELANDA_HOSTNAME}@jelanda"
   local docs_dir="Documents"
-  local -a dates=( `date +"%Y%m%d"` )
-  [[ ! -z "$day_offset" ]] && dates=( `date +"%Y%m%d" --date="$day_offset days ago"` )
   local -a indexes=( `seq --format="%04.0f" 1 20` )
   local all_remote_imgs="`mktemp`"
 
   ssh "${jelanda_host}" dir "$docs_dir" | grep IMG > "$all_remote_imgs"
-  for date_str in "${dates[@]}"; do
-  for index in "${indexes[@]}"; do
-    local filename="IMG_${date_str}_${index}.pdf"
-    grep "$filename" "$all_remote_imgs" \
-      && run_cmd scp "${jelanda_host}:${docs_dir}/$filename" .
-  done
+  for offset in `seq 0 "$day_offset"`; do
+    date_str="`date +"%Y%m%d" --date="$offset days ago"`"
+    for index in "${indexes[@]}"; do
+      local filename="IMG_${date_str}_${index}.pdf"
+      grep "$filename" "$all_remote_imgs" \
+        && run_cmd scp "${jelanda_host}:${docs_dir}/$filename" .
+    done
   done
 }
 

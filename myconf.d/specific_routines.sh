@@ -175,6 +175,32 @@ pdf_shrink() {
   done
 }
 
+## *USAGE: pdf_shrink ROOT_DIR
+## Transforms all pdfs in ROOT_DIR to a lower quality and saves them to a separate dir tree.
+pdf_shrink_dir() {
+  local srcdir="`readlink -f "$1"`"
+  local dstdir="/tmp/`basename "$srcdir"`_mini"
+  [[ -d "$dstdir" ]] && rm -rf "$dstdir"
+  mkdir "$dstdir"
+  pushd "$srcdir"
+  for doc in `find . -iname '*.pdf'`; do
+    if [[ "`basename "$doc"`" = __*.pdf ]]; then
+      echo "'$doc' -> IGNORE"
+      rm "$doc"
+      continue
+    fi
+    local mindoc="__`basename "$doc"`"
+    mindoc="`readlink -f "$mindoc"`"
+    local dstdoc="`readlink --canonicalize-missing "$dstdir/$doc"`"
+    local dstbase="`dirname "$dstdoc"`"
+    echo "'$doc' -> '$mindoc' -> '$dstdoc'"
+    pdf_shrink "$doc"
+    [[ -d "$dstbase" ]] || mkdir -p "$dstbase"
+    mv "$mindoc" "$dstdoc" || return 1
+  done
+  popd
+}
+
 ## *USAGE: backup_cp SOURCE TARGET
 ## Copies SOURCE into TARGET/SOURCE_date, calculates and checks md5 sums
 backup_cp() {

@@ -53,22 +53,6 @@ pulse_to_file() {
   local file_out="/tmp/capture_audio"
   [[ -f "$file_out" ]] && rm "$file_out"
 
-  # local -a input_opts=(
-  #   -f "pulse"
-  #   -i "default"
-  #   # `pactl list short sinks` does not do sh*t
-  #   #-i "alsa_output.usb-GFEC_ASSP_MyAMP-01.iec958-stereo"
-  # )
-  # local -a output_opts=(
-  #   -acodec libvorbis
-  #   -ar "48000"
-  #   -f "mp4" 
-  #   -q "9"
-  # )
-  # ffmpeg \
-  #     -loglevel "warning" \
-  #     "${input_opts[@]}" ${output_opts[@]} \
-  #     "$file_out"
   set -x
   ffmpeg -f pulse -i default -filter:a "volume=10dB" /tmp/pulse.wav
 }
@@ -82,7 +66,20 @@ x11_to_file() {
   local file_out="${1:-captured_video}"
   [[ -f "$file_out" ]] && rm "$file_out"
 
-  local -a input_opts=(
+  # pactl set-default-source alsa_output.usb-GFEC_ASSP_MyAMP-01.iec958-stereo.monitor
+  local -a audio_input_opts=(
+    -f "pulse"
+    -i "default"
+  )
+  #-acodec aac/libvorbis -> Produces glitchy audio
+  #-acodec copy -> cannot be used to capture audio
+  local -a audio_output_opts=(
+    -filter:a "volume=40dB" # so that record stream has more or less same volume as real thing
+    -acodec aac
+    -b:a 256k
+    #-ar "48000"
+  )
+  local -a video_input_opts=(
     -f "x11grab"
     -video_size "2560x1440" 
     -framerate "${fps}" 
@@ -90,7 +87,7 @@ x11_to_file() {
     -probesize "128M" 
     -i ":0.0"
   )
-  local -a output_opts=(
+  local -a video_output_opts=(
     -vcodec "libx264"
     -pix_fmt yuv420p
     -b:v "5000k"
@@ -104,7 +101,11 @@ x11_to_file() {
   ffmpeg \
       -loglevel "warning" \
       -thread_queue_size 32 \
-      "${input_opts[@]}" -map 0:v ${output_opts[@]} \
+      "${audio_input_opts[@]}" \
+      "${video_input_opts[@]}" \
+      -map 0:a -map 1:v \
+      ${audio_output_opts[@]} \
+      ${video_output_opts[@]} \
       "$file_out"
 }
 
@@ -139,5 +140,5 @@ main() {
   shift
   "$command" "$@"
 }
-main
+main "$@"
 

@@ -1,7 +1,9 @@
 ## Common routines used by steam patch scripts.
 STEAM_LIB_ROOT='/media/llewelyn_data_b/SteamLibrary'
 VS_RUNTIME_DOWN_SRV="aka.ms"
-PROTON_ROOT="$STEAM_LIB_ROOT/steamapps/common/Proton 5.13"
+#PROTON_ROOT="$STEAM_LIB_ROOT/steamapps/common/Proton 5.13"
+PROTON_ROOT="$STEAM_LIB_ROOT/steamapps/common/Proton 6.3"
+# Works for both 5 and 6 version of runtime
 CURRENT_PROTON_SETTINGS="user_settings_5_13.py"
 
 set_environment_vars() {
@@ -69,10 +71,10 @@ patch_visual_studio_runtime_helper() {
       if [[ "$alt_name" != "$library" ]]; then
         ln -s -T "$library" "$alt_name"
         mv --no-clobber "$system32_dir/$alt_name" "$backup_dir" 2> /dev/null
-        cp "$alt_name" "$system32_dir"
+        cp -f "$alt_name" "$system32_dir"
       fi
       mv --no-clobber "$system32_dir/$library" "$backup_dir" 2> /dev/null
-      cp "$library" "$system32_dir"
+      cp -f "$library" "$system32_dir"
     done
   popd
 }

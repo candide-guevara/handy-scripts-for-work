@@ -16,6 +16,8 @@ KV_TO_COPY=(
 
   "configuration/chromium-flags.conf:$HOME/.config/chromium-flags.conf"
   "configuration/shell_tools/xdg_session_envvars.sh:$HOME/.config/plasma-workspace/env/xdg_session_envvars.sh"
+
+  "configuration/shell_tools/aws_config:$HOME/.aws/config"
 )
 DIRS_TO_COPY=(
   "myconf.d:$HOME/.myconf.d"

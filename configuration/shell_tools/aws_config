@@ -1,0 +1,27 @@
+# Should be stored at `~/.aws/config`
+# `~/.aws/credentials` should be kept empty.
+#
+# `access key` id and `access secret` are encrypted
+# The encrypted credentials are a json file like :
+#   {
+#     "Version": 1,
+#     "AccessKeyId": "mrmonkey",
+#     "SecretAccessKey": "bananas"
+#   }
+# To create encrypted creds:
+#   gpg --symmetric --output some_user.gpg /dev/shm/creds_plain.json
+#
+# For automation the best is to create temporary credentials using STS:
+#   aws --profile="some_user" sts get-session-token --duration-seconds=X
+# See credential output format at: https://docs.aws.amazon.com/cli/latest/reference/sts/get-session-token.html#examples
+
+[default]
+region = eu-central-1
+output = json
+credential_process = bash -c 'gpg --quiet --decrypt ~/.aws/root.gpg'
+
+[profile btrfs_to_glacier_root]
+region = eu-central-1
+output = json
+credential_process = bash -c 'gpg --quiet --decrypt ~/.aws/btrfs_to_glacier_root.gpg'
+

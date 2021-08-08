@@ -1,8 +1,10 @@
 ## Defines some environment variables used in __my home machine__
 
 # Some distributions do not add system binaries to normal users
-PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games
-export PATH=$(echo "$PATH" | awk -v RS=':' -v ORS=":" '!a[$1]++')
+PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# https://www.gnu.org/software/gawk/manual/gawk.html#History-Sorting
+PATH=$( echo "$PATH" | awk -v RS=':' -v ORS=":" '!dups[$1]++ && !'"/games|${HOME////.}/" )
+export PATH=$( echo "$PATH" | head -n 1 | sed -r 's/:+$//' | sed -r 's/::+/:/g' )
 
 export LESS='--clear-screen --LONG-PROMPT --ignore-case --RAW-CONTROL-CHARS'
 export EDITOR=/usr/bin/vim

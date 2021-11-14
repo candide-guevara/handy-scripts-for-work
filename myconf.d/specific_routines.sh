@@ -180,8 +180,8 @@ pdf_shrink() {
 pdf_shrink_dir() {
   local srcdir="`readlink -f "$1"`"
   local dstdir="/tmp/`basename "$srcdir"`_mini"
-  [[ -d "$dstdir" ]] && rm -rf "$dstdir"
-  mkdir "$dstdir"
+  #[[ -d "$dstdir" ]] && rm -rf "$dstdir"
+  [[ -d "$dstdir" ]] ||  mkdir "$dstdir"
   pushd "$srcdir"
   for doc in `find . -iname '*.pdf'`; do
     if [[ "`basename "$doc"`" = __*.pdf ]]; then
@@ -193,6 +193,7 @@ pdf_shrink_dir() {
     mindoc="`readlink -f "$mindoc"`"
     local dstdoc="`readlink --canonicalize-missing "$dstdir/$doc"`"
     local dstbase="`dirname "$dstdoc"`"
+    [[ -f "$dstdoc" ]] && continue
     echo "'$doc' -> '$mindoc' -> '$dstdoc'"
     pdf_shrink "$doc"
     [[ -d "$dstbase" ]] || mkdir -p "$dstbase"

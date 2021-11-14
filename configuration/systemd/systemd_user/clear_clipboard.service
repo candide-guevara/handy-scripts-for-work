@@ -1,0 +1,13 @@
+[Unit]
+Description=Removes all clipboard contents when shutting down to avoid leaking passwords.
+Requires=home.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/bin/true
+ExecStop=/bin/bash -c 'shred --force --remove=unlink "$HOME/.local/share/klipper/"*.lst || true'
+
+[Install]
+WantedBy=default.target
+

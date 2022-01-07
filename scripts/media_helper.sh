@@ -1,5 +1,21 @@
 #!/bin/bash
 ## Some routines that use ffmpeg to capture audio/video from computer nd outputs it to a twitch stream or a file.
+## Do NOT source, usage: bash media_helper.sh COMMAND ARGS
+
+# *USAGE : __get_resolution
+# Returns the resolution (format widthxheigth) into variable $MY_RESOLUTION.
+# Crashes if more than 1 monitor is connected.
+__get_resolution() {
+  local -a resolutions=(
+    `xrandr --listmonitors | sed -nr 's".* ([[:digit:]]+)/[[:digit:]]+x([[:digit:]]+)/[[:digit:]]+.*"\1x\2"p'`
+  )
+  if [[ "${#resolutions[@]}" == 0 ]] || [[ -z "${resolutions[0]}" ]]; then
+    echo "[ERROR] cannot decide correct resolution"
+    xrandr --listmonitors
+    exit 1
+  fi
+  MY_RESOLUTION="${resolutions[0]}"
+}
 
 ## *USAGE : x11_to_twitch STREAM_KEY_FILE
 ## Original version at : https://wiki.archlinux.org/index.php/Streaming_to_twitch.tv
@@ -17,7 +33,7 @@ x11_to_twitch() {
 
   local -a input_opts=(
     -f "x11grab"
-    -video_size "2560x1440" 
+    -video_size "$MY_RESOLUTION"
     -framerate "${fps}" 
     # https://stackoverflow.com/a/57904380
     -probesize "128M" 
@@ -57,37 +73,45 @@ pulse_to_file() {
   ffmpeg -f pulse -i default -filter:a "volume=10dB" /tmp/pulse.wav
 }
 
-## *USAGE : x11_to_file OUTPUT_FILE
+## *USAGE : x11_to_file [[--no-audio]] OUTPUT_FILE
 ## Captures x11 and saves to file.
 x11_to_file() {
   local fps="30" # target FPS
   local gop="$(( fps * 2 ))" # gop = group of images = number of consecutive frames between keyframes
   local gop_min="$fps" # min frames between key frames
+  if [[ "$1" == "--no-audio" ]]; then
+    local noaudio=1
+    shift
+  fi
   local file_out="${1:-captured_video}"
   [[ -f "$file_out" ]] && rm "$file_out"
 
-  # pactl set-default-source alsa_output.usb-GFEC_ASSP_MyAMP-01.iec958-stereo.monitor
-  local -a audio_input_opts=(
-    -f "pulse"
-    -i "default"
-  )
-  #-acodec aac/libvorbis -> Produces glitchy audio
-  #-acodec copy -> cannot be used to capture audio
-  local -a audio_output_opts=(
-    -filter:a "volume=40dB" # so that record stream has more or less same volume as real thing
-    -acodec aac
-    -b:a 256k
-    #-ar "48000"
-  )
+  if [[ -z "$noaudio" ]]; then
+    # pactl set-default-source alsa_output.usb-GFEC_ASSP_MyAMP-01.iec958-stereo.monitor
+    local -a audio_input_opts=(
+      -f "pulse"
+      -i "default"
+    )
+    #-acodec aac/libvorbis -> Produces glitchy audio
+    #-acodec copy -> cannot be used to capture audio
+    local -a audio_output_opts=(
+      -map 1:a
+      -filter:a "volume=40dB" # so that record stream has more or less same volume as real thing
+      -acodec aac
+      -b:a 256k
+      #-ar "48000"
+    )
+  fi
   local -a video_input_opts=(
     -f "x11grab"
-    -video_size "2560x1440" 
+    -video_size "$MY_RESOLUTION"
     -framerate "${fps}" 
     # https://stackoverflow.com/a/57904380
     -probesize "128M" 
     -i ":0.0"
   )
   local -a video_output_opts=(
+    -map 0:v
     -vcodec "libx264"
     -pix_fmt yuv420p
     -b:v "5000k"
@@ -101,11 +125,10 @@ x11_to_file() {
   ffmpeg \
       -loglevel "warning" \
       -thread_queue_size 32 \
-      "${audio_input_opts[@]}" \
       "${video_input_opts[@]}" \
-      -map 0:a -map 1:v \
-      ${audio_output_opts[@]} \
-      ${video_output_opts[@]} \
+      "${audio_input_opts[@]}" \
+      "${video_output_opts[@]}" \
+      "${audio_output_opts[@]}" \
       "$file_out"
 }
 
@@ -138,6 +161,7 @@ remove_noise_audio() {
 main() {
   local command="$1"
   shift
+  __get_resolution
   "$command" "$@"
 }
 main "$@"

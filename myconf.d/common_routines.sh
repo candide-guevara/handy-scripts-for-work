@@ -343,11 +343,13 @@ vim_crypt() {
 
   (
     trap __cleanup__ EXIT INT TERM
-    if [[ -e "$crypt_file" ]]; then
-      "${decrypt_cmd[@]}" "$crypt_file" | "${vim_cmd[@]}" -
-      [[ "${PIPESTATUS[0]}" == "0" ]] && [[ -f "$tmp_file" ]] \
-        && "${crypt_cmd[@]}" "$tmp_file" > "$crypt_file"
+    if [[ ! -e "$crypt_file" ]]; then
+      echo "Initial version" | "${crypt_cmd[@]}" > "$crypt_file"
+      [[ -f "$crypt_file" ]] || return 1
     fi  
+    "${decrypt_cmd[@]}" "$crypt_file" | "${vim_cmd[@]}" -
+    [[ "${PIPESTATUS[0]}" == "0" ]] && [[ -f "$tmp_file" ]] \
+      && "${crypt_cmd[@]}" "$tmp_file" > "$crypt_file"
   )
 }
 

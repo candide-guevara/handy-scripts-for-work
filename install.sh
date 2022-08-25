@@ -14,7 +14,8 @@ KV_TO_COPY=(
   "configuration/shell_tools/pythonrc.py:$HOME/.myconf.d"
   "configuration/kde4_conf/mysteam.desktop:$HOME/.local/share/applications"
 
-  "configuration/chromium-flags.conf:$HOME/.config/chromium-flags.conf"
+  "configuration/chrome-flags.conf:$HOME/.config/chrome-flags.conf"
+  "configuration/chrome-flags.conf:$HOME/.config/chromium-flags.conf"
   "configuration/shell_tools/xdg_session_envvars.sh:$HOME/.config/plasma-workspace/env/xdg_session_envvars.sh"
 
   "configuration/shell_tools/aws_config:$HOME/.aws/config"

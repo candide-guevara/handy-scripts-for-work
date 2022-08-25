@@ -160,7 +160,7 @@
 * Add themes : droid fonts, kde-gtk-config, gtk 2 and 3 theme matching KDE's (currently breeze)
 * Activate hardware sensors : install `lm_sensors` and run `sensors-detect` (will active systemd unit)
 * Restore virtual machines disk images to ssd storage
-* Check [`.config/chromium-flags.conf`][33] was installed by private-handy-scripts-for-work
+* Check [`.config/chrome-flags.conf`][33] was installed by private-handy-scripts-for-work
   * [hardware acceleration][37] can be checked by going to `chrome://gpu/`
   * Some testing with 1080p60 on youtube shows cpu video decode works perfectly fine anyway
 * Install [retroarch][34] and reate `~/.config/retroarch/retroarch.cfg`

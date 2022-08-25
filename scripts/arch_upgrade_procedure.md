@@ -2,6 +2,10 @@
 
 > Should I remove `mhwd` ? You need this to auto upgrade nvidia drivers !
 
+## Run commands without exiting vim
+
+Yank the command, enter command mode and use `CTRL-R "`
+
 ## Enable internet in rescue mode
 
 ```sh
@@ -18,8 +22,7 @@ ping google.com
 pacman -R `pacman -Qqs linux-latest ; pacman -Qqs linux-lts`
 
 mhwd-kernel -li # get kernel versions installed
-pacman -R `pacman -Qqs "linux<version_to_remove>"`
-pacman -S `pacman -Qqs "linux<version_to_remove>" | sed 's/<version_to_remove>/<version_to_add>/'`
+pacman -S `pacman -Qqs "linux<old>" | sed 's/<old>/<new>/'`
 
 # Check mhwd does not have unneeded old drivers
 # Package names appearing on the first col can be removed
@@ -28,13 +31,17 @@ comm -1 <(pacman -Qqs mhwd|sort) <(pactree --depth=1 --unique mhwd-db|sort)
 # Check latest kernel dependent modules are installed
 # Package names appearing on the second col must be updated
 comm -3 \
-  <(pacman -Ss linux515 | sed -nr 's"^\w+/""p' | cut -d' ' -f1,2 | sort) \
-  <(pacman -Qs linux515 | sed -nr 's"^\w+/""p' | cut -d' ' -f1,2 | sort)
+  <(pacman -Ss "linux<old>" | sed -nr 's"^\w+/""p' | cut -d' ' -f1,2 | sort) \
+  <(pacman -Qs "linux<new>" | sed -nr 's"^\w+/""p' | cut -d' ' -f1,2 | sort)
+
+pacman -R `pacman -Qqs "linux<old>"`
 ```
 
 ## Upgrade system
 
 ```sh
+pacman -Sy archlinux-keyring manjaro-keyring
+pacman -Scc
 pacman -Scc
 pacman -Syyu
 pacman -S `echo opencl-nvidia nvidia-utils mesa-utils | sed -r 's/(.*)/\1 lib32-\1/'
@@ -54,10 +61,7 @@ sudo pacman -U "<generated_package>"
 
 ```sh
 uname -a
-vainfo | less
-vdpauinfo | less
-vulkaninfo | less
-glxinfo | grep direct
+( vainfo ; vdpauinfo ; vulkaninfo ; glxinfo | grep direct ) | less
 ```
 
 ## You do not need the following:

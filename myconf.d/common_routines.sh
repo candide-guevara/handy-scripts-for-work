@@ -329,10 +329,15 @@ vim_crypt() {
   local tmp_dir=`mktemp -d -p "/run/user/$user_num"`
   local tmp_file=`mktemp -u -p "$tmp_dir"`
 
+  if ! df --output=fstype "$tmp_dir" | sed -n '2p' | grep -q -w tmpfs; then
+    errecho "'$tmp_dir' is not a tmpfs, abort"
+    return 1
+  fi
   chmod 'go-rwx' "$tmp_dir"
   read -s -p "passphrase : " gpg_pwd
 
   function __cleanup__() {
+    [[ -f "$tmp_file" ]] && shred "$tmp_file"
     rm -rf "$tmp_dir"
   }
 
@@ -348,7 +353,9 @@ vim_crypt() {
       [[ -f "$crypt_file" ]] || return 1
     fi  
     "${decrypt_cmd[@]}" "$crypt_file" | "${vim_cmd[@]}" -
-    [[ "${PIPESTATUS[0]}" == "0" ]] && [[ -f "$tmp_file" ]] \
+    [[ "${PIPESTATUS[0]}" == "0" ]] \
+      && [[ -f "$tmp_file" ]] \
+      && [[ `stat --format=%s "$tmp_file"` -gt 1 ]] \
       && "${crypt_cmd[@]}" "$tmp_file" > "$crypt_file"
   )
 }

@@ -5,10 +5,11 @@ LABEL=ARNGRIMEFI  /boot/efi           vfat umask=0077,shortname=winnt 0 2
 LABEL=ArngrimHome /home               ext4 discard,noatime,nodiratime 0 2
 LABEL=ArngrimData /media/ArngrimData  ext4 noauto,user,noatime,nodiratime 0 2
 
-LABEL=Gandar    /media/Gandar          ext4 auto,user,noatime,nodiratime 0 2
-LABEL=Bifrost   /media/Lucian_PrioA    auto subvol=Lucian_PrioA,autodefrag,auto,user,noatime,nodiratime,exec     0 2
-LABEL=Bifrost   /media/Lucian_PrioB    auto subvol=Lucian_PrioB,autodefrag,auto,user,noatime,nodiratime,noexec   0 2
-LABEL=Bifrost   /media/Lucian_PrioC    auto subvol=Lucian_PrioC,autodefrag,auto,user,noatime,nodiratime,noexec   0 2
+LABEL=Gandar    /media/Gandar            ext4 auto,user,noatime,nodiratime 0 2
+LABEL=Bifrost   /media/Lucian_PrioA      auto subvol=Lucian_PrioA,autodefrag,auto,user,noatime,nodiratime,exec     0 2
+LABEL=Bifrost   /media/Lucian_PrioADocs  auto subvol=Lucian_PrioADocs,autodefrag,auto,user,noatime,nodiratime,exec     0 2
+LABEL=Bifrost   /media/Lucian_PrioB      auto subvol=Lucian_PrioB,autodefrag,auto,user,noatime,nodiratime,noexec   0 2
+LABEL=Bifrost   /media/Lucian_PrioC      auto subvol=Lucian_PrioC,autodefrag,auto,user,noatime,nodiratime,noexec   0 2
 
 LABEL=Bifrost   /media/Bifrost         auto subvolid=5,autodefrag,noauto,nouser,noatime,nodiratime,noexec        0 2
 LABEL=Bifrost   /media/BifrostSnap     auto subvol=BifrostSnap,autodefrag,noauto,user,noatime,nodiratime,noexec  0 2
@@ -23,9 +24,10 @@ tmpfs /home/cguevara/.cache tmpfs noatime,nodev,nosuid,size=2G  0 0
 # Bind mounts
 
 /media/Lucian_PrioA/MyProjects /home/cguevara/Programation none bind
-/media/Lucian_PrioA/Images /home/cguevara/Images none bind
-/media/Lucian_PrioA/Important_Documents /home/cguevara/Documents none bind
-/media/Lucian_PrioC/Music /home/cguevara/Music none bind
-/media/Lucian_PrioC/Video /home/cguevara/Videos none bind
-/media/Gandar/Temp /home/cguevara/Temp none bind
+/media/Lucian_PrioA/Images     /home/cguevara/Images none bind
+/media/Lucian_PrioADocs        /home/cguevara/Documents none bind
+/media/Lucian_PrioB            /home/cguevara/Lucian_PrioB none bind
+/media/Lucian_PrioC/Music      /home/cguevara/Music none bind
+/media/Lucian_PrioC/Video      /home/cguevara/Videos none bind
+/media/Gandar/Temp             /home/cguevara/Temp none bind
 

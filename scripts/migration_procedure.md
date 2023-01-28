@@ -16,11 +16,11 @@
 * Ensure git repo modifs are all commited and pushed to github (run `git_check_all_pushed`)
 
 * Run a BTRFS [scrub][5] on Bifrost
-* Create snapshots on Lucian_PrioA/B/C
+* Create snapshots on Lucian_PrioA/ADocs/B/C
 * Backup /home in /media/BifrostSnap/ArngrimHome using shell function `backup_home` (but manually snapshot)
   * check you can restore your ssh keys
   * check you can restore `.bash_history`
-* Do an extra backup (seprate usb key, laptop ...) : /media/Lucian_PrioA, /media/Lucian_PrioB
+* Do an extra backup (separate usb key, laptop ...) : /media/Lucian_PrioA, /media/Lucian_PrioADocs
 
 
 
@@ -140,15 +140,17 @@
   * If using external amplifier you can blacklist all onboard-sound kernel modules (like `snd_hda_intel`) in `/etc/modprobe.d`
   * Disable alsa restore udev rule by creating the relevant symlink to `/dev/null` in `/etc/udev/rules.d`
   * Use `pactl list` to check options are setup ok
-* There are too many option for power management : powerdevil, acpid, sytemd-logind, TLP, upower...
-  * pick one and disable the others (via systemd services ?)
+* There are too many option for power management : powerdevil (looks broken?), sytemd-logind, TLP...
+  * Monitor resume after shutting it down is broken.
+  * Keep acpid ([disable common events][47]) and upower enabled in systemd otherwise sh\*t happens with chrome ?
+  * Settings in `/etc/default/tlp` and check it is working by unplugging power and check settings have changed
   * Make sure there are no actions that can suspend/sleep the system in `/etc/systemd/logind.conf`
+    * [Disable suspend/sleep][46] in `/etc/systemd/sleep.conf`.
 
 ### Notebook specific tweaks
 
 * [backlight adjust][28] with `man tmpfiles.d`
   * you need to mask systemd backlight service
-* settings in `/etc/default/tlp` and check it is working by unplugging power and check settings have changed
 
 ### Software packages
 
@@ -252,4 +254,6 @@ Do this at the end since it may take into account any blacklisted modules
 [43]: https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/index.html
 [44]: https://wiki.archlinux.org/index.php/Audit_framework
 [45]: https://docs.kde.org/trunk5/en/kde-workspace/kcontrol/windowspecific/kwin-rule-editor.html
+[46]: https://wiki.archlinux.org/title/Power_management#Disabling_suspend
+[47]: https://wiki.archlinux.org/title/acpid#Disabling_ordinary_key_events
 

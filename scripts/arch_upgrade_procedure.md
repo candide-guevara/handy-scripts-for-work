@@ -41,10 +41,8 @@ pacman -R `pacman -Qqs "linux<old>"`
 
 ```sh
 pacman -Sy archlinux-keyring manjaro-keyring
-pacman -Scc
-pacman -Scc
-pacman -Syyu
-pacman -S `echo opencl-nvidia nvidia-utils mesa-utils | sed -r 's/(.*)/\1 lib32-\1/'
+pacman -Scc && pacman -Syyu
+pacman -S `echo opencl-nvidia nvidia-utils mesa-utils | sed -r 's/(.*)/\1 lib32-\1/'`
 ```
 
 ## Upgrade AUR packages

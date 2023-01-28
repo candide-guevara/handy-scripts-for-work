@@ -12,6 +12,7 @@ BEGIN {
   txtpur=gensub(/\\e/, escape, 1, ENVIRON["txtpur"]);   # Purple
   txtcyn=gensub(/\\e/, escape, 1, ENVIRON["txtcyn"]);   # Cyan
   txtwht=gensub(/\\e/, escape, 1, ENVIRON["txtwht"]);   # White
+  txtgry=gensub(/\\e/, escape, 1, ENVIRON["txtgry"]);   # Grey
   bldblk=gensub(/\\e/, escape, 1, ENVIRON["bldblk"]);   # Bold Black
   bldred=gensub(/\\e/, escape, 1, ENVIRON["bldred"]);   # Bold Red
   bldgrn=gensub(/\\e/, escape, 1, ENVIRON["bldgrn"]);   # Bold Green
@@ -20,6 +21,7 @@ BEGIN {
   bldpur=gensub(/\\e/, escape, 1, ENVIRON["bldpur"]);   # Bold Purple
   bldcyn=gensub(/\\e/, escape, 1, ENVIRON["bldcyn"]);   # Bold Cyan
   bldwht=gensub(/\\e/, escape, 1, ENVIRON["bldwht"]);   # Bold White
+  bldgry=gensub(/\\e/, escape, 1, ENVIRON["bldgry"]);   # Bold Grey
   bkgred=gensub(/\\e/, escape, 1, ENVIRON["bkgred"]);   # Background Red
   bkggrn=gensub(/\\e/, escape, 1, ENVIRON["bkggrn"]);   # Background Green
   bkgylw=gensub(/\\e/, escape, 1, ENVIRON["bkgylw"]);   # Background Yellow

@@ -10,6 +10,7 @@ if [[ $IS_BLOOM_MAC == 1 ]]; then
   export txtpur=$'\e[0;35m' # Purple
   export txtcyn=$'\e[0;36m' # Cyan
   export txtwht=$'\e[0;37m' # White
+  export txtgry=$'\e[0;90m' # Grey
   export bldblk=$'\e[1;30m' # Bold Black
   export bldred=$'\e[1;31m' # Bold Red
   export bldgrn=$'\e[1;32m' # Bold Green
@@ -18,6 +19,7 @@ if [[ $IS_BLOOM_MAC == 1 ]]; then
   export bldpur=$'\e[1;35m' # Bold Purple
   export bldcyn=$'\e[1;36m' # Bold Cyan
   export bldwht=$'\e[1;37m' # Bold White
+  export bldgry=$'\e[1;90m' # Bold Grey
   export bkgred=$'\e[41m'   # Background red
   export bkggrn=$'\e[42m'   # Background green
   export bkgylw=$'\e[43m'   # Background yellow
@@ -63,6 +65,7 @@ if [[ $IS_BASH == 1 ]]; then
   export sed_txtpur=$'\e[0;35m' # Purple
   export sed_txtcyn=$'\e[0;36m' # Cyan
   export sed_txtwht=$'\e[0;37m' # White
+  export sed_txtgry=$'\e[0;90m' # Grey
   export sed_bldblk=$'\e[1;30m' # Bold Black
   export sed_bldred=$'\e[1;31m' # Bold Red
   export sed_bldgrn=$'\e[1;32m' # Bold Green
@@ -71,6 +74,7 @@ if [[ $IS_BASH == 1 ]]; then
   export sed_bldpur=$'\e[1;35m' # Bold Purple
   export sed_bldcyn=$'\e[1;36m' # Bold Cyan
   export sed_bldwht=$'\e[1;37m' # Bold White
+  export sed_bldgry=$'\e[1;90m' # Bold Grey
   export sed_bkgred=$'\e[41m'   # Background red
   export sed_bkggrn=$'\e[42m'   # Background green
   export sed_bkgylw=$'\e[43m'   # Background yellow

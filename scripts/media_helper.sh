@@ -156,6 +156,10 @@ remove_noise_audio() {
   sox "$inputfile" "$temp_proc" highpass 800
   sox "$temp_proc" "$temp_proc2" lowpass 8000
   sox -v 3.0 "$temp_proc2" "$outputfile"
+  # To ouput frequenct spectre with a highpass filter
+  #ffmpeg -i kawa_zx9r_engine_noise_raw_20230221_2.m4a \
+  #  -filter_complex "[0:a]highpass=frequency=400[a1];[a1]asplit[a2][a3];[a3]showfreqs=s=1920x1080[v]" \
+  #  -map '[v]' -map '[a2]' -c:v libx264 -preset slow kawa_zx9r_engine_spectral_20230221_2.mp4
 }
 
 main() {

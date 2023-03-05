@@ -202,6 +202,18 @@ pdf_shrink_dir() {
   popd
 }
 
+## *USAGE: pdf_remove_securities FILES
+## Removes protections by translating to ps.
+## BE CAREFUL IT IS A TRAP! `pdftops` and `pdf2ps` are different tools, `pdftops` uses newer libs and has more options.
+pdf_remove_securities() {
+  local output_prefix="fixed_"
+  for ff in "$@"; do
+    pdftops -rasterize never "$ff" out.ps
+    ps2pdf -dCompatibilityLevel=1.7 out.ps "${output_prefix}_$ff"
+    rm out.ps
+  done
+}
+
 ## *USAGE: backup_cp SOURCE TARGET
 ## Copies SOURCE into TARGET/SOURCE_date, calculates and checks md5 sums
 backup_cp() {

@@ -45,8 +45,12 @@ alias .3='cd ..; cd ..; cd ..; ls'
 ## *USAGE : mps PROCESS_PAT
 ## Looks for running processes matching PROCESS_PAT in their whole command line.
 function mps() {
-  local -a allpids=`pgrep -f "${1}"`;
-  ps -ef | grep -i "${1}" | grep -v "grep -i ${1}" | gawk -f "$AWK_COLOR_SCRIPT" -f "$AWK_PS_FORMAT";
+  local -a allpids=( `pgrep -fi "${1}"` )
+  if [[ "${#allpids[@]}" = 0 ]]; then
+    echo "No matches for '${1}'"
+    return
+  fi
+  ps -f --pid "${allpids[@]}" | gawk -f "$AWK_COLOR_SCRIPT" -f "$AWK_PS_FORMAT"
   echo "${allpids[@]}" | to_space_separated
 }
 

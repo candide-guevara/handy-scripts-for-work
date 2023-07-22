@@ -19,22 +19,22 @@ ping google.com
 
 ```sh
 # "latest" packages are no longer used, drop them
-pacman -R `pacman -Qqs linux-latest ; pacman -Qqs linux-lts`
+pacman -Rsun `pacman -Qqs linux-latest ; pacman -Qqs linux-lts`
 
 mhwd-kernel -li # get kernel versions installed
 pacman -S `pacman -Qqs "linux<old>" | sed 's/<old>/<new>/'`
 
 # Check mhwd does not have unneeded old drivers
-# Package names appearing on the first col can be removed
-comm -1 <(pacman -Qqs mhwd|sort) <(pactree --depth=1 --unique mhwd-db|sort)
+# Package names can be removed
+comm -13 <(pacman -Qqs mhwd|sort) <(pactree --depth=1 --unique mhwd-db|sort)
 
 # Check latest kernel dependent modules are installed
-# Package names appearing on the second col must be updated
-comm -3 \
-  <(pacman -Ss "linux<old>" | sed -nr 's"^\w+/""p' | cut -d' ' -f1,2 | sort) \
-  <(pacman -Qs "linux<new>" | sed -nr 's"^\w+/""p' | cut -d' ' -f1,2 | sort)
+# Package names appearing col must be updated
+comm -13 \
+  <(pacman -Qs "linux<old>" | sed -nr 's"<old>"<new>"; s"^\w+/""p' | cut -d' ' -f1 | sort) \
+  <(pacman -Qs "linux<new>" | sed -nr 's"^\w+/""p' | cut -d' ' -f1 | sort)
 
-pacman -R `pacman -Qqs "linux<old>"`
+pacman -Rsun `pacman -Qqs "linux<old>"`
 ```
 
 ## Upgrade system

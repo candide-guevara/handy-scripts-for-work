@@ -40,6 +40,7 @@ nnoremap <LocalLeader> <Nop>
 nnoremap <Space> <C-D>
 nnoremap Y y$
 nnoremap gb :bn<CR>
+nnoremap <C-l> :set invnumber<CR>
 
 " Do not copy text each time something is deleted
 nnoremap cw "_cw

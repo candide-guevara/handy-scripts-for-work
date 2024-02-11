@@ -71,6 +71,8 @@
 * Use `man tmpfiles.d` to set some configuration
   * Enable performance [cpufreq][26] governor by writing "performance" to /sys/devices/system/cpu/cpu\*/cpufreq/scaling\_governor
   * Enable bpf jit for [seccomp][27] filter by writing "1" to /proc/sys/net/core/bpf\_jit\_enable
+* If interactive SSH sessions are needed then deactivate the [wireless device power save mode][48] otherwise you will get high latency.
+  * `/etc/udev/rules.d/81-wifi-powersave.rules`
 
 ### [Huge pages][39]
 
@@ -256,4 +258,5 @@ Do this at the end since it may take into account any blacklisted modules
 [45]: https://docs.kde.org/trunk5/en/kde-workspace/kcontrol/windowspecific/kwin-rule-editor.html
 [46]: https://wiki.archlinux.org/title/Power_management#Disabling_suspend
 [47]: https://wiki.archlinux.org/title/acpid#Disabling_ordinary_key_events
+[48]: https://wiki.archlinux.org/title/Power_management#Network_interfaces
 

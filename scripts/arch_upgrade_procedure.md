@@ -41,7 +41,10 @@ pacman -Rsun `pacman -Qqs "linux<old>"`
 
 ```sh
 pacman -Sy archlinux-keyring manjaro-keyring
-pacman -Scc && pacman -Syyu
+pacman -Scc && pacman -Syyuw
+# Install updates in rescue mode
+# systemclt rescue
+# pacman -Su
 pacman -S `echo opencl-nvidia nvidia-utils mesa-utils | sed -r 's/(.*)/\1 lib32-\1/'`
 ```
 

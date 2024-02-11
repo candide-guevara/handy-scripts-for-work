@@ -62,15 +62,13 @@ x11_to_twitch() {
 }
 
 
-## *USAGE : pulse_to_file
+## *USAGE : pulse_to_file FILENAME
 ## Broken using an external USB audio device.
 ## Requires the manual device selection with `pavucontrol` to work ...
 pulse_to_file() {
-  local file_out="/tmp/capture_audio"
-  [[ -f "$file_out" ]] && rm "$file_out"
-
   set -x
-  ffmpeg -f pulse -i default -filter:a "volume=10dB" /tmp/pulse.wav
+  ffmpeg -f pulse -i default -filter:a "volume=10dB" "$1"
+  set +x
 }
 
 ## *USAGE : x11_to_file [[--no-audio]] OUTPUT_FILE
@@ -168,5 +166,5 @@ main() {
   __get_resolution
   "$command" "$@"
 }
-main "$@"
+#main "$@"
 

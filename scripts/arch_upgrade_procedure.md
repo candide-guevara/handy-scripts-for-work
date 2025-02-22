@@ -21,8 +21,10 @@ ping google.com
 # "latest" packages are no longer used, drop them
 pacman -Rsun `pacman -Qqs linux-latest ; pacman -Qqs linux-lts`
 
+old_vers=61
+new_vers=66
 mhwd-kernel -li # get kernel versions installed
-pacman -S `pacman -Qqs "linux<old>" | sed 's/<old>/<new>/'`
+pacman -S `pacman -Qqs "linux$old_vers" | sed "s/$old_vers/$new_vers/"`
 
 # Check mhwd does not have unneeded old drivers
 # Package names can be removed
@@ -31,10 +33,10 @@ comm -13 <(pacman -Qqs mhwd|sort) <(pactree --depth=1 --unique mhwd-db|sort)
 # Check latest kernel dependent modules are installed
 # Package names appearing col must be updated
 comm -13 \
-  <(pacman -Qs "linux<old>" | sed -nr 's"<old>"<new>"; s"^\w+/""p' | cut -d' ' -f1 | sort) \
-  <(pacman -Qs "linux<new>" | sed -nr 's"^\w+/""p' | cut -d' ' -f1 | sort)
+  <(pacman -Qs "linux$old_vers" | sed -nr 's"$old_vers"$new_vers"; s"^\w+/""p' | cut -d' ' -f1 | sort) \
+  <(pacman -Qs "linux$new_vers" | sed -nr 's"^\w+/""p' | cut -d' ' -f1 | sort)
 
-pacman -Rsun `pacman -Qqs "linux<old>"`
+pacman -Rsun `pacman -Qqs "linux$old_vers"`
 ```
 
 ## Upgrade system
@@ -43,9 +45,13 @@ pacman -Rsun `pacman -Qqs "linux<old>"`
 pacman -Sy archlinux-keyring manjaro-keyring
 pacman -Scc && pacman -Syyuw
 # Install updates in rescue mode
-# systemclt rescue
+# systemctl rescue
 # pacman -Su
-pacman -S `echo opencl-nvidia nvidia-utils mesa-utils | sed -r 's/(.*)/\1 lib32-\1/'`
+
+# For nvidia prefer vdpau
+# See https://wiki.archlinux.org/title/Hardware_video_acceleration
+pacman -S {lib32-,}libva {lib32-,}libva-vdpau-driver {lib32-,}mesa-vdpau libva-utils libvdpau-va-gl
+pacman -S {lib32-,}opencl-nvidia {lib32-,}nvidia-utils {lib32-,}mesa-utils
 ```
 
 ## Upgrade AUR packages

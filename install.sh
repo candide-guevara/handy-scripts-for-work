@@ -19,6 +19,7 @@ KV_TO_COPY=(
   "configuration/shell_tools/xdg_session_envvars.sh:$HOME/.config/plasma-workspace/env/xdg_session_envvars.sh"
 
   "configuration/shell_tools/aws_config:$HOME/.aws/config"
+  "configuration/shell_tools/gpg-agent.conf:$HOME/.gnupg/gpg-agent.conf"
 )
 DIRS_TO_COPY=(
   "myconf.d:$HOME/.myconf.d"

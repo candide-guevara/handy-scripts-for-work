@@ -124,8 +124,9 @@
   * Use `ethtool` to validate autonegotiation is active => otherwise we may have a slow connection
   * If connection slow try removing and reloading network kernel module (`alx`)
 * Disable unneeded systemd units 
-  * disable iptables, ip6tables, firewalld, sssd(NOT a typo), sshd (service), bluetooth, avahi-daemon (service and socket)
-  * mask sshd@, sshd.socket, systemd-journald-audit.socket
+  * disable firewalld, sssd(NOT a typo), avahi-daemon (service and socket)
+  * mask systemd-journald-audit.socket
+  * mask unneeded [gpg-agent sockets][49] (both for user and pacman).
 * Make sshd a bit more secure
   * create iptable rules to only allow ssh connection from home network in `/etc/iptables/(ip|ip6)tables.rules`
   * tweak the sshd.service unit to depend on [systemd-iptables][8] so that iptable kernel module is only loaded when opening sshd
@@ -158,16 +159,19 @@
 
 * Remove utils : totem, cd-burner, konqueror 
 * Remove services : 
-  * drkonqi (cores at shutdown), spice-vdagent (xserver on host for virtual guest machines desktop), backuppc (pulls in httpd)
+  * drkonqi (cores at shutdown)
+  * spice-vdagent (xserver on host for virtual guest machines desktop)
+  * backuppc (pulls in httpd)
   * kdeconnect (listens at everything on port 1716)
   * octopi (crashes Xserver) : `pacman -Qsq octopi | sudo pacman -Rnsu -`
+  * geoclue
 * Add themes : droid fonts, kde-gtk-config, gtk 2 and 3 theme matching KDE's (currently breeze)
 * Activate hardware sensors : install `lm_sensors` and run `sensors-detect` (will active systemd unit)
 * Restore virtual machines disk images to ssd storage
 * Check [`.config/chrome-flags.conf`][33] was installed by private-handy-scripts-for-work
   * [hardware acceleration][37] can be checked by going to `chrome://gpu/`
   * Some testing with 1080p60 on youtube shows cpu video decode works perfectly fine anyway
-* Install [retroarch][34] and reate `~/.config/retroarch/retroarch.cfg`
+* Install [retroarch][34] and recreate `~/.config/retroarch/retroarch.cfg`
   * Use online updater to get **assets** to have icons
 
 ### Desktop environment tweaks
@@ -180,8 +184,6 @@
   * Disable inactivity screen lock and login prompt at boot
   * Disable kde file search (install mlocate instead)
 * Configure the task bar
-* Set gpg [password prompt][31] to ncurses on `~/.gnupg/gpg-agent.conf`
-  * Reduce the time to live for gpg passwords
 * Run `ss -pltun` and `sudo lsof -nPi` to detect listening ports, remove any application opening ports (ex avahi)
 * Create a [polkit rule][32] in `/etc/polkit-1/rules.d` to avoid udisks2 (used by Dolphin) to mount arbitrary devices
 * Create [window rule][45] to not show title bars (gets back a bit of screen real state)
@@ -241,7 +243,6 @@ Do this at the end since it may take into account any blacklisted modules
 [28]: https://wiki.archlinux.org/index.php/backlight
 [29]: https://wiki.ubuntu.com/SecurityTeam/KnowledgeBase/Variant4
 [30]: https://wiki.archlinux.org/index.php/Hardware_video_acceleration#Verification
-[31]: https://wiki.archlinux.org/index.php/GnuPG#pinentry
 [32]: https://wiki.archlinux.org/index.php/Polkit#Authorization_rules
 [33]: https://wiki.archlinux.org/index.php/Chromium/Tips_and_tricks#Making_flags_persistent
 [34]: https://wiki.archlinux.org/index.php/RetroArch#Configuration
@@ -259,4 +260,5 @@ Do this at the end since it may take into account any blacklisted modules
 [46]: https://wiki.archlinux.org/title/Power_management#Disabling_suspend
 [47]: https://wiki.archlinux.org/title/acpid#Disabling_ordinary_key_events
 [48]: https://wiki.archlinux.org/title/Power_management#Network_interfaces
+[49]: https://wiki.archlinux.org/title/GnuPG#gpg-agent
 

@@ -1,0 +1,99 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+## Put this file where you want the virtualmachine files to be, then call
+## VAGRANT_HOME=vagrant.d vagrant up
+## VAGRANT_HOME=vagrant.d vagrant ssh
+
+require 'pathname'
+
+vm_name = "fribourg_taxes_2023"
+guest_sync_dir = Pathname.new("/home/vagrant/shared_dir")
+host_sync_dir = Pathname.pwd.join("shared_dir")
+vbox_root = Pathname.pwd.join("vbox_root")
+
+unless ENV.key?("VAGRANT_HOME") then
+  # Needs to be done manually, this does not work:
+  # ENV.merge!("VAGRANT_HOME" => "#{Pathname.pwd.join('vagrant.d')}")
+  raise "\nCall with VAGRANT_HOME=vagrant.d (otherwise /home gets all vbox images/data)"
+end
+
+# does not do sh*t when called from `config.vm.provider`?
+%x(vboxmanage setproperty machinefolder #{vbox_root})
+# If you called vagrant destroy but the following command still shows the VM
+#vbox_id = %x(vboxmanage list vms | grep #{vm_name}).split(/\n/)
+# Then you need to delete teh whole dir probably...
+
+unless host_sync_dir.directory? then
+  system("mkdir -p #{host_sync_dir}")
+end
+
+vbox_mods = %x( lsmod | grep vbox ).split(/\n/)
+unless vbox_mods.length > 0 then
+  puts "Will load kernel vbox modules, you may be prompted for root pw"
+  system(%{sed -rn 's/.*blacklist (.+)/\\1/p' /etc/modprobe.d/vbox.conf \
+           | sudo xargs modprobe --all})
+  puts "installed kernel vbox modules, no password should be asked anymore"
+
+  vbox_mods = %x( lsmod | grep vbox ).split(/\n/)
+  unless vbox_mods.length > 0 then
+    raise "\nvbox kernel modules not loaded"
+  end
+end
+
+# https://docs.vagrantup.com.
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.ssh.forward_x11 = true
+
+  # https://developer.hashicorp.com/vagrant/docs/networking/private_network
+  config.vm.network "private_network", type: "dhcp"
+
+  # Disable the default share of the current code directory. Doing this
+  # provides improved isolation between the vagrant box and your host
+  # by making sure your Vagrantfile isn't accessable to the vagrant box.
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  # https://developer.hashicorp.com/vagrant/docs/synced-folders/rsync
+  # host -> guest: vagrant rsync
+  # guest -> host: vagrant ssh-config > ssh-config ; rsync -aze 'ssh -F ssh-config' default:shared_dir/ shared_dir
+	config.vm.synced_folder host_sync_dir, guest_sync_dir, type: "rsync",
+    rsync__auto: false
+
+  # https://www.vagrantup.com/docs/providers/virtualbox/configuration
+  # vboxmanage --help | less
+  # vboxmanage storageattach :id --name=SCSI --controller=LSILogic --hostiocache=on
+  # vboxmanage storageattach :id --storagectl=SCSI --device=0 --port=0 --nonrotational=on
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = vm_name
+    vb.memory = "8192"
+    vb.cpus = "4"
+    vb.customize ["setproperty", "machinefolder", "#{vbox_root}"]
+    vb.customize ["modifyvm", :id, "--vram", "128"]
+    vb.customize ["modifyvm", :id, "--audio-enabled", "off"]
+  end
+  
+  # https://developer.hashicorp.com/vagrant/docs/provisioning/shell
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get -qq update
+    apt-get -qq upgrade -y
+  SHELL
+  config.vm.provision 'shell', reboot: true
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get -qq install -y linux-headers-$(uname -r)
+    apt-get -qq install -y build-essential dkms gcc make rsync
+    apt-get -qq install -y virtualbox-guest-additions-iso
+    apt-get -qq install -y okular
+    apt-get -qq install -y openjdk-8-jdk
+    # Already installed on the base image?
+    #apt-get -qq install -y virtualbox-guest-utils virtualbox-guest-x11
+    #mount /usr/share/virtualbox/VBoxGuestAdditions.iso /mnt
+    #pushd /mnt ; ./VBoxLinuxAdditions.run
+    #apt-get -qq install -y virtualbox-guest-x11
+  SHELL
+  config.vm.provision 'shell', reboot: true
+  config.vm.provision "shell", inline: <<-SHELL
+    wget --quiet --output-document=install_fritax.sh 'https://webupdate.ringler.ch/VBUpdateDispatcher/KVGetInstaller?k=FR&y=2024&t=N&o=lin'
+    ln -sT 'FriTax_2023/FriTax 2023 fr' run_fritax
+    # -q is non-interactive mode
+    runuser -u vagrant -- bash install_fritax.sh -q
+  SHELL
+end

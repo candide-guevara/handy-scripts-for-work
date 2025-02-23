@@ -6,10 +6,11 @@ SECURITY_GROUP_NAME="openvpn-sg"
 REGION="eu-central-1"
 CIDR_BLOCK="192.168.0.0/16"
 SUBNET_CIDR="192.168.0.0/24"
-WORKSTATION_IP="`curl -s ifconfig.me`"
+WORKSTATION_IP="`curl --silent ifconfig.me`"
 SSH_KEY_NAME="aws_vpn_ssh_key"
 EC2_USER="ec2-user"
 VPN_CONFIG_DIR="/etc/openvpn/client"
+CLIENT_CONFIG=aws_vpn
 
 die_if_not_set() {
   for vv in "$@"; do
@@ -300,6 +301,7 @@ EOF
       cp pki/issued/server.crt /etc/openvpn/
       cp pki/private/server.key /etc/openvpn/
       cp pki/dh.pem /etc/openvpn/
+      chmod -R o+rx pki
  
       cat > /etc/openvpn/server.conf <<EOF
 port 1194
@@ -354,6 +356,65 @@ get_instance_ipaddr() {
 }
 
 
+user_install() {
+  read_all
+  die_if_not_set INSTANCE_IP SSH_KEY_PATH CLIENT_CONFIG VPN_CONFIG_DIR
+  TEMP_DIR=$(mktemp -d)
+  if ! pacman -Q openvpn &>/dev/null; then
+    sudo pacman -Sy --noconfirm openvpn
+  fi
+
+  # Download certificates from EC2 instance
+  for ff in /etc/openvpn/easy-rsa/pki/ca.crt \
+            /etc/openvpn/easy-rsa/pki/issued/client1.crt \
+            /etc/openvpn/easy-rsa/pki/private/client1.key; do
+    scp -i "$SSH_KEY_PATH" -o StrictHostKeyChecking=no \
+        "$EC2_USER@$INSTANCE_IP:$ff" \
+        "$TEMP_DIR"
+  done
+
+  # Create client configuration
+  cat > "$TEMP_DIR/${CLIENT_CONFIG}.conf" <<EOF
+client
+dev tun
+proto udp
+remote $INSTANCE_IP 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert client1.crt
+key client1.key
+cipher AES-256-CBC
+verb 3
+auth-nocache
+# Route all traffic through VPN
+#redirect-gateway def1 bypass-dhcp
+
+# Use Google DNS servers
+#dhcp-option DNS 8.8.8.8
+#dhcp-option DNS 8.8.4.4
+
+# Verify server certificate
+#remote-cert-tls server
+EOF
+
+  sudo cp "$TEMP_DIR"/* "$VPN_CONFIG_DIR"
+  sudo chown openvpn "$VPN_CONFIG_DIR"/*
+  rm -rf "$TEMP_DIR"
+
+  sudo systemctl start openvpn-client@$CLIENT_CONFIG
+  ip route
+  echo "curl ifconfig.me=`curl --silent ifconfig.me` / INSTANCE_IP=$INSTANCE_IP"
+}
+user_uninstall() {
+  sudo systemctl stop openvpn-client@$CLIENT_CONFIG
+  ip route
+  echo "curl ifconfig.me=`curl --silent ifconfig.me` / INSTANCE_IP=$INSTANCE_IP"
+}
+
+
 read_all() {
   read_vpc
   read_vpc_routetable
@@ -373,6 +434,7 @@ read_all() {
   SSH_KEY_NAME='$SSH_KEY_NAME'
   EC2_USER='$EC2_USER'
   VPN_CONFIG_DIR='$VPN_CONFIG_DIR'
+  CLIENT_CONFIG='$CLIENT_CONFIG'
   VPC_ID='$VPC_ID'
   IGW_ID='$IGW_ID'
   ROUTE_TABLE_ID='$ROUTE_TABLE_ID'
@@ -409,4 +471,6 @@ create_all() {
 #read_all
 #create_all
 delete_all
+#user_install
+#user_uninstall
 

@@ -12,6 +12,7 @@ KV_TO_COPY=(
   "configuration/shell_tools/gdb_prompt_and_help.py:$HOME/.myconf.d"
 
   "configuration/shell_tools/pythonrc.py:$HOME/.myconf.d"
+  "configuration/shell_tools/cargo_config.toml:$HOME/.cargo/config.toml"
   "configuration/kde4_conf/mysteam.desktop:$HOME/.local/share/applications"
 
   "configuration/chrome-flags.conf:$HOME/.config/chrome-flags.conf"

@@ -8,6 +8,8 @@ target-dir = "/tmp"
 linker = "clang"
 rustflags = [
   #"-Awarnings",
+  "-Aunused_parens",
+  "-Adead_code",
   "-C", "target-cpu=native",
   "-C", "link-arg=-fuse-ld=lld",
   # Profile guided optimization:
@@ -17,10 +19,14 @@ rustflags = [
   #"-C", "profile-use=/tmp/pgo/merged.profdata",
 ]
 
+[profile.release]
+debug = "limited"
+
 # USAGE: cargo build --profile optimized
 [profile.optimized]
 inherits = "release"
 lto = true
 codegen-units = 1
+#debug = "none"
 panic = "abort"
 

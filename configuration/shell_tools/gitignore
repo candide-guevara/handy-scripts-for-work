@@ -13,4 +13,5 @@
 **/__pycache__
 **/.sconsign.dblite
 **/.directory
+**/Cargo.lock
 

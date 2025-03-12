@@ -28,8 +28,8 @@ gdrive_file_download() {
   local drive_v3_url='https://www.googleapis.com/drive/v3/files'
 
   local drive_read_scope="https://www.googleapis.com/auth/drive.readonly"
-  # This value indicates that Google's authorization server should return the authorization code in the browser's title bar
-  local redirection_url="urn:ietf:wg:oauth:2.0:oob"
+  # This is a hack! Redirection will fail but the code will be available in the browser address.
+  local redirection_url="http://127.0.0.1";
   local code_fetch_url="${auth_endpt_url}?client_id=${client_id}&redirect_uri=${redirection_url}&scope=${drive_read_scope}&response_type=code"
   local oauth_code=""
 
